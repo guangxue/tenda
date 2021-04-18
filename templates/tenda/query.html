@@ -1,0 +1,33 @@
+{{define "content"}}
+<div class="container">
+	<nav>
+		<ul>
+			<li><a href="#">Stock check</a></li>
+			<li><a href="#">weekly summary</a></li>
+			<li><a href="#">daily packed</a></li>
+		</ul>
+	</nav>
+	<h2 id="today">Today: </h2>
+	<form action="/query" method="post" id="queryform">
+		<div class="form-element">
+			<label for="prodModel">
+				<span class="title">Model</span>
+			</label>
+			<input list="modelist" id="prodModel" type="text" name="model">
+		</div>
+		<div id="feedback"></div>
+		<!-- <div class="form-element">
+			<label for="option">
+				<span class="title">Options</span>
+			</label>
+			<select name="option" id="option" class="select">
+				<option value="location">Location</option>
+				<option value="quantity">Quantity</option>
+			</select>
+		</div> -->
+		<div class="form-element">
+			<input type="submit" value="Query" id="querybutton">
+		</div>
+	</form>
+</div>
+{{end}}

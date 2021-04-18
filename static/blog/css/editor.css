@@ -1,0 +1,371 @@
+/****************************** @font-face ******************************/
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI-BoldItalic.eot');
+    src: local('/static/fonts/segoe_ui/Segoe UI Bold Italic'), local('SegoeUI-BoldItalic'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-BoldItalic.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-BoldItalic.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI.eot');
+    src: local('/static/blog/fonts/segoe_ui/Segoe UI'), local('SegoeUI'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI-SemiBold.eot');
+    src: local('/static/blog/fonts/segoe_ui/Segoe UI Semibold'), local('SegoeUI-SemiBold'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-SemiBold.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-SemiBold.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI-Light.eot');
+    src: local('/static/blog/fonts/segoe_ui/Segoe UI Light'), local('SegoeUI-Light'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Light.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Light.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Light.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI-Bold.eot');
+    src: local('/static/blog/fonts/segoe_ui/Segoe UI Bold'), local('SegoeUI-Bold'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Bold.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Bold.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Bold.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Segoe UI';
+    src: url('/static/blog/fonts/segoe_ui/SegoeUI-Italic.eot');
+    src: local('/static/blog/fonts/segoe_ui/Segoe UI Italic'), local('SegoeUI-Italic'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Italic.eot?#iefix') format('embedded-opentype'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Italic.woff2') format('woff2'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Italic.woff') format('woff'),
+        url('/static/blog/fonts/segoe_ui/SegoeUI-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+/******************************************/
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: scroll;
+    font-family: "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+.main-container {
+    display: grid;
+    grid-template-rows: 60px 1fr;
+    grid-template-columns: 1fr;
+    height: 100%;
+}
+header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #fff;
+    padding: 0;
+    margin: 0;
+    /*border-bottom: 2px solid #bbb;*/
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px
+}
+header nav {
+    display: flex;
+    padding: 4px;
+    flex: 1;
+}
+
+header nav button {
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
+}
+header nav .navtoolbar {
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+header nav .navtoolbar > div {
+    margin-right: .2em;
+}
+header nav .navtoolbar .navbutton-plus {
+    color: #fff;
+    background-color: #000;
+    border-radius: 3px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+header nav .middleflex {
+    flex: 3;
+}
+header nav .navsetting {
+    display: flex;
+    margin-left: auto;
+    flex: 1;
+    align-items: center;
+    font-size: 13px;
+    justify-content: flex-end;
+}
+header nav .navsetting div:nth-child(2) {
+    margin: 0 16px;
+}
+button.preview {
+    color:#007cba;
+    padding: 6px 12px;
+    height: 37px;
+    border-radius: 2px;
+    border:1px solid #fff;
+    font-size: 13px;
+}
+button.preview:hover {
+    border:1px solid #007cba;
+}
+button.publish {
+    padding: 6px 12px;
+    background-color: #007cba;
+    color: #fff;
+    font-size: 13px;
+    height: 37px;
+    border-radius: 2px;
+}
+button.setting {
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 2px;
+    margin: 0 12px;
+    width: 36px;
+    height: 36px;
+}
+
+.blog-container {
+    display: flex;
+    height: 100%;
+    position: relative;
+    width: 100%;
+
+}
+.blog-left-menu {
+    flex: 1 0 0;
+    overflow: auto;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+}
+.blog-left-menu > div {
+    padding: .5em;
+}
+.blog-left-menu button span:first-child {
+    padding: 10px 20px;
+}
+.blog-left-menu button span:last-child {
+    font-size: 12px;
+}
+.blog-left-menu button {
+    border: none;
+    background: transparent;
+    display: inline-flex;
+    flex-direction: column;
+    padding: 1.5em;
+    border: 1px solid #fff;
+}
+.blog-left-menu button:hover {
+    border: 1px solid #007cba;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #007cba;
+}
+.blog-left-menu button:hover span {
+    color: #007cba;
+    cursor: pointer;
+}
+.blog-left-menu .panel-title {
+    /*border-bottom: 1px solid #ccc;*/
+    color: #757575;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 550;
+}
+
+.blog-content {
+    flex: 3;
+    padding: 1em 3em;
+    overflow: auto;
+    background: #d1e4dd;
+}
+.blog-right-menu {
+    flex: 1 0 0;
+    overflow: auto;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.right-menu-wrapper > div {
+    border-bottom: 1px solid #bbb;
+}
+.right-menu-wrapper > div > div {
+    padding: 0 1rem;
+    margin: 0.5em 0;
+}
+.right-menu-wrapper button {
+    width: 100%;
+    border: none;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    padding: 16px;
+}
+nav button svg {
+    fill: currentColor;
+}
+.right-menu-wrapper button span {
+    margin-left: auto;
+}
+.right-menu-wrapper button:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+h1.blog-title {
+    width: 100%;
+    height: 65px;
+    border-bottom: 1px solid #bbb;
+    color: rgba(30,30,30,.62);
+    font-weight: normal;
+    font-size: 39px;
+}
+.blog-title:focus {
+    outline: none;
+}
+.blog-slug {
+    margin: 0.3rem;
+    height: 30px;
+    color: #393939;
+    font-size: 18px;
+}
+.blog-editor {
+    border-bottom: 1px solid #bbb;
+    width: 100%;
+    margin: 0 auto;
+    font-size: 23px;
+    padding-bottom: 2em;
+}
+.blog-editor:focus {
+    outline: none;
+}
+.toolbar-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid black;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    /* toolbar styles */
+    background: linear-gradient(to bottom, #242424, rgba(36, 36, 36, 0.75));
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-shadow: 0 0 3px #000;
+    /* display */
+    visibility: hidden;
+}
+.toolbar-container::after {
+    content: '';
+    width: 0;
+    height: 0;
+    /* triangle */
+    border-width: 8px 8px 0px 8px;
+    border-style: solid;
+    border-color: #242424 transparent transparent transparent;
+    /* position */
+    position: absolute;
+    left: 50%;
+    top: 50px;
+    margin-left: -8px;
+}
+
+.toolbar-container .selectToolbar button {
+    background: linear-gradient(to bottom, #242424, rgba(36, 36, 36, 0.89));
+    border: 0;
+    color:#fff;
+    height: 50px;
+    min-width: 50px;
+    cursor: pointer;
+    box-sizing:border-box;
+    font-size: 14px;
+    margin: 0;
+    background-color: transparent;
+    text-decoration: none;
+    padding: 15px;
+    line-height: 1.33;
+    /* button seperator */
+    border-right: 1px solid #000;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+.toolbar-container .selectToolbar button:hover {
+    background-color: #000;
+    color: yellow;
+}
+.toolbar-container .inputToolbar {
+    background: #242424;
+    width: 100%;
+}
+.displayflex {
+    display: flex;
+}
+.displaynone {
+    display: none;
+}
+.toolbar-container input {
+    background: #242424;
+    box-sizing: border-box;
+    color: #ccc;
+    height: 50px;
+    border: none;
+    font-size: 14px;
+    margin: 0;
+    padding: 6px;
+    /*width: 316px;*/
+    flex: 2;
+}
+.toolbar-container input:focus {
+    outline: none;
+}
+.toolbar-container input ~ a {
+    display: flex;
+    background: #242424;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bolder;
+    margin: 0 10px;
+    text-decoration: none;
+    /*flex: max-content;*/
+    align-items: center;
+    justify-content: center;
+}
+

@@ -1,0 +1,35 @@
+{{define "content"}}
+<div class="container">
+	<h2 id="today">Today: </h2>
+	<form action="/packing" method="post">
+		<div class="form-element">
+			<label for="prodModel">
+				<span class="title">Model</span>
+			</label>
+			<input list="modelist" id="prodModel" type="text" name="Model">
+		</div>
+		<div class="form-element">
+			<label for="qunatity">
+				<span class="title">Qunatity</span>
+			</label>
+			<input type="tel" name="qty">
+		</div>
+		<div class="form-element">
+			<label for="customer">
+				<span class="title">Customer</span>
+			</label>
+			<input type="text" name="customer">
+		</div>
+		<div id="po"></div>
+		<template id="order">
+			<tr><td></td><td></td><td></td></tr>
+		</template>
+		<div class="form-element">
+			<button class="btn btn-secondary addBtn">Add</button>
+		</div>
+		<div class="form-element">
+			<input type="submit" value="Generate">
+		</div>
+	</form>
+</div>
+{{end}}

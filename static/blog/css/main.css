@@ -1,0 +1,33 @@
+
+body {
+    font-family: 'Fira Sans', serif;
+}
+a {
+    color:  #000;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.flex-container {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 150px 1fr 100px;
+    grid-template-rows: 100px 30px 1fr 50px;
+}
+
+header {
+    grid-column: 2;
+}
+
+main {
+    grid-column: 2;
+}
+nav {
+    grid-column: 2;
+}
+
+footer {
+    grid-column: 2;
+}
+
