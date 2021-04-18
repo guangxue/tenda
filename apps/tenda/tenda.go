@@ -58,7 +58,6 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	    if err != nil {
 	    	fmt.Println("ModelsJson error: ", err)
 	    }
-
 		w.Write(ModelsJSON)
 	}
 

@@ -37,7 +37,7 @@ func GetAllModels() []string {
 	return models
 }
 
-func GetModel(querymodel string) []Model {
+func GetModel(querymodel string) []model {
 	sql := "SELECT model, location, unit, cartons, boxes, total " +
                "FROM stock_locations " +
                "WHERE model ='" + querymodel + "'"
