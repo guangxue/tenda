@@ -5,19 +5,16 @@ import (
 	"github.com/guangxue/webpages/mysql"
 	_ "github.com/go-sql-driver/mysql"	
 )
+
 var db = mysql.Connect("tenda");
 
-type model struct {
+type Model struct {
 	Model    string `json:"model"`
 	Location string `json:"location"`
 	Unit     int    `json:"unit"`
 	Cartons  int    `json:"cartons"`
 	Boxes    int    `json:"loose"`
 	Total    int    `json:"total"`
-}
-
-func GetModelLocation(modelName string) {
-
 }
 
 func GetAllModels() []string {
@@ -37,22 +34,43 @@ func GetAllModels() []string {
 	return models
 }
 
-func GetModel(querymodel string) []model {
+func GetModel(querymodel string) []Model {
 	sql := "SELECT model, location, unit, cartons, boxes, total " +
-               "FROM stock_locations " +
-               "WHERE model ='" + querymodel + "'"
+           "FROM stock_locations " +
+           "WHERE model ='" + querymodel + "'"
     rows, err := db.Query(sql)
     if err != nil {
 		fmt.Println("DB Query failed error: ", err)
 	}
-	m := model{}
-    allmodels := []model{}
+	m := Model{}
+    allmodels := []Model{}
     for rows.Next() {
         err := rows.Scan(&m.Model, &m.Location, &m.Unit, &m.Cartons, &m.Boxes, &m.Total)
-        if err !=nil {
-
-        }
+        if err != nil {
+			fmt.Println("DB Query failed error: ", err)
+		}
         allmodels = append(allmodels, m)
     }
+	return allmodels
+}
+func GetLocationModels(querylocation string) []Model {
+	sql := "SELECT location, model, unit, cartons, boxes, total " +
+		   "FROM stock_locations " +
+		   "WHERE location='" + querylocation + "'"
+	rows, err := db.Query(sql)
+	fmt.Println("SQL Statement:", sql)
+	if err != nil {
+		fmt.Println("DB Query failed error: ", err)
+	}
+	m := Model{}
+	allmodels := []Model{}
+    for rows.Next() {
+        err := rows.Scan(&m.Location, &m.Model, &m.Unit, &m.Cartons, &m.Boxes, &m.Total)
+        if err != nil {
+			fmt.Println("DB Query failed error: ", err)
+		}
+        allmodels = append(allmodels, m)
+    }
+    fmt.Printf("allmodels:%v\n", allmodels)
 	return allmodels
 }

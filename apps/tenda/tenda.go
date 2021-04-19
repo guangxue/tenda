@@ -50,6 +50,10 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
     // model name from URL querystring
 	querymodel := r.URL.Query().Get("model");
 	queryall := r.URL.Query().Get("allmodels")
+	querylocation := r.URL.Query().Get("location");
+	fmt.Println("Request Path:", r.URL.Path)
+	fmt.Println("querylocation:", querylocation)
+	fmt.Println("querymodel:", querymodel)
 
     // get all models
 	if len(queryall) > 0 {
@@ -67,6 +71,15 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
 
+        w.Write(ModelsJSON)
+	}
+
+	// get location data
+	if len(querylocation) > 0 {
+		allModels := stock.GetLocationModels(querylocation);
+		ModelsJSON, err := json.Marshal(allModels)
+	    ErrorCheck(err)
+	    fmt.Println("ModelsJSON %v\n", string(ModelsJSON))
         w.Write(ModelsJSON)
 	}
 }

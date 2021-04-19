@@ -2,7 +2,6 @@
 
 function getCurrentDateTime() {
 	let date = new Date();
-	console.log("new date:", date);
 	let dates = date.toString().split(" ");
 	let currTime = dates[4];
 	var month = date.getMonth();
@@ -16,7 +15,6 @@ function getCurrentDateTime() {
 
 let today = 'Today: '+ getCurrentDateTime();
 document.querySelector('#today').innerHTML = today;
-
 
 
 fetch("https://gzhang.dev/tenda/query/models?allmodels=true")
@@ -55,24 +53,47 @@ let queryButton = document.querySelector('#querybutton');
 if(queryButton) {
 	queryButton.addEventListener('click', function(e) {
 		e.preventDefault();
-		let model = document.querySelector('#prodModel').value;
-		let fetchurl = "https://gzhang.dev/tenda/query/models?model="+model;
-		fetch(fetchurl).then(response => { return response.json()})
-		.then(data => {
-			let sum_total = 0;
-			let table = "<table><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
-			data.forEach(m => {
-				// console.log("model ->", m);
-				let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.loose}</td><td>${m.total}</td></tr>`
-				table += row
-				sum_total += m.total;
+		let model = document.querySelector('#mod').value;
+		let location = document.querySelector('#loc').value;
+		if(model) {
+			let url = "https://gzhang.dev/tenda/query/models?model="+model;
+			fetch(url).then(response => { return response.json()})
+			.then(data => {
+				let sum_total = 0;
+				let table = "<table><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
+				data.forEach(m => {
+					// console.log("model ->", m);
+					let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.loose}</td><td>${m.total}</td></tr>`
+					table += row
+					sum_total += m.total;
+				});
+				table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></table>`
+				document.querySelector("#mfb").innerHTML = table;
+			})
+			.catch( err => {
+				console.log("model query FAILED:", err);
 			});
-			table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></table>`
-			document.querySelector("#feedback").innerHTML = table;
-		})
-		.catch( err => {
-			console.log("model query FAILED:", err);
-		});
+		}
+		if(location) {
+			console.log("location->", location);
+			let url = "https://gzhang.dev/tenda/query/models?location="+location;
+			console.log("fetch url:", url);
+			fetch(url).then(response => {
+				return response.json()
+			})
+			.then(data => {
+				console.log("location json:", data);
+				let table = "<table><tr><th>Location</th><th>model</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
+				data.forEach( m=> {
+					let row = `<tr><td>${m.location}</td><td>${m.model}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.loose}</td><td>${m.total}</td></tr>`
+					table += row
+				})
+				document.querySelector("#lfb").innerHTML = table;
+			})
+			.catch( err => {
+				console.log("location query FAILED:", err);
+			});
+		}
 	});
 }
 
@@ -83,7 +104,7 @@ if(addBtn) {
 
 		let currentDateTime = getCurrentDateTime()
 
-		let model = document.querySelector('#prodModel').value;
+		let model = document.querySelector('#mod').value;
 		let qty = document.querySelector('input[name="qty"]').value;
 		let customer = document.querySelector('input[name="customer"]').value;
 		let tableElem = document.querySelector('table > tbody');
