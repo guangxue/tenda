@@ -1,15 +1,22 @@
 // import { ElementWrapper as $ } from './core.js';
 
-let currentDate = new Date();
-let year = currentDate.getFullYear();
-let month = currentDate.getMonth();
-let day = currentDate.getDate();
-let hrs = currentDate.getHours();
-let min = currentDate.getMinutes();
-let sec = currentDate.getSeconds();
-let time = hrs + ':' + min + ':' + sec;
-let today = 'Today: '+ day + '/' + month + '/' + year;
-document.querySelector('#today').innerHTML = today + '  '+ time;
+function getCurrentDateTime() {
+	let date = new Date();
+	console.log("new date:", date);
+	let dates = date.toString().split(" ");
+	let currTime = dates[4];
+	var month = date.getMonth();
+	if(month < 10) {
+		month = `0${month}`
+	}
+	let currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
+	console.log(currentDateTime)
+	return currentDateTime;
+}
+
+let today = 'Today: '+ getCurrentDateTime();
+document.querySelector('#today').innerHTML = today;
+
 
 
 fetch("https://gzhang.dev/tenda/query/models?allmodels=true")
@@ -17,7 +24,7 @@ fetch("https://gzhang.dev/tenda/query/models?allmodels=true")
 		return response.json()
 	})
 	.then(data=> {
-		console.log("data->",data);
+		// console.log("data->",data);
 		var modelist = [];
 		for(let [key, value] of Object.entries(data)) {
 			modelist.push(value);
@@ -73,7 +80,9 @@ let addBtn = document.querySelector('.addBtn');
 if(addBtn) {
 	addBtn.addEventListener('click', function(e) {
 		e.preventDefault();
-		let time = new Date();
+
+		let currentDateTime = getCurrentDateTime()
+
 		let model = document.querySelector('#prodModel').value;
 		let qty = document.querySelector('input[name="qty"]').value;
 		let customer = document.querySelector('input[name="customer"]').value;
