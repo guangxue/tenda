@@ -3,10 +3,16 @@
 	<h2 id="today">Today: </h2>
 	<form action="/packing" method="post">
 		<div class="form-element">
-			<label for="prodModel">
+			<label for="pano">
+				<span class="title">PO/AE Number</span>
+			</label>
+			<input id="panum" type="text" name="pano" list="POAENumber">
+		</div>
+		<div class="form-element">
+			<label for="mod">
 				<span class="title">Model</span>
 			</label>
-			<input list="modelist" id="prodModel" type="text" name="Model">
+			<input list="modelist" id="mod" type="text" name="Model">
 		</div>
 		<div class="form-element">
 			<label for="qunatity">

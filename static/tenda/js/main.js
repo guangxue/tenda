@@ -1,14 +1,20 @@
 // import { ElementWrapper as $ } from './core.js';
 
-function getCurrentDateTime() {
+function getCurrentDateTime(numonly) {
 	let date = new Date();
 	let dates = date.toString().split(" ");
 	let currTime = dates[4];
-	var month = date.getMonth();
+	var currentDateTime = ""
+	var month = date.getMonth()+1;
 	if(month < 10) {
 		month = `0${month}`
 	}
-	let currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
+	if (numonly) {
+		currentDateTime = `${date.getFullYear()}${month}${date.getDate()}`;
+	}
+	else {
+		currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
+	}
 	console.log(currentDateTime)
 	return currentDateTime;
 }
@@ -125,4 +131,20 @@ if(addBtn) {
 		}
 		
 	});
+}
+
+
+let datalistElem = document.createElement('datalist');
+datalistElem.id='POAENumber';
+let PONumber = `PO${getCurrentDateTime(true)}`;
+let AENumber = `AE${getCurrentDateTime(true)}`;
+var PO_option = document.createElement('option');
+PO_option.textContent = PONumber;
+var AE_option = document.createElement('option');
+AE_option.textContent = AENumber;
+datalistElem.appendChild(PO_option);
+datalistElem.appendChild(AE_option);
+let formElem = document.querySelector('form');
+if(formElem) {
+	formElem.insertAdjacentElement('afterend', datalistElem);
 }
