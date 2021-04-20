@@ -86,9 +86,9 @@ label.logo {
 	padding: 0 100px;
 	font-weight: bold;
 }
-nav.main ul {
+nav.main-navbar ul {
 	float: right;
-	margin-left: auto;
+	margin-right: 2em;
 }
 nav.main-navbar ul li {
 	display: inline-block;
@@ -115,6 +115,7 @@ a:active, a:hover {
 	line-height: 80px;
 	margin-right: 40px;
 	cursor: pointer;
+	display: none;
 }
 #check {
 	display: none;

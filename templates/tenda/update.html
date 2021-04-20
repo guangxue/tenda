@@ -1,0 +1,24 @@
+{{define "content"}}
+<div class="container">
+	<h2 id="today">Today: </h2>
+	<form action="/update" method="post" id="updateform">
+		<div class="form-element">
+			<label for="mod">
+				<span class="title">Model</span>
+			</label>
+			<input list="modelist" id="mod" type="text" name="model">
+		</div>
+		<div id="mfb"></div>
+		<div class="form-element">
+			<label for="loc">
+				<span class="title">Location</span>
+			</label>
+			<input list="loclist" id="loc" type="text" name="location">
+		</div>
+		<div id="lfb"></div>
+		<div class="form-element">
+			<input type="submit" value="Update" id="updateButton">
+		</div>
+	</form>
+</div>
+{{end}}

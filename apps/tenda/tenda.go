@@ -41,6 +41,16 @@ func QueryPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("template executing errors: ", err)
 	}
 }
+func UpdatePage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/update.html")
+	if err != nil {
+		fmt.Println("template parsing errors: ", err)
+	}
+	err = tmpl.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		fmt.Println("template executing errors: ", err)
+	}
+}
 
 func QueryModels(w http.ResponseWriter, r *http.Request) {
 
