@@ -1,18 +1,18 @@
 {{define "content"}}
 <div class="container">
 	<h2 id="today">Today: </h2>
-	<form action="/packing" method="post">
+	<form action="/tenda/update/formdata" method="post" id="pickform">
 		<div class="form-element">
 			<label for="pano">
 				<span class="title">PO/AE Number</span>
 			</label>
-			<input id="panum" type="text" name="pano" list="POAENumber">
+			<input id="panum" type="text" name="PNO" list="POAENumber">
 		</div>
 		<div class="form-element">
 			<label for="mod">
 				<span class="title">Model</span>
 			</label>
-			<input list="modelist" id="mod" type="text" name="Model">
+			<input list="modelist" id="mod" type="text" name="model">
 		</div>
 		<div class="form-element">
 			<label for="qunatity">
@@ -34,7 +34,7 @@
 			<button class="btn btn-secondary addBtn">Add</button>
 		</div>
 		<div class="form-element">
-			<input type="submit" value="Generate">
+			<input type="submit" value="Pick" id="pickbtn">
 		</div>
 	</form>
 </div>

@@ -2,6 +2,7 @@ package tenda
 
 import (
 	"fmt"
+	"time"
 	"net/http"
 	"encoding/json"
 	"html/template"
@@ -92,4 +93,34 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	    fmt.Println("ModelsJSON %v\n", string(ModelsJSON))
         w.Write(ModelsJSON)
 	}
+}
+
+func ProcessForm(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("request Method:",r.Method)
+	fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println("Form parse error:", err)
+	}
+
+	tableName := r.FormValue("tableName")
+	if tableName == "picked" {
+		PNO := r.FormValue("PNO")
+		model := r.FormValue("model")
+		qty := r.FormValue("qty")
+		customer := r.FormValue("customer")
+		now := r.FormValue("now")
+
+		stock.InsertPicked(PNO, model, qty, customer, now)
+	}
+	
+}
+
+func TodaysPackages(w http.ResponseWriter, r *http.Request) {
+	timenow := time.Now()
+	currTime := timenow.Format("2006-01-02")
+	fmt.Println("YYYY-MM-DD : ", currTime)
+
+	allPicked := stock.GetTodayPackages(currTime)
+	fmt.Printf("allPicked: %T",allPicked)
 }

@@ -55,8 +55,13 @@ function fetchModelData(argument) {
 function WhenClick(elem, listener) {
 	let theEl = document.querySelector(elem);
 	if(theEl) {
-		theEl.addEventListner('click', listener);
+		theEl.addEventListener('click', listener);
 	}
 }
 
-export default {getCurrentDateTime, fetchDataList, WhenClick};
+
+export {
+	getCurrentDateTime,
+	fetchDataList,
+	WhenClick,
+};

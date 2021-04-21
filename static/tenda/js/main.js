@@ -1,4 +1,4 @@
-// import { ElementWrapper as $ } from './core.js';
+import {WhenClick } from './helper.js';
 
 function getCurrentDateTime(numonly) {
 	let date = new Date();
@@ -148,3 +148,27 @@ let formElem = document.querySelector('form');
 if(formElem) {
 	formElem.insertAdjacentElement('afterend', datalistElem);
 }
+
+WhenClick('#pickbtn', function(e) {
+	e.preventDefault();
+	console.log("Pick clicked")
+	let currentDateTime = getCurrentDateTime();
+	let formEl = document.querySelector('#pickform')
+	let formData = new FormData(formEl);
+	let PNO = document.querySelector('input[name="PNO"').value;
+	let model = document.querySelector('input[name="model"]').value;
+	let qty = document.querySelector('input[name="qty"]').value;
+	let customer = document.querySelector('input[name="customer"]').value;
+	let data = new URLSearchParams(formData);
+
+	for(const pair of formData) {
+		data.append(pair[0], pair[1])
+	}
+	data.append('tableName', 'picked')
+	data.append('now', currentDateTime)
+	fetch("https://gzhang.dev/tenda/update/formdata", {
+		// headers: {'Content-Type':'application/x-www-form-urlencoded'},
+		method: "POST",
+		body: data,
+	})
+});

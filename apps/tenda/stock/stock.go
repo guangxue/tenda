@@ -17,6 +17,15 @@ type Model struct {
 	Total    int    `json:"total"`
 }
 
+type Picked struct {
+	PID          int 
+	PNO          int
+	Model        string
+	Qty          int
+	Customer     string
+	Last_updated string
+}
+
 func GetAllModels() []string {
 	rows, err := db.Query("select distinct model from stock_locations")
 	if err != nil {
@@ -73,4 +82,47 @@ func GetLocationModels(querylocation string) []Model {
     }
     fmt.Printf("allmodels:%v\n", allmodels)
 	return allmodels
+}
+
+func InsertPicked(PNO string, model string, qty string, customer string, updated string) int64  {
+	
+	stmt, err := db.Prepare("INSERT INTO picked(PNO, model, qty, customer, last_updated) VALUES (?,?,?,?,?)")
+	if err != nil {
+		fmt.Println("Error sql Prepare:", err)
+	}
+	res, err := stmt.Exec(PNO, model, qty, customer, updated)
+	if err != nil {
+		fmt.Println("Error exectue sql:", err)
+	}
+
+	id, err := res.LastInsertId()
+
+	if err != nil {
+		fmt.Println("Error last ID:", err)
+	}
+
+	fmt.Println("Last id:", id)
+	return id
+}
+
+func GetTodayPackages(date string) []Picked {
+	sql := "SELECT PID, PNO, model, qty, customer, last_updated " +
+		   "FROM picked " +
+		   "WHERE last_updated LIKE '%" + date + "%'"
+	rows, err := db.Query(sql)
+	fmt.Println("SQL Statement:", sql)
+	if err != nil {
+		fmt.Println("DB Query failed error: ", err)
+	}
+	p := Picked{}
+	allPicked := []Picked{}
+    for rows.Next() {
+        err := rows.Scan(&p.PID, &p.PNO, &p.Model, &p.Qty, &p.Customer, &p.Last_updated)
+        if err != nil {
+			fmt.Println("DB Query failed error: ", err)
+		}
+        allPicked = append(allPicked, p)
+    }
+    fmt.Printf("allPicked:%v\n", allPicked)
+	return allPicked
 }

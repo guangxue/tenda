@@ -25,6 +25,8 @@ func main() {
 	mux.HandleFunc("/tenda/query", tenda.QueryPage)
 	mux.HandleFunc("/tenda/update", tenda.UpdatePage)
 	mux.HandleFunc("/tenda/query/models", tenda.QueryModels)
+	mux.HandleFunc("/tenda/update/formdata",tenda.ProcessForm)
+	mux.HandleFunc("/tenda/pack/",tenda.TodaysPackages)
 	
 
 	/*------------------------------------------------------------*/
