@@ -130,12 +130,33 @@ func GetTodayPackages(date string) []Picked {
 	return allPicked
 }
 
+type Loc struct {
+	Location string `json:"location"`
+}
+func GetModelLocations(model string) []Loc {
+	sql := "SELECT location from stock_locations where model='"+model+"'"
+	rows, err := db.Query(sql)
+	if err != nil {
+		fmt.Println("DB Query failed error: ", err)
+	}
+	l := Loc{}
+	locs := []Loc{}
+	for rows.Next() {
+		err := rows.Scan(&l.Location)
+		if err != nil {
+			fmt.Println("DB location query failed:", err)
+		}
+		locs = append(locs, l)
+	}
+	fmt.Printf("all locations array: %v\n", locs)
+	return locs
+
+}
 func GetPendingParcels() []Picked {
 	sql := "SELECT PID, PNO, model, qty, customer, location, status,  last_updated " +
 		   "FROM picked " +
 		   "WHERE status='Pending'"
 	rows, err := db.Query(sql)
-	fmt.Println("SQL Statement:", sql)
 	if err != nil {
 		fmt.Println("DB Query failed error: ", err)
 	}

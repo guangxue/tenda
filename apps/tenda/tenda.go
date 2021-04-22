@@ -56,23 +56,36 @@ func UpdatePage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("template executing errors: ", err)
 	}
 }
-
+func QueryLocations(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	queryModel := r.URL.Query().Get("model");
+	if len(queryModel) > 0 {
+		allLocations := stock.GetModelLocations(queryModel);
+		LocationJSON, err := json.Marshal(allLocations)
+	    ErrorCheck(err)
+	    fmt.Println("LocationJSON", string(LocationJSON))
+        w.Write(LocationJSON)
+	}
+}
 func QueryModels(w http.ResponseWriter, r *http.Request) {
 
     // Set Header for json HTTP response
 	w.Header().Set("Content-Type", "application/json")
 
     // model name from URL querystring
-	querymodel := r.URL.Query().Get("model"); // model=all OR model=ACU10
-	querylocation := r.URL.Query().Get("location"); // location=0-G-1
-
+    // -- api/models
+    // -- api/models?model=AC18
+    // -- api/models?location=0-G-1
+	queryModel    := r.URL.Query().Get("model");
+	queryLocation := r.URL.Query().Get("location");
 
 	fmt.Println("[QueryModels] Request Path:", r.URL.Path)
-	fmt.Println("[QueryModels] querylocation:", querylocation)
-	fmt.Println("[QueryModels] querymodel:", querymodel)
+	fmt.Println("[QueryModels] query Model:", len(queryModel))
+	fmt.Println("[QueryModels] query Location:", queryLocation)
+
 
     // get all models
-	if querymodel == "all" {
+	if len(queryModel) == 0 && len(queryLocation) == 0{
         models := stock.GetAllModels();
 	    ModelsJSON, err := json.Marshal(models)
 	    if err != nil {
@@ -82,8 +95,8 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	}
 
     // get one model
-	if len(querymodel) > 0 && querymodel != "all" {
-        allModels := stock.GetModel(querymodel)
+	if len(queryModel) > 0 {
+        allModels := stock.GetModel(queryModel)
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
 
@@ -91,12 +104,12 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get location data
-	if len(querylocation) > 0 {
-		allModels := stock.GetLocationModels(querylocation);
-		ModelsJSON, err := json.Marshal(allModels)
+	if len(queryLocation) > 0 {
+		allModels := stock.GetLocationModels(queryLocation);
+		LocationJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
-	    fmt.Println("ModelsJSON %v\n", string(ModelsJSON))
-        w.Write(ModelsJSON)
+	    fmt.Println("LocationJSON", string(LocationJSON))
+        w.Write(LocationJSON)
 	}
 }
 

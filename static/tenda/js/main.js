@@ -24,7 +24,7 @@ document.querySelector('#today').innerHTML = today;
 
 let modelinput = document.querySelector('input[name="model"]')
 if(modelinput) {
-	fetch("https://gzhang.dev/tenda/api/models?model=all")
+	fetch("https://gzhang.dev/tenda/api/models")
 	.then(response => {
 		return response.json()
 	})
@@ -153,6 +153,8 @@ if(formElem) {
 	formElem.insertAdjacentElement('afterend', datalistElem);
 }
 
+
+/** INSERT INTO picked **/
 WhenClick('#pickbtn', function(e) {
 	e.preventDefault();
 	console.log("Pick clicked")
@@ -243,13 +245,32 @@ WhenClick('.picklist-btn', function() {
 })
 
 
-const qtyInput = document.querySelector("input[name=qty]");
+const qtyInput = document.querySelector("#pick-location");
 
 if(qtyInput) {
-	qtyInput.addEventListener('change', function(e) {
+	qtyInput.addEventListener('click', function(e) {
 		let model = document.querySelector("input[name=model]").value;
 		if(model) {
 			console.log("model no:", model)
+			fetch("https://gzhang.dev/tenda/api/locations?model="+model)
+			.then( resp => {
+				return resp.json();
+			})
+			.then( data => {
+				console.log("locations data:", data);
+				let optionFragement = new DocumentFragment();
+				let selectButton = document.querySelector('#pick-location');
+				selectButton.innerHTML = ""
+				data.forEach( loc => {
+					console.log("loc:", loc.location);
+					// let currentOpt = '<option value="'+loc.location+'">'+loc.location+"</option>";
+					let opt = document.createElement('option');
+					opt.value = loc.location;
+					opt.textContent = loc.location;
+					optionFragement.appendChild(opt);
+				});
+				selectButton.appendChild(optionFragement)
+			})
 		}
 	})
 }

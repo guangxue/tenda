@@ -26,6 +26,7 @@ func main() {
 	mux.HandleFunc("/tenda/query", tenda.QueryPage)
 	mux.HandleFunc("/tenda/update", tenda.UpdatePage)
 	mux.HandleFunc("/tenda/api/models", tenda.QueryModels)
+	mux.HandleFunc("/tenda/api/locations", tenda.QueryLocations)
 	mux.HandleFunc("/tenda/api/picked",tenda.PickedParcels)
 	
 
