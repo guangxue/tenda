@@ -18,12 +18,12 @@ type Model struct {
 }
 
 type Picked struct {
-	PID          int 
-	PNO          int
-	Model        string
-	Qty          int
-	Customer     string
-	Last_updated string
+	PID          int    `json:"PID"`
+	PNO          string `json:"PNO"`
+	Model        string `json:"model"`
+	Qty          int    `json:"qty"`
+	Customer     string `json:"customer"`
+	Last_updated string `json:"updated"`
 }
 
 func GetAllModels() []string {
@@ -123,6 +123,6 @@ func GetTodayPackages(date string) []Picked {
 		}
         allPicked = append(allPicked, p)
     }
-    fmt.Printf("allPicked:%v\n", allPicked)
+    fmt.Printf("rows.Scaned - allPicked:%v\n", allPicked)
 	return allPicked
 }

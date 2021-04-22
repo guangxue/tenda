@@ -22,8 +22,9 @@ function getCurrentDateTime(numonly) {
 let today = 'Today: '+ getCurrentDateTime();
 document.querySelector('#today').innerHTML = today;
 
-
-fetch("https://gzhang.dev/tenda/query/models?allmodels=true")
+let modelinput = document.querySelector('input[name="model"]')
+if(modelinput) {
+	fetch("https://gzhang.dev/api/models?allmodels=true")
 	.then(response => {
 		return response.json()
 	})
@@ -53,6 +54,9 @@ fetch("https://gzhang.dev/tenda/query/models?allmodels=true")
 	.catch( err => {
 		console.log("modelallerr:", err);
 	})
+}
+
+
 
 
 let queryButton = document.querySelector('#querybutton');
@@ -62,7 +66,7 @@ if(queryButton) {
 		let model = document.querySelector('#mod').value;
 		let location = document.querySelector('#loc').value;
 		if(model) {
-			let url = "https://gzhang.dev/tenda/query/models?model="+model;
+			let url = "https://gzhang.dev/tenda/api/models?model="+model;
 			fetch(url).then(response => { return response.json()})
 			.then(data => {
 				let sum_total = 0;
@@ -82,7 +86,7 @@ if(queryButton) {
 		}
 		if(location) {
 			console.log("location->", location);
-			let url = "https://gzhang.dev/tenda/query/models?location="+location;
+			let url = "https://gzhang.dev/tenda/api/models?location="+location;
 			console.log("fetch url:", url);
 			fetch(url).then(response => {
 				return response.json()
@@ -115,7 +119,7 @@ if(addBtn) {
 		let customer = document.querySelector('input[name="customer"]').value;
 		let tableElem = document.querySelector('table > tbody');
 		if(tableElem) {
-			let tplrow = document.querySelector('#order');
+			let tplrow = document.querySelector('#htmpl_order');
 			var row = tplrow.content.cloneNode(true);
 			var td = row.querySelectorAll('td');
 			td.item(0).textContent = model;
@@ -166,9 +170,34 @@ WhenClick('#pickbtn', function(e) {
 	}
 	data.append('tableName', 'picked')
 	data.append('now', currentDateTime)
-	fetch("https://gzhang.dev/tenda/update/formdata", {
-		// headers: {'Content-Type':'application/x-www-form-urlencoded'},
+	fetch("https://gzhang.dev/tenda/api/picked", {
 		method: "POST",
 		body: data,
 	})
 });
+
+let picktable = document.querySelector("#picktable");
+if(picktable) {
+	let todayDateTime = getCurrentDateTime();
+	let today = todayDateTime.split(' ')[0]
+	console.log("today::", today);
+	let url = "https://gzhang.dev/tenda/api/picked?date=today";
+	fetch(url).then(response => { return response.json()})
+	.then(data => {
+		console.log("data from /picked/today:", data);
+		// let tplrow = document.querySelector('#htmpl_pack');
+		// var row = tplrow.content.cloneNode(true);
+		// var td = row.querySelectorAll('td');
+		// td.item(0).textContent = model;
+		// td.item(1).textContent = qty;
+		// td.item(2).textContent = customer;
+		// tableElem.appendChild(row);
+		// data.forEach(m => {
+		// 	// console.log("model ->", m);
+		// 	let row = `<tr><td>${m.PID}</td><td>${m.PNO}</td><td>${m.model}</td><td>${m.qty}</td><td>${m.customer}</td><td>${m.updated}</td></tr>`
+		// });
+	})
+	// .catch( err => {
+	// 	console.log("today packed  FAILED:", err);
+	// });
+}

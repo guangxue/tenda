@@ -1,8 +1,12 @@
 {{define "content"}}
+<div id="today"></div>
 <div class="container">
-	<table>
+	<table id="picktable">
 		<tr><th>PID</th><th>PNO</th><th>model</th><th>qty</th><th>customer</th><th>last_updated</th></tr>
-		<tr><td>{{.pid}}</td><td>{{.pno}}</td><td>{{.model}}</td><td>{{.qty}}</td><td>{{.customer}}</td><td>{{.last_updated}}</td></tr>
-	</table>	
+		<!-- <tr><td>{{.PID}}</td><td>{{.PNO}}</td><td>{{.Model}}</td><td>{{.Qty}}</td><td>{{.Customer}}</td><td>{{.Last_updated}}</td></tr> -->
+	</table>
+	<template id="htmpl_pack">
+		<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	</template>	
 </div>
 {{end}}

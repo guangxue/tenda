@@ -116,11 +116,27 @@ func ProcessForm(w http.ResponseWriter, r *http.Request) {
 	
 }
 
+func PackPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/pack.html")
+	if err != nil {
+		fmt.Println("template parsing errors: ", err)
+	}
+	err = tmpl.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		fmt.Println("template executing errors: ", err)
+	}
+}
+
 func TodaysPackages(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	timenow := time.Now()
 	currTime := timenow.Format("2006-01-02")
 	fmt.Println("YYYY-MM-DD : ", currTime)
 
 	allPicked := stock.GetTodayPackages(currTime)
-	fmt.Printf("allPicked: %T",allPicked)
+	PickedJSON, err := json.Marshal(allPicked)
+    if err != nil {
+    	fmt.Println("PickedJson error: ", err)
+    }
+	w.Write(PickedJSON)
 }
