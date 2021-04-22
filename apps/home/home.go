@@ -12,7 +12,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
  //        return
  //    }
 	
-	fmt.Println("Request path: ", r.URL.Path)
+	fmt.Println("[Main] Request path: ", r.URL.Path)
 	if r.URL.Path != "/" {
 		tmpl, err := template.ParseFiles("templates/404.html")
 		templVar := map[string]interface{}{

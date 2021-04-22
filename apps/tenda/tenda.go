@@ -9,6 +9,10 @@ import (
 	"github.com/guangxue/webpages/apps/tenda/stock"
 )
 
+type InsertResponse struct {
+	LastId int64 `json:"lastId"`
+}
+
 func ErrorCheck(err error) {
 	if err != nil {
 		fmt.Println(err.Error())
@@ -60,14 +64,13 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 
     // model name from URL querystring
 	querymodel := r.URL.Query().Get("model");
-	queryall := r.URL.Query().Get("allmodels")
 	querylocation := r.URL.Query().Get("location");
-	fmt.Println("Request Path:", r.URL.Path)
-	fmt.Println("querylocation:", querylocation)
-	fmt.Println("querymodel:", querymodel)
+	fmt.Println("[QueryModels] Request Path:", r.URL.Path)
+	fmt.Println("[QueryModels] querylocation:", querylocation)
+	fmt.Println("[QueryModels] querymodel:", querymodel)
 
     // get all models
-	if len(queryall) > 0 {
+	if querymodel == "all" {
         models := stock.GetAllModels();
 	    ModelsJSON, err := json.Marshal(models)
 	    if err != nil {
@@ -77,7 +80,7 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	}
 
     // get one model
-	if len(querymodel) > 0 {
+	if len(querymodel) > 0 && querymodel != "all" {
         allModels := stock.GetModel(querymodel)
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
@@ -116,8 +119,8 @@ func ProcessForm(w http.ResponseWriter, r *http.Request) {
 	
 }
 
-func PackPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/pack.html")
+func PickListPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/picklist.html")
 	if err != nil {
 		fmt.Println("template parsing errors: ", err)
 	}
@@ -127,16 +130,41 @@ func PackPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func TodaysPackages(w http.ResponseWriter, r *http.Request) {
+func PickedParcels(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	timenow := time.Now()
-	currTime := timenow.Format("2006-01-02")
-	fmt.Println("YYYY-MM-DD : ", currTime)
+	if r.Method == "GET" {
+		date := r.URL.Query().Get("date");
+		if date == "today" {
+			timenow := time.Now()
+			currTime := timenow.Format("2006-01-02")
+			fmt.Println("YYYY-MM-DD : ", currTime)
 
-	allPicked := stock.GetTodayPackages(currTime)
-	PickedJSON, err := json.Marshal(allPicked)
-    if err != nil {
-    	fmt.Println("PickedJson error: ", err)
-    }
-	w.Write(PickedJSON)
+			allPicked := stock.GetTodayPackages(currTime)
+			PickedJSON, err := json.Marshal(allPicked)
+		    if err != nil {
+		    	fmt.Println("PickedJson error: ", err)
+		    }
+			w.Write(PickedJSON)
+		}
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println("Form parse error:", err)
+		}
+		PNO := r.FormValue("PNO")
+		model := r.FormValue("model")
+		qty := r.FormValue("qty")
+		customer := r.FormValue("customer")
+		now := r.FormValue("now")
+
+		lastId := stock.InsertPicked(PNO, model, qty, customer, now)
+		insertResp := InsertResponse {lastId}
+		resJSON, err := json.Marshal(insertResp)
+	    if err != nil {
+	    	fmt.Println("resJSON error: ", err)
+	    }
+		w.Write(resJSON)
+	}
 }

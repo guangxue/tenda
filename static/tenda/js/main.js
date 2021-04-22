@@ -24,7 +24,7 @@ document.querySelector('#today').innerHTML = today;
 
 let modelinput = document.querySelector('input[name="model"]')
 if(modelinput) {
-	fetch("https://gzhang.dev/api/models?allmodels=true")
+	fetch("https://gzhang.dev/tenda/api/models?model=all")
 	.then(response => {
 		return response.json()
 	})
@@ -168,11 +168,17 @@ WhenClick('#pickbtn', function(e) {
 	for(const pair of formData) {
 		data.append(pair[0], pair[1])
 	}
-	data.append('tableName', 'picked')
+
 	data.append('now', currentDateTime)
 	fetch("https://gzhang.dev/tenda/api/picked", {
 		method: "POST",
 		body: data,
+	})
+	.then(resp => { 
+		return resp.json()
+	})
+	.then(data => {
+		console.log(data.lastId)
 	})
 });
 

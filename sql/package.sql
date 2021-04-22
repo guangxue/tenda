@@ -4,6 +4,7 @@ CREATE TABLE picked (
 	model VARCHAR(50) NOT NULL,
 	qty INT NOT NULL,
 	customer VARCHAR(200),
+	status VARCHAR(50) DEFAULT "Pending",
 	last_updated TIMESTAMP NOT NULL,
 );
 

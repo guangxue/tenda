@@ -22,12 +22,11 @@ func main() {
 	// Tenda pick and pack system
 	mux.HandleFunc("/tenda", tenda.Index)
 	mux.HandleFunc("/tenda/pick", tenda.PickPage)
-	mux.HandleFunc("/tenda/pack/",tenda.PackPage)
+	mux.HandleFunc("/tenda/picklist",tenda.PickListPage)
 	mux.HandleFunc("/tenda/query", tenda.QueryPage)
 	mux.HandleFunc("/tenda/update", tenda.UpdatePage)
 	mux.HandleFunc("/tenda/api/models", tenda.QueryModels)
-	mux.HandleFunc("/tenda/api/form-data",tenda.ProcessForm)
-	mux.HandleFunc("/tenda/api/picked",tenda.TodaysPackages)
+	mux.HandleFunc("/tenda/api/picked",tenda.PickedParcels)
 	
 
 	/*------------------------------------------------------------*/
