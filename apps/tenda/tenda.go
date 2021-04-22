@@ -63,8 +63,10 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
     // model name from URL querystring
-	querymodel := r.URL.Query().Get("model");
-	querylocation := r.URL.Query().Get("location");
+	querymodel := r.URL.Query().Get("model"); // model=all OR model=ACU10
+	querylocation := r.URL.Query().Get("location"); // location=0-G-1
+
+
 	fmt.Println("[QueryModels] Request Path:", r.URL.Path)
 	fmt.Println("[QueryModels] querylocation:", querylocation)
 	fmt.Println("[QueryModels] querymodel:", querymodel)
@@ -98,26 +100,6 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ProcessForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("request Method:",r.Method)
-	fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println("Form parse error:", err)
-	}
-
-	tableName := r.FormValue("tableName")
-	if tableName == "picked" {
-		PNO := r.FormValue("PNO")
-		model := r.FormValue("model")
-		qty := r.FormValue("qty")
-		customer := r.FormValue("customer")
-		now := r.FormValue("now")
-
-		stock.InsertPicked(PNO, model, qty, customer, now)
-	}
-	
-}
 
 func PickListPage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/picklist.html")
@@ -145,6 +127,14 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 		    	fmt.Println("PickedJson error: ", err)
 		    }
 			w.Write(PickedJSON)
+		}
+		if date == "pending" {
+			pendingParcels := stock.GetPendingParcels()
+			ParcelJSON, err := json.Marshal(pendingParcels)
+		    if err != nil {
+		    	fmt.Println("ParcelJSON error: ", err)
+		    }
+			w.Write(ParcelJSON)
 		}
 	}
 

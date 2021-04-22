@@ -175,35 +175,81 @@ WhenClick('#pickbtn', function(e) {
 		body: data,
 	})
 	.then(resp => { 
-		return resp.json()
+		return resp.json();
 	})
 	.then(data => {
 		console.log(data.lastId)
 	})
 });
 
-let picktable = document.querySelector("#picktable");
-if(picktable) {
-	let todayDateTime = getCurrentDateTime();
-	let today = todayDateTime.split(' ')[0]
-	console.log("today::", today);
-	let url = "https://gzhang.dev/tenda/api/picked?date=today";
-	fetch(url).then(response => { return response.json()})
-	.then(data => {
-		console.log("data from /picked/today:", data);
-		// let tplrow = document.querySelector('#htmpl_pack');
-		// var row = tplrow.content.cloneNode(true);
-		// var td = row.querySelectorAll('td');
-		// td.item(0).textContent = model;
-		// td.item(1).textContent = qty;
-		// td.item(2).textContent = customer;
-		// tableElem.appendChild(row);
-		// data.forEach(m => {
-		// 	// console.log("model ->", m);
-		// 	let row = `<tr><td>${m.PID}</td><td>${m.PNO}</td><td>${m.model}</td><td>${m.qty}</td><td>${m.customer}</td><td>${m.updated}</td></tr>`
-		// });
+
+WhenClick('.picklist-btn', function() {
+	let selection = document.querySelector("#pick-selection").value;
+	console.log("Selection is:", selection)
+	if (selection == "Today") {
+		fetch("https://gzhang.dev/tenda/api/picked?date=today")
+		.then( resp => {
+			return resp.json();
+		})
+		.then( data => {
+			console.log(data)
+			let tableBody = document.querySelector('#picklist_table tbody')
+			console.log("table body:", tableBody)
+			tableBody.innerHTML = ""
+			let tplrow = document.querySelector('#htmpl_pick');
+			
+			data.forEach(p=> {
+				var row = tplrow.content.cloneNode(true);
+				var td = row.querySelectorAll('td');
+				td.item(0).textContent = p.PID;
+				td.item(1).textContent = p.PNO;
+				td.item(2).textContent = p.model;
+				td.item(3).textContent = p.qty;
+				td.item(4).textContent = p.customer.String;
+				td.item(5).textContent = p.status;
+				td.item(6).textContent = p.updated;
+				tableBody.appendChild(row);
+			})
+			
+		})
+	}
+	if (selection == "Pending") {
+		fetch("https://gzhang.dev/tenda/api/picked?date=pending")
+		.then( resp => {
+			return resp.json();
+		})
+		.then( data => {
+			console.log(data)
+			let tableBody = document.querySelector('#picklist_table tbody')
+			console.log("table body:", tableBody)
+			tableBody.innerHTML = ""
+			let tplrow = document.querySelector('#htmpl_pick');
+			
+			data.forEach(p=> {
+				var row = tplrow.content.cloneNode(true);
+				var td = row.querySelectorAll('td');
+				td.item(0).textContent = p.PID;
+				td.item(1).textContent = p.PNO;
+				td.item(2).textContent = p.model;
+				td.item(3).textContent = p.qty;
+				td.item(4).textContent = p.customer.String;
+				td.item(5).textContent = p.status;
+				td.item(6).textContent = p.updated;
+				tableBody.appendChild(row);
+			})
+			
+		})
+	}
+})
+
+
+const qtyInput = document.querySelector("input[name=qty]");
+
+if(qtyInput) {
+	qtyInput.addEventListener('change', function(e) {
+		let model = document.querySelector("input[name=model]").value;
+		if(model) {
+			console.log("model no:", model)
+		}
 	})
-	// .catch( err => {
-	// 	console.log("today packed  FAILED:", err);
-	// });
 }

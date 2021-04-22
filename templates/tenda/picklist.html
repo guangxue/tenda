@@ -1,12 +1,31 @@
 {{define "content"}}
-<div id="today"></div>
+
 <div class="container">
-	<table id="picklist">
-		<tr><th>PID</th><th>PNO</th><th>model</th><th>qty</th><th>customer</th><th>last_updated</th></tr>
-		<!-- <tr><td>{{.PID}}</td><td>{{.PNO}}</td><td>{{.Model}}</td><td>{{.Qty}}</td><td>{{.Customer}}</td><td>{{.Last_updated}}</td></tr> -->
-	</table>
-	<template id="htmpl_pack">
-		<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-	</template>	
+	<h2 id="today">Today: </h2>
+	<div class="space-between select-options">
+		<div class="space-between">
+			<select name="pickoptions" id="pick-selection" class="select">
+				<option value="Today">Today</option>
+				<option value="Pending">Pending</option>
+			</select>
+		</div>
+		<div class="space-between">
+			<button class="btn btn-secondary picklist-btn">Select</button>
+		</div>
+	</div>
+	<div class="space-between">
+		<table id="picklist_table">
+			<thead>
+				<tr><th>PID</th><th>PNO</th><th>Model</th><th>Qty</th><th>Customer</th><th>Status</th><th>Last_updated</th></tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+		<template id="htmpl_pick">
+			<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+		</template>
+	</div>
+	<div class="space-between">
+		<button class="btn btn-primary">Complete</button>
+	</div>	
 </div>
 {{end}}

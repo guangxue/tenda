@@ -2,6 +2,7 @@ package stock
 
 import (
 	"fmt"
+	"database/sql"
 	"github.com/guangxue/webpages/mysql"
 	_ "github.com/go-sql-driver/mysql"	
 )
@@ -18,12 +19,14 @@ type Model struct {
 }
 
 type Picked struct {
-	PID          int    `json:"PID"`
-	PNO          string `json:"PNO"`
-	Model        string `json:"model"`
-	Qty          int    `json:"qty"`
-	Customer     string `json:"customer"`
-	Last_updated string `json:"updated"`
+	PID          int            `json:"PID"`
+	PNO          string         `json:"PNO"`
+	Model        string         `json:"model"`
+	Qty          int            `json:"qty"`
+	Customer     sql.NullString `json:"customer"`
+	Location     string         `json:"location"`
+	Status       string         `json:"status"`
+	Last_updated string         `json:"updated"`
 }
 
 func GetAllModels() []string {
@@ -106,7 +109,7 @@ func InsertPicked(PNO string, model string, qty string, customer string, updated
 }
 
 func GetTodayPackages(date string) []Picked {
-	sql := "SELECT PID, PNO, model, qty, customer, last_updated " +
+	sql := "SELECT PID, PNO, model, qty, customer, location, status, last_updated " +
 		   "FROM picked " +
 		   "WHERE last_updated LIKE '%" + date + "%'"
 	rows, err := db.Query(sql)
@@ -117,7 +120,29 @@ func GetTodayPackages(date string) []Picked {
 	p := Picked{}
 	allPicked := []Picked{}
     for rows.Next() {
-        err := rows.Scan(&p.PID, &p.PNO, &p.Model, &p.Qty, &p.Customer, &p.Last_updated)
+        err := rows.Scan(&p.PID, &p.PNO, &p.Model, &p.Qty, &p.Customer, &p.Location, &p.Status, &p.Last_updated)
+        if err != nil {
+			fmt.Println("DB Query failed error: ", err)
+		}
+        allPicked = append(allPicked, p)
+    }
+    fmt.Printf("rows.Scaned - allPicked:%v\n", allPicked)
+	return allPicked
+}
+
+func GetPendingParcels() []Picked {
+	sql := "SELECT PID, PNO, model, qty, customer, location, status,  last_updated " +
+		   "FROM picked " +
+		   "WHERE status='Pending'"
+	rows, err := db.Query(sql)
+	fmt.Println("SQL Statement:", sql)
+	if err != nil {
+		fmt.Println("DB Query failed error: ", err)
+	}
+	p := Picked{}
+	allPicked := []Picked{}
+    for rows.Next() {
+        err := rows.Scan(&p.PID, &p.PNO, &p.Model, &p.Qty, &p.Customer, &p.Location, &p.Status, &p.Last_updated)
         if err != nil {
 			fmt.Println("DB Query failed error: ", err)
 		}

@@ -24,7 +24,7 @@ body {
 div.container {
 	display: flex;
 	flex-direction: column;
-	padding: 1em;
+	width: 100%;
 }
 input[type=text],
 input[type=tel] {
@@ -55,11 +55,21 @@ input[type=submit] {
 	display: block;
 }
 
-div.form-element {
+div.form-element,
+.space-between {
 	margin-top: 1em;
+	margin: 5px;
 }
 .title {
 	margin-bottom: 1em;
+}
+.select-options {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+.select-btn {
+	justify-content: flex-end;
 }
 ul {
 	padding: 0;
