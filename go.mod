@@ -1,4 +1,4 @@
-module github.com/guangxue/webpages
+module github.com/guangxue/webapps
 
 go 1.16
 

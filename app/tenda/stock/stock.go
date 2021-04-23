@@ -3,8 +3,8 @@ package stock
 import (
 	"fmt"
 	"database/sql"
-	"github.com/guangxue/webpages/mysql"
-	_ "github.com/go-sql-driver/mysql"	
+	"github.com/guangxue/webapps/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db = mysql.Connect("tenda");
@@ -93,7 +93,6 @@ func GetLocationModels(querylocation string) []Model {
 }
 
 func InsertPicked(PNO string, model string, qty string, customer string, location string, status string, updated string) int64  {
-	
 	stmt, err := db.Prepare("INSERT INTO picked(PNO, model, qty, customer, location, status, last_updated) VALUES (?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println("Error sql Prepare:", err)

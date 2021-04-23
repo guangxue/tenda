@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"html/template"
-	"github.com/guangxue/webpages/app/tenda"
-	"github.com/guangxue/webpages/app/blog"
+	"github.com/guangxue/webapps/app/tenda"
+	"github.com/guangxue/webapps/app/blog"
 )
 
 var mux = http.NewServeMux()

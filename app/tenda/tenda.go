@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"html/template"
-	"github.com/guangxue/webpages/app/tenda/stock"
+	"github.com/guangxue/webapps/app/tenda/stock"
 )
 
 type InsertResponse struct {
