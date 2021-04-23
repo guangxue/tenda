@@ -33,11 +33,6 @@ type Loc struct {
 	Location string `json:"location"`
 }
 
-func GetPicked()    []Picked {}
-func GetLocations() []Loc    {}
-func GetModels()    []Model  {}
-
-
 func GetAllModels() []string {
 	rows, err := db.Query("select distinct model from stock_locations")
 	if err != nil {
