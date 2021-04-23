@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"html/template"
-	"github.com/guangxue/webpages/apps/tenda"
-	"github.com/guangxue/webpages/apps/blog"
+	"github.com/guangxue/webpages/app/tenda"
+	"github.com/guangxue/webpages/app/blog"
 )
 
 var mux = http.NewServeMux()
 
 func main() {
-	
 	fs := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
@@ -31,7 +30,6 @@ func main() {
 	mux.HandleFunc("/tenda/api/locations", tenda.QueryLocations)
 	mux.HandleFunc("/tenda/api/picked",tenda.PickedParcels)
 	mux.HandleFunc("/tenda/api/picked/pid",tenda.QueryPickedWithPID)
-	
 
 	/*------------------------------------------------------------*/
 	// Blog system
@@ -50,7 +48,7 @@ func main() {
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
 	fmt.Println("[Main] Request path: ", rPath)
-	
+
 	if r.URL.Path != "/" {
 		// render 404 page
 		tmpl, err := template.ParseFiles("templates/404.html")
@@ -64,7 +62,7 @@ func routing(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("template executing errors: ", err)
 		}
-		return 
+		return
 	}
 
 	// render HOME 
