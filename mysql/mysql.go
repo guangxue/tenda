@@ -16,6 +16,6 @@ func Connect(dbname string) *sql.DB {
 	if pingerr != nil {
 		fmt.Println("DB pinging error: ", pingerr)
 	}
-	fmt.Println("DB Connected (tenda)")
+	fmt.Println("[mysql.Connect] DB Connected (tenda)")
 	return db
 }

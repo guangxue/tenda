@@ -161,10 +161,6 @@ WhenClick('#pickbtn', function(e) {
 	let currentDateTime = getCurrentDateTime();
 	let formEl = document.querySelector('#pickform')
 	let formData = new FormData(formEl);
-	let PNO = document.querySelector('input[name="PNO"').value;
-	let model = document.querySelector('input[name="model"]').value;
-	let qty = document.querySelector('input[name="qty"]').value;
-	let customer = document.querySelector('input[name="customer"]').value;
 	let data = new URLSearchParams(formData);
 
 	for(const pair of formData) {
@@ -196,7 +192,6 @@ WhenClick('.picklist-btn', function() {
 		.then( data => {
 			console.log(data)
 			let tableBody = document.querySelector('#picklist_table tbody')
-			console.log("table body:", tableBody)
 			tableBody.innerHTML = ""
 			let tplrow = document.querySelector('#htmpl_pick');
 			
@@ -208,8 +203,10 @@ WhenClick('.picklist-btn', function() {
 				td.item(2).textContent = p.model;
 				td.item(3).textContent = p.qty;
 				td.item(4).textContent = p.customer.String;
-				td.item(5).textContent = p.status;
-				td.item(6).textContent = p.updated;
+				td.item(5).textContent = p.location;
+				td.item(6).textContent = p.status;
+				td.item(7).textContent = p.updated;
+				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
 				tableBody.appendChild(row);
 			})
 			
@@ -223,7 +220,6 @@ WhenClick('.picklist-btn', function() {
 		.then( data => {
 			console.log(data)
 			let tableBody = document.querySelector('#picklist_table tbody')
-			console.log("table body:", tableBody)
 			tableBody.innerHTML = ""
 			let tplrow = document.querySelector('#htmpl_pick');
 			
@@ -235,8 +231,10 @@ WhenClick('.picklist-btn', function() {
 				td.item(2).textContent = p.model;
 				td.item(3).textContent = p.qty;
 				td.item(4).textContent = p.customer.String;
-				td.item(5).textContent = p.status;
-				td.item(6).textContent = p.updated;
+				td.item(5).textContent = p.location;
+				td.item(6).textContent = p.status;
+				td.item(7).textContent = p.updated;
+				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
 				tableBody.appendChild(row);
 			})
 			
@@ -245,10 +243,10 @@ WhenClick('.picklist-btn', function() {
 })
 
 
-const qtyInput = document.querySelector("#pick-location");
+const modelInput = document.querySelector("input[name=model]");
 
-if(qtyInput) {
-	qtyInput.addEventListener('click', function(e) {
+if(modelInput) {
+	modelInput.addEventListener('change', function(e) {
 		let model = document.querySelector("input[name=model]").value;
 		if(model) {
 			console.log("model no:", model)

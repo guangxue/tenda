@@ -29,6 +29,15 @@ type Picked struct {
 	Last_updated string         `json:"updated"`
 }
 
+type Loc struct {
+	Location string `json:"location"`
+}
+
+func GetPicked()    []Picked {}
+func GetLocations() []Loc    {}
+func GetModels()    []Model  {}
+
+
 func GetAllModels() []string {
 	rows, err := db.Query("select distinct model from stock_locations")
 	if err != nil {
@@ -65,6 +74,7 @@ func GetModel(querymodel string) []Model {
     }
 	return allmodels
 }
+
 func GetLocationModels(querylocation string) []Model {
 	sql := "SELECT location, model, unit, cartons, boxes, total " +
 		   "FROM stock_locations " +
@@ -87,13 +97,13 @@ func GetLocationModels(querylocation string) []Model {
 	return allmodels
 }
 
-func InsertPicked(PNO string, model string, qty string, customer string, updated string) int64  {
+func InsertPicked(PNO string, model string, qty string, customer string, location string, status string, updated string) int64  {
 	
-	stmt, err := db.Prepare("INSERT INTO picked(PNO, model, qty, customer, last_updated) VALUES (?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO picked(PNO, model, qty, customer, location, status, last_updated) VALUES (?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Println("Error sql Prepare:", err)
 	}
-	res, err := stmt.Exec(PNO, model, qty, customer, updated)
+	res, err := stmt.Exec(PNO, model, qty, customer, location, status, updated)
 	if err != nil {
 		fmt.Println("Error exectue sql:", err)
 	}
@@ -104,7 +114,7 @@ func InsertPicked(PNO string, model string, qty string, customer string, updated
 		fmt.Println("Error last ID:", err)
 	}
 
-	fmt.Println("Last id:", id)
+	fmt.Println("[InsertPicked] Last id:", id)
 	return id
 }
 
@@ -126,13 +136,11 @@ func GetTodayPackages(date string) []Picked {
 		}
         allPicked = append(allPicked, p)
     }
-    fmt.Printf("rows.Scaned - allPicked:%v\n", allPicked)
+    fmt.Printf("[DB selected] allPicked:%v\n", len(allPicked))
 	return allPicked
 }
 
-type Loc struct {
-	Location string `json:"location"`
-}
+
 func GetModelLocations(model string) []Loc {
 	sql := "SELECT location from stock_locations where model='"+model+"'"
 	rows, err := db.Query(sql)
@@ -148,12 +156,12 @@ func GetModelLocations(model string) []Loc {
 		}
 		locs = append(locs, l)
 	}
-	fmt.Printf("all locations array: %v\n", locs)
+	fmt.Printf("[GetModelLocations] locations array: %v\n", locs)
 	return locs
 
 }
 func GetPendingParcels() []Picked {
-	sql := "SELECT PID, PNO, model, qty, customer, location, status,  last_updated " +
+	sql := "SELECT PID, PNO, model, qty, customer, location, status, last_updated " +
 		   "FROM picked " +
 		   "WHERE status='Pending'"
 	rows, err := db.Query(sql)
@@ -172,3 +180,4 @@ func GetPendingParcels() []Picked {
     fmt.Printf("rows.Scaned - allPicked:%v\n", allPicked)
 	return allPicked
 }
+

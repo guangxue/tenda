@@ -24,49 +24,27 @@ func Index(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Tenda Pick and Pack System.")
 }
 
-func PickPage(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("request path ->", r.URL.Path);
-	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/pick.html")
-	if err != nil {
-		fmt.Println("template parsing errors: ", err)
-	}
-	err = tmpl.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		fmt.Println("template executing errors: ", err)
+
+func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
+	queryPID := r.URL.Query().Get("PID");
+	fmt.Println("[UpdatePickedPage] PID:", queryPID)
+}
+func Render(templateName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmplpath := "templates/tenda/" + templateName
+		tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", tmplpath)
+		if err != nil {
+			fmt.Println("template parsing errors: ", err)
+		}
+		err = tmpl.ExecuteTemplate(w, "base", nil)
+		if err != nil {
+			fmt.Println("template executing errors: ", err)
+		}
 	}
 }
 
-func QueryPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/query.html")
-	if err != nil {
-		fmt.Println("template parsing errors: ", err)
-	}
-	err = tmpl.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		fmt.Println("template executing errors: ", err)
-	}
-}
-func UpdatePage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/update.html")
-	if err != nil {
-		fmt.Println("template parsing errors: ", err)
-	}
-	err = tmpl.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		fmt.Println("template executing errors: ", err)
-	}
-}
-func QueryLocations(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	queryModel := r.URL.Query().Get("model");
-	if len(queryModel) > 0 {
-		allLocations := stock.GetModelLocations(queryModel);
-		LocationJSON, err := json.Marshal(allLocations)
-	    ErrorCheck(err)
-	    fmt.Println("LocationJSON", string(LocationJSON))
-        w.Write(LocationJSON)
-	}
-}
+//----------------------------------------------------------*/
+/*--------------------API-----------------------------------*/
 func QueryModels(w http.ResponseWriter, r *http.Request) {
 
     // Set Header for json HTTP response
@@ -80,8 +58,8 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 	queryLocation := r.URL.Query().Get("location");
 
 	fmt.Println("[QueryModels] Request Path:", r.URL.Path)
-	fmt.Println("[QueryModels] query Model:", len(queryModel))
-	fmt.Println("[QueryModels] query Location:", queryLocation)
+	fmt.Println("[QueryModels] query Model:", queryModel, len(queryModel))
+	fmt.Println("[QueryModels] query Location:", queryLocation, len(queryLocation))
 
 
     // get all models
@@ -114,16 +92,19 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func PickListPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", "templates/tenda/picklist.html")
-	if err != nil {
-		fmt.Println("template parsing errors: ", err)
-	}
-	err = tmpl.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		fmt.Println("template executing errors: ", err)
+
+func QueryLocations(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	queryModel := r.URL.Query().Get("model");
+	if len(queryModel) > 0 {
+		allLocations := stock.GetModelLocations(queryModel);
+		LocationJSON, err := json.Marshal(allLocations)
+	    ErrorCheck(err)
+	    fmt.Println("[QueryLocations] LocationJSON", string(LocationJSON))
+        w.Write(LocationJSON)
 	}
 }
+
 
 func PickedParcels(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -160,9 +141,10 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 		model := r.FormValue("model")
 		qty := r.FormValue("qty")
 		customer := r.FormValue("customer")
+		location := r.FormValue("location")
 		now := r.FormValue("now")
-
-		lastId := stock.InsertPicked(PNO, model, qty, customer, now)
+		status := "Pending"
+		lastId := stock.InsertPicked(PNO, model, qty, customer, location, status, now)
 		insertResp := InsertResponse {lastId}
 		resJSON, err := json.Marshal(insertResp)
 	    if err != nil {
@@ -170,4 +152,8 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 	    }
 		w.Write(resJSON)
 	}
+}
+
+func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
+	fmt.Println("r.PATH :", r.URL.Path)
 }
