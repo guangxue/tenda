@@ -25,10 +25,11 @@ func main() {
 	mux.HandleFunc("/tenda/query", tenda.Render("query.html"))
 	mux.HandleFunc("/tenda/update", tenda.Render("update.html"))
 	mux.HandleFunc("/tenda/update/picked", tenda.UpdatePickedPage)
+
 	// Tenda API system
-	mux.HandleFunc("/tenda/api/models", tenda.QueryModels)
-	mux.HandleFunc("/tenda/api/locations", tenda.QueryLocations)
-	mux.HandleFunc("/tenda/api/picked",tenda.PickedParcels)
+	mux.HandleFunc("/tenda/api/models", tenda.Models)
+	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
+	mux.HandleFunc("/tenda/api/picked",tenda.Picked)
 	mux.HandleFunc("/tenda/api/picked/pid",tenda.QueryPickedWithPID)
 
 	/*------------------------------------------------------------*/

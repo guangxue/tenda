@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"encoding/json"
 	"html/template"
-	"github.com/guangxue/webapps/app/tenda/stock"
+	"github.com/guangxue/webapps/mysql"
 )
-
+var db = mysql.Connect("tenda");
 type InsertResponse struct {
 	LastId int64 `json:"lastId"`
 }
@@ -45,7 +45,7 @@ func Render(templateName string) http.HandlerFunc {
 
 //----------------------------------------------------------*/
 /*--------------------API-----------------------------------*/
-func QueryModels(w http.ResponseWriter, r *http.Request) {
+func Models(w http.ResponseWriter, r *http.Request) {
 
     // Set Header for json HTTP response
 	w.Header().Set("Content-Type", "application/json")
@@ -54,68 +54,84 @@ func QueryModels(w http.ResponseWriter, r *http.Request) {
     // -- api/models
     // -- api/models?model=AC18
     // -- api/models?location=0-G-1
+
+
+    /********* TEST MySQL Statements **********
+    // mysql.Select("model", "location").From("stock_locations").Where("model", "MW6-3PK").Use(db)
+    // updateColumns := map[string]string{
+    // 	"model": "ABC9-2PK",
+    // 	"location":"0-0-0",
+    // }
+    // mysql.Update("stock_locations").Set(updateColumns).Where("SID", "12").Use(db)
+
+    // mysql.Select("model","qty", "location").From("picked").WhereLike("last_updated", "2021-04-23%").Use(db)
+    // insertColumns := []string{"PNO", "model", "qty", "customer", "location"}
+    // insertValues  := []string{"PO20210412", "AC6", "eBay", "0-G-3"}
+    // mysql.Insert("picked", insertColumns, insertValues)
+    *******************************************/
+
+
+
+
 	queryModel    := r.URL.Query().Get("model");
 	queryLocation := r.URL.Query().Get("location");
 
-	fmt.Println("[QueryModels] Request Path:", r.URL.Path)
-	fmt.Println("[QueryModels] query Model:", queryModel, len(queryModel))
-	fmt.Println("[QueryModels] query Location:", queryLocation, len(queryLocation))
+	fmt.Println("[Models] Request Path:", r.URL.Path)
+	fmt.Println("[Models] query Model:", queryModel)
+	fmt.Println("[Models] query Location:", queryLocation)
 
 
     // get all models
 	if len(queryModel) == 0 && len(queryLocation) == 0{
-        models := stock.GetAllModels();
-	    ModelsJSON, err := json.Marshal(models)
+        modelNames := mysql.SelectDistinct("model").From("stock").Use(db);
+	    ModelNamesJSON, err := json.Marshal(modelNames)
 	    if err != nil {
 	    	fmt.Println("ModelsJson error: ", err)
 	    }
-		w.Write(ModelsJSON)
+		w.Write(ModelNamesJSON)
 	}
 
     // get one model
 	if len(queryModel) > 0 {
-        allModels := stock.GetModel(queryModel)
+        allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock").Where("model", queryModel).Use(db)
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
-
         w.Write(ModelsJSON)
 	}
 
 	// get location data
 	if len(queryLocation) > 0 {
-		allModels := stock.GetLocationModels(queryLocation);
+		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock").Where("location", queryLocation).Use(db)
 		LocationJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
 	    fmt.Println("LocationJSON", string(LocationJSON))
-        w.Write(LocationJSON)
+ 	    w.Write(LocationJSON)
 	}
 }
 
 
-
-func QueryLocations(w http.ResponseWriter, r *http.Request) {
+func Locations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	queryModel := r.URL.Query().Get("model");
+	
 	if len(queryModel) > 0 {
-		allLocations := stock.GetModelLocations(queryModel);
+		allLocations := mysql.Select("location").From("stock").Where("model", queryModel).Use(db)
 		LocationJSON, err := json.Marshal(allLocations)
 	    ErrorCheck(err)
-	    fmt.Println("[QueryLocations] LocationJSON", string(LocationJSON))
-        w.Write(LocationJSON)
+	    fmt.Printf("[Locations]\nLocationJSON:%s\n", string(LocationJSON))
+ 	    w.Write(LocationJSON)
 	}
 }
 
 
-func PickedParcels(w http.ResponseWriter, r *http.Request) {
+func Picked(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == "GET" {
 		date := r.URL.Query().Get("date");
 		if date == "today" {
 			timenow := time.Now()
-			currTime := timenow.Format("2006-01-02")
-			fmt.Println("YYYY-MM-DD : ", currTime)
-
-			allPicked := stock.GetTodayPackages(currTime)
+			timePattern := timenow.Format("2006-01-02")+"%"
+			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "last_updated").From("picked").WhereLike("last_updated",timePattern).Use(db)
 			PickedJSON, err := json.Marshal(allPicked)
 		    if err != nil {
 		    	fmt.Println("PickedJson error: ", err)
@@ -123,7 +139,7 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 			w.Write(PickedJSON)
 		}
 		if date == "pending" {
-			pendingParcels := stock.GetPendingParcels()
+			pendingParcels := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "last_updated").From("picked").Where("status","Pending").Use(db)
 			ParcelJSON, err := json.Marshal(pendingParcels)
 		    if err != nil {
 		    	fmt.Println("ParcelJSON error: ", err)
@@ -131,7 +147,7 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 			w.Write(ParcelJSON)
 		}
 	}
-
+/*
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -152,8 +168,9 @@ func PickedParcels(w http.ResponseWriter, r *http.Request) {
 	    }
 		w.Write(resJSON)
 	}
+	*/
 }
 
 func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
-	fmt.Println("r.PATH :", r.URL.Path)
+	// fmt.Println("r.PATH :", r.URL.Path)
 }

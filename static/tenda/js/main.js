@@ -15,7 +15,6 @@ function getCurrentDateTime(numonly) {
 	else {
 		currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
 	}
-	console.log(currentDateTime)
 	return currentDateTime;
 }
 
@@ -23,13 +22,14 @@ let today = 'Today: '+ getCurrentDateTime();
 document.querySelector('#today').innerHTML = today;
 
 let modelinput = document.querySelector('input[name="model"]')
-if(modelinput) {
+let modelNameinput = document.querySelector('input[name="modelName"]')
+if(modelinput || modelNameinput) {
 	fetch("https://gzhang.dev/tenda/api/models")
 	.then(response => {
 		return response.json()
 	})
 	.then(data=> {
-		// console.log("data->",data);
+		console.log("data->",data);
 		var modelist = [];
 		for(let [key, value] of Object.entries(data)) {
 			modelist.push(value);
@@ -43,10 +43,10 @@ if(modelinput) {
 		let formElem = document.querySelector('form');
 		formElem.insertAdjacentElement('afterend', datalistElem);
 		let optionFragement = new DocumentFragment();
-		models.forEach( model => {
-			let currentOpt = '<option value="'+model+'">';
+		models.forEach( m => {
+			let currentOpt = '<option value="'+m.model+'">';
 			let opt = document.createElement('option');
-			opt.value = model;
+			opt.value = m.model;
 			optionFragement.appendChild(opt);
 		});
 		datalistElem.appendChild(optionFragement)
@@ -70,12 +70,12 @@ if(queryButton) {
 			fetch(url).then(response => { return response.json()})
 			.then(data => {
 				let sum_total = 0;
-				let table = "<table><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
+				let table = "<table><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr>";
 				data.forEach(m => {
-					// console.log("model ->", m);
-					let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.loose}</td><td>${m.total}</td></tr>`
+					console.log("m.total ->", m.total);
+					let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 					table += row
-					sum_total += m.total;
+					sum_total += parseFloat(m.total);
 				});
 				table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></table>`
 				document.querySelector("#mfb").innerHTML = table;
@@ -95,7 +95,7 @@ if(queryButton) {
 				console.log("location json:", data);
 				let table = "<table><tr><th>Location</th><th>model</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
 				data.forEach( m=> {
-					let row = `<tr><td>${m.location}</td><td>${m.model}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.loose}</td><td>${m.total}</td></tr>`
+					let row = `<tr><td>${m.location}</td><td>${m.model}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 					table += row
 				})
 				document.querySelector("#lfb").innerHTML = table;
@@ -202,7 +202,7 @@ WhenClick('.picklist-btn', function() {
 				td.item(1).textContent = p.PNO;
 				td.item(2).textContent = p.model;
 				td.item(3).textContent = p.qty;
-				td.item(4).textContent = p.customer.String;
+				td.item(4).textContent = p.customer;
 				td.item(5).textContent = p.location;
 				td.item(6).textContent = p.status;
 				td.item(7).textContent = p.updated;
@@ -224,13 +224,14 @@ WhenClick('.picklist-btn', function() {
 			let tplrow = document.querySelector('#htmpl_pick');
 			
 			data.forEach(p=> {
+				console.log("customer",p.customer);
 				var row = tplrow.content.cloneNode(true);
 				var td = row.querySelectorAll('td');
 				td.item(0).textContent = p.PID;
 				td.item(1).textContent = p.PNO;
 				td.item(2).textContent = p.model;
 				td.item(3).textContent = p.qty;
-				td.item(4).textContent = p.customer.String;
+				td.item(4).textContent = p.customer;
 				td.item(5).textContent = p.location;
 				td.item(6).textContent = p.status;
 				td.item(7).textContent = p.updated;
@@ -243,11 +244,11 @@ WhenClick('.picklist-btn', function() {
 })
 
 
-const modelInput = document.querySelector("input[name=model]");
+const modelInput = document.querySelector("input[name=modelName]");
 
 if(modelInput) {
 	modelInput.addEventListener('change', function(e) {
-		let model = document.querySelector("input[name=model]").value;
+		let model = document.querySelector("input[name=modelName]").value;
 		if(model) {
 			console.log("model no:", model)
 			fetch("https://gzhang.dev/tenda/api/locations?model="+model)
