@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"database/sql"
 	"strings"
+	"strconv"
 	_ "github.com/go-sql-driver/mysql"	
 )
 
@@ -13,6 +14,7 @@ type Statement struct {
 	ColumnNames   []string
 	TableName     string
 	InsertStmt    string
+	InsertValues  []interface{}
 	SetExpr  	  string
 	WhereClause   string
 	DBconnection  *sql.DB
@@ -50,9 +52,21 @@ func SelectDistinct(searchColumns ...string) *Statement{
 	return sqlstmt
 }
 
-func Insert(tableName string, insertColumns []string, insertValues []string) {
-	insertStmt := "INSERT INTO "+tableName + "("+strings.Join(insertColumns, ",")+") VALUES (" +strings.Join(insertValues, ",")+")"
+func InsertInto(tableName string, insertColumns []string, insertValues []interface{}) *Statement{
+	sqlstmt := &Statement{}
+	sqlstmt.QueryType = "INSERT"
+	sqlstmt.InsertValues = insertValues
+
+	placeholders := make([]string, len(insertValues))
+	for i, _ := range placeholders {
+		placeholders[i] = "?"
+	}
+	insertPlaceholders := "("+strings.Join(placeholders, ",")+")"
+	fmt.Println("INSERT placeholders:", insertPlaceholders)
+	insertStmt := "INSERT INTO "+tableName + "("+strings.Join(insertColumns, ",")+") VALUES " + insertPlaceholders
+	sqlstmt.InsertStmt = insertStmt
 	fmt.Println("insertStmt:", insertStmt)
+	return sqlstmt
 }
 
 func Update(tableName string) *Statement{
@@ -103,7 +117,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		]
 	****/
 	finalColumns := []map[string]string{}
-	
+	fmt.Println("QueryType:", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
 	case "SELECT":
 		
@@ -119,12 +133,12 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		}
 		rows, err := db.Query(stmt)
 		if err != nil {
-			fmt.Println("[stmt.Get] db.Query error:72:", err)
+			fmt.Println("[stmt.Get] db.Query error line:135:", err)
 		}
 		for rows.Next() {
 			err := rows.Scan(scannedColumns...)
 			if err != nil {
-				fmt.Println("[Get]: dbColumns Scan error:109:", err)
+				fmt.Println("[Get]: dbColumns Scan error:140:", err)
 			}
 			// save each scanned column to col map[string]string
 			col := map[string]string{}
@@ -142,7 +156,34 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	case "UPDATE":
 		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause
 		fmt.Println("UPdate Statement:", stmt)
-	}
+		
+
+	case "INSERT":
+		fmt.Println("INSERT statment::", sqlstmt.InsertStmt)
+		fmt.Println("INSERT values:", sqlstmt.InsertValues)
+		stmt, err := db.Prepare(sqlstmt.InsertStmt)
+		if err != nil {
+			fmt.Println("Error sql Prepare:", err)
+		}
+		res, err := stmt.Exec(sqlstmt.InsertValues...)
+		if err != nil {
+			fmt.Println("Error exectue sql:", err)
+		}
+
+		id, err := res.LastInsertId()
+
+		if err != nil {
+			fmt.Println("Error last ID:", err)
+		}
+
+		fmt.Println("[InsertPicked] Last id:", id)
+		rid := strconv.FormatInt(id, 10)
+		insertFeedback := map[string]string{"lastId":rid}
+		finalColumns = append(finalColumns, insertFeedback)
+		
+
+	} // EOS: end of switch
+
 	for _,val := range finalColumns {
 		fmt.Println("stmt: finalColumns:", val)
 	}

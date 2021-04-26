@@ -147,28 +147,30 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 			w.Write(ParcelJSON)
 		}
 	}
-/*
+	// Inserting picking informations
+
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
 			fmt.Println("Form parse error:", err)
 		}
 		PNO := r.FormValue("PNO")
-		model := r.FormValue("model")
+		model := r.FormValue("modelName")
 		qty := r.FormValue("qty")
 		customer := r.FormValue("customer")
-		location := r.FormValue("location")
+		location := r.FormValue("pickLocation")
 		now := r.FormValue("now")
 		status := "Pending"
-		lastId := stock.InsertPicked(PNO, model, qty, customer, location, status, now)
-		insertResp := InsertResponse {lastId}
-		resJSON, err := json.Marshal(insertResp)
-	    if err != nil {
-	    	fmt.Println("resJSON error: ", err)
-	    }
-		w.Write(resJSON)
+		insertColumns := []string{"PNO","model","qty","customer","location","status", "last_updated"}
+		insertValues  := []interface{}{PNO,model,qty,customer,location,status,now}
+		mysql.InsertInto("picked", insertColumns, insertValues).Use(db)
+		// insertResp := InsertResponse {lastId}
+		// resJSON, err := json.Marshal(insertResp)
+	 //    if err != nil {
+	 //    	fmt.Println("resJSON error: ", err)
+	 //    }
+		// w.Write(resJSON)
 	}
-	*/
 }
 
 func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
