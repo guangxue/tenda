@@ -20,10 +20,10 @@ func main() {
 	/*------------------------------------------------------------*/
 	// Tenda pick and pack system
 	mux.HandleFunc("/tenda", tenda.Index)
-	mux.HandleFunc("/tenda/pick", tenda.Render("pick.html"))
-	mux.HandleFunc("/tenda/picklist",tenda.Render("picklist.html"))
-	mux.HandleFunc("/tenda/query", tenda.Render("query.html"))
-	mux.HandleFunc("/tenda/update", tenda.Render("update.html"))
+	mux.HandleFunc("/tenda/pick", tenda.RenderHandler("pick.html"))
+	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
+	mux.HandleFunc("/tenda/query", tenda.RenderHandler("query.html"))
+	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
 	mux.HandleFunc("/tenda/update/picked", tenda.UpdatePickedPage)
 
 	// Tenda API system

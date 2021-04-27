@@ -1,0 +1,51 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="container">
+	<h2 id="today">Today: </h2>
+	<h3>Update PID:</h3>
+	<form action="/update/summary" method="post" id="updateform">
+		<ul>
+		{{range $name, $value := .}}
+			<li>{{$name}} ::: {{$value}}</li>
+		{{end}}
+		</ul>
+		<div class="form-element">
+			<label for="pno">
+				<span class="title">PNO</span>
+			</label>
+			<input id="pno" type="text" name="PNO">
+		</div>
+		<div class="form-element">
+			<label for="mod">
+				<span class="title">Model</span>
+			</label>
+			<input list="modelist" id="mod" type="text" name="model">
+		</div>
+		<div class="form-element">
+			<label for="pqty">
+				<span class="title">Picked Qty</span>
+			</label>
+			<input id="pqty" type="tel" name="qty">
+		</div>
+		<div class="form-element">
+			<label for="loc">
+				<span class="title">Location</span>
+			</label>
+			<input list="loclist" id="loc" type="text" name="location">
+		</div>
+		<div class="form-element">
+			<label for="stat">
+				<span class="title">Status</span>
+			</label>
+			<select name="statusoption" id="status-selection" class="select">
+				<option value="Pending">Pending</option>
+				<option value="Complete">Complete</option>
+			</select>
+		</div>
+		<div class="form-element">
+			<input type="submit" value="Update" id="updatePickedButton">
+		</div>
+	</form>
+</div>
+{{end}}

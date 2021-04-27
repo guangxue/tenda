@@ -183,10 +183,5 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 
 	} // EOS: end of switch
 
-	for _,val := range finalColumns {
-		fmt.Println("stmt: finalColumns:", val)
-	}
 	return finalColumns
 }
-
-

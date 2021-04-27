@@ -167,6 +167,7 @@ WhenClick('#pickbtn', function(e) {
 		data.append(pair[0], pair[1])
 	}
 
+	console.log("NOW:", currentDateTime)
 	data.append('now', currentDateTime)
 	fetch("https://gzhang.dev/tenda/api/picked", {
 		method: "POST",
@@ -206,7 +207,7 @@ WhenClick('.picklist-btn', function() {
 				td.item(4).textContent = p.customer;
 				td.item(5).textContent = p.location;
 				td.item(6).textContent = p.status;
-				td.item(7).textContent = p.updated;
+				td.item(7).textContent = p.last_updated;
 				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
 				tableBody.appendChild(row);
 			})
@@ -235,7 +236,7 @@ WhenClick('.picklist-btn', function() {
 				td.item(4).textContent = p.customer;
 				td.item(5).textContent = p.location;
 				td.item(6).textContent = p.status;
-				td.item(7).textContent = p.updated;
+				td.item(7).textContent = p.last_updated;
 				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
 				tableBody.appendChild(row);
 			})

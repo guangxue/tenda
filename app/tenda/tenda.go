@@ -1,9 +1,12 @@
 package tenda
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
+	"math"
 	"net/http"
+	_ "strings"
 	"encoding/json"
 	"html/template"
 	"github.com/guangxue/webapps/mysql"
@@ -24,12 +27,19 @@ func Index(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Tenda Pick and Pack System.")
 }
 
-func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
-	queryPID := r.URL.Query().Get("PID");
-	fmt.Println("[UpdatePickedPage] PID:", queryPID)
+func render(w http.ResponseWriter, templateName string, data interface{}) {
+	tmplpath := "templates/tenda/" + templateName
+	tmpl, err := template.ParseFiles(tmplpath, "templates/tenda/base.html","templates/tenda/nav.html")
+	if err != nil {
+		fmt.Println("template parsing errors: ", err)
+	}
+	err = tmpl.ExecuteTemplate(w, templateName, data)
+	if err != nil {
+		fmt.Println("template executing errors: ", err)
+	}
 }
 
-func Render(templateName string) http.HandlerFunc {
+func RenderHandler(templateName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmplpath := "templates/tenda/" + templateName
 		tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", tmplpath)
@@ -160,6 +170,7 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 		customer := r.FormValue("customer")
 		location := r.FormValue("pickLocation")
 		now := r.FormValue("now")
+		fmt.Println("now", now)
 		status := "Pending"
 		insertColumns := []string{"PNO","model","qty","customer","location","status", "last_updated"}
 		insertValues  := []interface{}{PNO,model,qty,customer,location,status,now}
@@ -176,10 +187,19 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("r.PATH :", r.URL.Path)
 }
+
+
 type pickcolumns struct {
 	Model    string
+	Qty      int
 	Location string
-	Unit     int
+}
+type updateModel struct {
+	Model    string
+	Location string
+	Cartons  int
+	Boxes    int
+	Total    int
 }
 func CompletePicked (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
@@ -189,14 +209,78 @@ func CompletePicked (w http.ResponseWriter, r *http.Request) {
 		}
 		completeType := r.FormValue("completeType")
 		fmt.Println("completeType:", completeType)
-/*
+
+		p := pickcolumns{}
+		pcols := []pickcolumns{}
+		sqlstmt := "SELECT model, qty, location FROM picked "
 		if completeType == "Today" {
 			timenow := time.Now()
 			timePattern := timenow.Format("2006-01-02")+"%"
+			sqlstmt += "WHERE status='Pending' AND last_updated LIKE '"+timePattern+"'"
+			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
 		}
 		if completeType == "Pending" {
-			mysql.Select("model", "location", "qty").From("stock_update")
+			sqlstmt += "WHERE status='Pending'"
+			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
 		}
-*/
+		if completeType == "Complete" {
+			sqlstmt += "WHERE status='Complete'"
+			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
+		}
+		rows, err := db.Query(sqlstmt)
+		if err != nil {
+			fmt.Println("[CompletePicked] selection error:", err)
+		}
+
+		for rows.Next() {
+			err := rows.Scan(&p.Model, &p.Qty, &p.Location)
+			if err != nil {
+				fmt.Println("[tenda.go CompletePicked]: dbColumns Scan error:207:", err)
+			}
+			pcols = append(pcols, p)
+		}
+		//-------------- Complete db.Query -------------/
+		upModels := []updateModel{}
+		for _, p := range pcols {
+			fmt.Println("====> pcols:", p)
+			fmt.Println("=> p.Model:", p.Model)
+			totals := 0
+			unit := 0
+			err := db.QueryRow("SELECT totals,unit FROM stock_totals WHERE model=?", p.Model).Scan(&totals, &unit)
+			switch {
+				case err == sql.ErrNoRows:
+					fmt.Printf("[db *ERR*] no totals fpr model %s\n", p.Model)
+				case err != nil:
+					fmt.Printf("[db *ERR*] query error: %v\n", err)
+				default:
+					fmt.Printf("=> totals are %d\n", totals)
+			}
+			fmt.Println("=> current pick:", p.Qty)
+			newTotal := totals-p.Qty
+			fmt.Println("=> *NEW Total:", newTotal)
+			fmt.Printf("=> [unit are %d]\n", unit)
+			newCartons := newTotal/unit
+			fmt.Println("=> *NeW Cartons:", newCartons)
+			newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
+			fmt.Println("=> *NEW BoxeFrac:", newBoxesFrac)
+			newBoxesFrac = newBoxesFrac * float64(unit)
+			newBoxes := int(math.Round(newBoxesFrac))
+			fmt.Println("=> *NEW Boxes:", newBoxes)
+			upModel := updateModel{p.Model, p.Location, newCartons, newBoxes, newTotal}
+			upModels = append(upModels, upModel)
+		}
+		for _, val := range upModels {
+			fmt.Println("Update Models :", val)
+		}
 	}
+}
+
+
+func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
+	queryPID := r.URL.Query().Get("PID");
+	
+	fmt.Println("[UpdatePickedPage] PID:", queryPID)
+	currentPID := mysql.Select("PNO", "model", "qty", "location", "status").From("picked").Where("PID", queryPID).Use(db)
+	fmt.Println("CurrentPID: info:", currentPID[0])
+	render(w, "update_picked.html", currentPID[0])
 }
