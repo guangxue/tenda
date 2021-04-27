@@ -33,7 +33,7 @@ func render(w http.ResponseWriter, templateName string, data interface{}) {
 	if err != nil {
 		fmt.Println("template parsing errors: ", err)
 	}
-	err = tmpl.ExecuteTemplate(w, templateName, data)
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		fmt.Println("template executing errors: ", err)
 	}
@@ -93,7 +93,7 @@ func Models(w http.ResponseWriter, r *http.Request) {
 
     // get all models
 	if len(queryModel) == 0 && len(queryLocation) == 0{
-        modelNames := mysql.SelectDistinct("model").From("stock").Use(db);
+        modelNames := mysql.SelectDistinct("model").From("stock_update").Use(db);
 	    ModelNamesJSON, err := json.Marshal(modelNames)
 	    if err != nil {
 	    	fmt.Println("ModelsJson error: ", err)
@@ -217,15 +217,15 @@ func CompletePicked (w http.ResponseWriter, r *http.Request) {
 			timenow := time.Now()
 			timePattern := timenow.Format("2006-01-02")+"%"
 			sqlstmt += "WHERE status='Pending' AND last_updated LIKE '"+timePattern+"'"
-			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
+			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
 		}
 		if completeType == "Pending" {
 			sqlstmt += "WHERE status='Pending'"
-			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
+			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
 		}
 		if completeType == "Complete" {
 			sqlstmt += "WHERE status='Complete'"
-			fmt.Printf("[db] SELECTing ... picked\n%s",sqlstmt)
+			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
 		}
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
@@ -246,10 +246,10 @@ func CompletePicked (w http.ResponseWriter, r *http.Request) {
 			fmt.Println("=> p.Model:", p.Model)
 			totals := 0
 			unit := 0
-			err := db.QueryRow("SELECT totals,unit FROM stock_totals WHERE model=?", p.Model).Scan(&totals, &unit)
+			err := db.QueryRow("SELECT total,unit FROM stock_update WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
 			switch {
 				case err == sql.ErrNoRows:
-					fmt.Printf("[db *ERR*] no totals fpr model %s\n", p.Model)
+					fmt.Printf("[db *ERR*] no `totals` for model %s\n", p.Model)
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
@@ -277,10 +277,44 @@ func CompletePicked (w http.ResponseWriter, r *http.Request) {
 
 
 func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
-	queryPID := r.URL.Query().Get("PID");
-	
-	fmt.Println("[UpdatePickedPage] PID:", queryPID)
-	currentPID := mysql.Select("PNO", "model", "qty", "location", "status").From("picked").Where("PID", queryPID).Use(db)
-	fmt.Println("CurrentPID: info:", currentPID[0])
-	render(w, "update_picked.html", currentPID[0])
+
+	dbPickedInfo := map[string]string{}
+
+	if r.Method == "GET" {
+		queryPID := r.URL.Query().Get("PID");
+		fmt.Println("[UpdatePickedPage] PID:", queryPID)
+		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picked").Where("PID", queryPID).Use(db)
+		dbPickedInfo = currentPID[0]
+		dbPickedInfo["PID"] = queryPID
+		fmt.Println("CurrentPID: info:", dbPickedInfo)
+		render(w, "update_picked.html", dbPickedInfo)
+	}
+
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println("Form parse error:", err)
+		}
+		PID := r.FormValue("PID")
+		PNO := r.FormValue("PNO")
+		model := r.FormValue("model")
+		qty := r.FormValue("qty")
+		customer := r.FormValue("customer")
+		location := r.FormValue("location")
+		status := r.FormValue("statusoption")
+		timenow := r.FormValue("timenow")
+		fmt.Printf("PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
+		fmt.Println("dbPickedInfo::", dbPickedInfo)
+		
+		updateInfo := map[string]string {
+			"PNO":PNO,
+			"model":model,
+			"qty":qty,
+			"customer":customer,
+			"location":location,
+			"status":status,
+			"last_updated":timenow,
+		}
+		mysql.Update("picked").Set(updateInfo).Where("PID",PID).Use(db)
+	}
 }

@@ -155,6 +155,18 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	case "UPDATE":
 		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause
 		fmt.Println("UPdate Statement:", stmt)
+		res, err := db.Exec(stmt)
+		if err != nil {
+			fmt.Println("[db *Err]: UPdate error:", err)
+		}
+		rnums, err := res.RowsAffected()
+		if err != nil {
+			fmt.Println("*Error RowsAffected:", err)
+		}
+		fmt.Println("[UPdated affected rows]:", rnums)
+		rid := strconv.FormatInt(rnums, 10)
+		rowsFeedback := map[string]string{"rowsAffected":rid}
+		finalColumns = append(finalColumns, rowsFeedback)
 		
 
 	case "INSERT":

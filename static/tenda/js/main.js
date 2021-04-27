@@ -249,7 +249,7 @@ WhenClick('.picklist-btn', function() {
 const modelInput = document.querySelector("input[name=modelName]");
 
 if(modelInput) {
-	modelInput.addEventListener('change', function(e) {
+	modelInput.addEventListener('input', function(e) {
 		let model = document.querySelector("input[name=modelName]").value;
 		if(model) {
 			console.log("model no:", model)
