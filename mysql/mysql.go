@@ -17,7 +17,6 @@ type Statement struct {
 	InsertValues  []interface{}
 	SetExpr  	  string
 	WhereClause   string
-	DBconnection  *sql.DB
 	QueryType  string
 }
 

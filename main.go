@@ -30,6 +30,7 @@ func main() {
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
 	mux.HandleFunc("/tenda/api/picked",tenda.Picked)
+	mux.HandleFunc("/tenda/api/complete/picked",tenda.CompletePicked)
 	mux.HandleFunc("/tenda/api/picked/pid",tenda.QueryPickedWithPID)
 
 	/*------------------------------------------------------------*/

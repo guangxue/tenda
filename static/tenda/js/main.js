@@ -176,7 +176,8 @@ WhenClick('#pickbtn', function(e) {
 		return resp.json();
 	})
 	.then(data => {
-		console.log(data.lastId)
+		console.log("data:",data);
+		console.log(data[0].lastId)
 	})
 });
 
@@ -271,5 +272,26 @@ if(modelInput) {
 				selectButton.appendChild(optionFragement)
 			})
 		}
+	})
+}
+
+const completePickBtn = document.querySelector('#completepick')
+if(completePickBtn) {
+	completePickBtn.addEventListener('click', function() {
+		let formData = new FormData();
+		let data = new URLSearchParams(formData);
+		let optionvalue = document.querySelector('#pick-selection').value
+		console.log("option value:", optionvalue);
+		data.append("completeType", optionvalue);
+		fetch("https://gzhang.dev/tenda/api/complete/picked", {
+			method: "POST",
+			body: data,
+		})
+		.then(resp => { 
+			return resp.json();
+		})
+		.then(data => {
+			console.log("data:",data);
+		})
 	})
 }

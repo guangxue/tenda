@@ -24,11 +24,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Tenda Pick and Pack System.")
 }
 
-
 func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
 	queryPID := r.URL.Query().Get("PID");
 	fmt.Println("[UpdatePickedPage] PID:", queryPID)
 }
+
 func Render(templateName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmplpath := "templates/tenda/" + templateName
@@ -50,10 +50,12 @@ func Models(w http.ResponseWriter, r *http.Request) {
     // Set Header for json HTTP response
 	w.Header().Set("Content-Type", "application/json")
 
+	/**********************************
     // model name from URL querystring
     // -- api/models
     // -- api/models?model=AC18
     // -- api/models?location=0-G-1
+    ***********************************/
 
 
     /********* TEST MySQL Statements **********
@@ -69,8 +71,6 @@ func Models(w http.ResponseWriter, r *http.Request) {
     // insertValues  := []string{"PO20210412", "AC6", "eBay", "0-G-3"}
     // mysql.Insert("picked", insertColumns, insertValues)
     *******************************************/
-
-
 
 
 	queryModel    := r.URL.Query().Get("model");
@@ -93,7 +93,7 @@ func Models(w http.ResponseWriter, r *http.Request) {
 
     // get one model
 	if len(queryModel) > 0 {
-        allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock").Where("model", queryModel).Use(db)
+        allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_update").Where("model", queryModel).Use(db)
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
         w.Write(ModelsJSON)
@@ -101,7 +101,7 @@ func Models(w http.ResponseWriter, r *http.Request) {
 
 	// get location data
 	if len(queryLocation) > 0 {
-		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock").Where("location", queryLocation).Use(db)
+		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_update").Where("location", queryLocation).Use(db)
 		LocationJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
 	    fmt.Println("LocationJSON", string(LocationJSON))
@@ -115,7 +115,7 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 	queryModel := r.URL.Query().Get("model");
 	
 	if len(queryModel) > 0 {
-		allLocations := mysql.Select("location").From("stock").Where("model", queryModel).Use(db)
+		allLocations := mysql.Select("location").From("stock_update").Where("model", queryModel).Use(db)
 		LocationJSON, err := json.Marshal(allLocations)
 	    ErrorCheck(err)
 	    fmt.Printf("[Locations]\nLocationJSON:%s\n", string(LocationJSON))
@@ -147,8 +147,8 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 			w.Write(ParcelJSON)
 		}
 	}
-	// Inserting picking informations
 
+	// Inserting picking informations
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -163,16 +163,40 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 		status := "Pending"
 		insertColumns := []string{"PNO","model","qty","customer","location","status", "last_updated"}
 		insertValues  := []interface{}{PNO,model,qty,customer,location,status,now}
-		mysql.InsertInto("picked", insertColumns, insertValues).Use(db)
-		// insertResp := InsertResponse {lastId}
-		// resJSON, err := json.Marshal(insertResp)
-	 //    if err != nil {
-	 //    	fmt.Println("resJSON error: ", err)
-	 //    }
-		// w.Write(resJSON)
+		insertFeedback := mysql.InsertInto("picked", insertColumns, insertValues).Use(db)
+		
+		respJSON, err := json.Marshal(insertFeedback)
+	    if err != nil {
+	    	fmt.Println("respJSON error: ", err)
+	    }
+		w.Write(respJSON)
 	}
 }
 
 func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("r.PATH :", r.URL.Path)
+}
+type pickcolumns struct {
+	Model    string
+	Location string
+	Unit     int
+}
+func CompletePicked (w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println("[CompletePicked] Form parse error:", err)
+		}
+		completeType := r.FormValue("completeType")
+		fmt.Println("completeType:", completeType)
+/*
+		if completeType == "Today" {
+			timenow := time.Now()
+			timePattern := timenow.Format("2006-01-02")+"%"
+		}
+		if completeType == "Pending" {
+			mysql.Select("model", "location", "qty").From("stock_update")
+		}
+*/
+	}
 }
