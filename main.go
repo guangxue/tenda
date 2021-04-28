@@ -24,14 +24,13 @@ func main() {
 	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
 	mux.HandleFunc("/tenda/query", tenda.RenderHandler("query.html"))
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
-	mux.HandleFunc("/tenda/update/picked", tenda.UpdatePickedPage)
+	mux.HandleFunc("/tenda/update/picklist", tenda.UpdatePickList)
 
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
-	mux.HandleFunc("/tenda/api/picked",tenda.Picked)
-	mux.HandleFunc("/tenda/api/complete/picked",tenda.CompletePicked)
-	mux.HandleFunc("/tenda/api/picked/pid",tenda.QueryPickedWithPID)
+	mux.HandleFunc("/tenda/api/picklist",tenda.PickList)
+	mux.HandleFunc("/tenda/api/complete/picklist",tenda.CompletePickList)
 
 	/*------------------------------------------------------------*/
 	// Blog system

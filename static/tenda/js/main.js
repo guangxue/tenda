@@ -29,7 +29,6 @@ if(modelinput || modelNameinput) {
 		return response.json()
 	})
 	.then(data=> {
-		console.log("data->",data);
 		var modelist = [];
 		for(let [key, value] of Object.entries(data)) {
 			modelist.push(value);
@@ -154,97 +153,6 @@ if(formElem) {
 }
 
 
-/** INSERT INTO picked **/
-WhenClick('#pickbtn', function(e) {
-	e.preventDefault();
-	console.log("Pick clicked")
-	let currentDateTime = getCurrentDateTime();
-	let formEl = document.querySelector('#pickform')
-	let formData = new FormData(formEl);
-	let data = new URLSearchParams(formData);
-
-	for(const pair of formData) {
-		data.append(pair[0], pair[1])
-	}
-
-	console.log("NOW:", currentDateTime)
-	data.append('now', currentDateTime)
-	fetch("https://gzhang.dev/tenda/api/picked", {
-		method: "POST",
-		body: data,
-	})
-	.then(resp => { 
-		return resp.json();
-	})
-	.then(data => {
-		console.log("data:",data);
-		console.log(data[0].lastId)
-	})
-});
-
-
-WhenClick('.picklist-btn', function() {
-	let selection = document.querySelector("#pick-selection").value;
-	console.log("Selection is:", selection)
-	if (selection == "Today") {
-		fetch("https://gzhang.dev/tenda/api/picked?date=today")
-		.then( resp => {
-			return resp.json();
-		})
-		.then( data => {
-			console.log(data)
-			let tableBody = document.querySelector('#picklist_table tbody')
-			tableBody.innerHTML = ""
-			let tplrow = document.querySelector('#htmpl_pick');
-			
-			data.forEach(p=> {
-				var row = tplrow.content.cloneNode(true);
-				var td = row.querySelectorAll('td');
-				td.item(0).textContent = p.PID;
-				td.item(1).textContent = p.PNO;
-				td.item(2).textContent = p.model;
-				td.item(3).textContent = p.qty;
-				td.item(4).textContent = p.customer;
-				td.item(5).textContent = p.location;
-				td.item(6).textContent = p.status;
-				td.item(7).textContent = p.last_updated;
-				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
-				tableBody.appendChild(row);
-			})
-			
-		})
-	}
-	if (selection == "Pending") {
-		fetch("https://gzhang.dev/tenda/api/picked?date=pending")
-		.then( resp => {
-			return resp.json();
-		})
-		.then( data => {
-			console.log(data)
-			let tableBody = document.querySelector('#picklist_table tbody')
-			tableBody.innerHTML = ""
-			let tplrow = document.querySelector('#htmpl_pick');
-			
-			data.forEach(p=> {
-				console.log("customer",p.customer);
-				var row = tplrow.content.cloneNode(true);
-				var td = row.querySelectorAll('td');
-				td.item(0).textContent = p.PID;
-				td.item(1).textContent = p.PNO;
-				td.item(2).textContent = p.model;
-				td.item(3).textContent = p.qty;
-				td.item(4).textContent = p.customer;
-				td.item(5).textContent = p.location;
-				td.item(6).textContent = p.status;
-				td.item(7).textContent = p.last_updated;
-				td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
-				tableBody.appendChild(row);
-			})
-			
-		})
-	}
-})
-
 
 const modelInput = document.querySelector("input[name=modelName]");
 
@@ -273,26 +181,5 @@ if(modelInput) {
 				selectButton.appendChild(optionFragement)
 			})
 		}
-	})
-}
-
-const completePickBtn = document.querySelector('#completepick')
-if(completePickBtn) {
-	completePickBtn.addEventListener('click', function() {
-		let formData = new FormData();
-		let data = new URLSearchParams(formData);
-		let optionvalue = document.querySelector('#pick-selection').value
-		console.log("option value:", optionvalue);
-		data.append("completeType", optionvalue);
-		fetch("https://gzhang.dev/tenda/api/complete/picked", {
-			method: "POST",
-			body: data,
-		})
-		.then(resp => { 
-			return resp.json();
-		})
-		.then(data => {
-			console.log("data:",data);
-		})
 	})
 }

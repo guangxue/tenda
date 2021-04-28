@@ -27,7 +27,8 @@ div.container {
 	width: 100%;
 }
 input[type=text],
-input[type=tel] {
+input[type=tel],
+input[type=date] {
 	width: 100%;
 	padding: 12px 20px;
 	margin: 8px 0;
@@ -68,6 +69,11 @@ div.form-element,
 	flex-direction: row;
 	justify-content: flex-end;
 }
+.select-options > div {
+	align-self: baseline;
+	margin-left: 2em;
+}
+
 .select-btn {
 	justify-content: flex-end;
 }
@@ -204,3 +210,4 @@ td {
 th, td {
   border-bottom: 1px solid #ddd;
 }
+

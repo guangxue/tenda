@@ -3,11 +3,11 @@ package tenda
 import (
 	"database/sql"
 	"fmt"
-	"time"
 	"math"
 	"net/http"
 	_ "strings"
 	"encoding/json"
+	_ "time"
 	"html/template"
 	"github.com/guangxue/webapps/mysql"
 )
@@ -134,28 +134,18 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func Picked(w http.ResponseWriter, r *http.Request) {
+func PickList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == "GET" {
 		date := r.URL.Query().Get("date");
-		if date == "today" {
-			timenow := time.Now()
-			timePattern := timenow.Format("2006-01-02")+"%"
-			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "last_updated").From("picked").WhereLike("last_updated",timePattern).Use(db)
-			PickedJSON, err := json.Marshal(allPicked)
-		    if err != nil {
-		    	fmt.Println("PickedJson error: ", err)
-		    }
-			w.Write(PickedJSON)
-		}
-		if date == "pending" {
-			pendingParcels := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "last_updated").From("picked").Where("status","Pending").Use(db)
-			ParcelJSON, err := json.Marshal(pendingParcels)
-		    if err != nil {
-		    	fmt.Println("ParcelJSON error: ", err)
-		    }
-			w.Write(ParcelJSON)
-		}
+		date = date + "%"
+		status := r.URL.Query().Get("status");
+		allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",date).AndWhere("status", status).Use(db)
+		PickedJSON, err := json.Marshal(allPicked)
+	    if err != nil {
+	    	fmt.Println("PickedJson error: ", err)
+	    }
+		w.Write(PickedJSON)
 	}
 
 	// Inserting picking informations
@@ -169,12 +159,10 @@ func Picked(w http.ResponseWriter, r *http.Request) {
 		qty := r.FormValue("qty")
 		customer := r.FormValue("customer")
 		location := r.FormValue("pickLocation")
-		now := r.FormValue("now")
-		fmt.Println("now", now)
 		status := "Pending"
-		insertColumns := []string{"PNO","model","qty","customer","location","status", "last_updated"}
-		insertValues  := []interface{}{PNO,model,qty,customer,location,status,now}
-		insertFeedback := mysql.InsertInto("picked", insertColumns, insertValues).Use(db)
+		insertColumns := []string{"PNO","model","qty","customer","location","status"}
+		insertValues  := []interface{}{PNO,model,qty,customer,location,status}
+		insertFeedback := mysql.InsertInto("picklist", insertColumns, insertValues).Use(db)
 		
 		respJSON, err := json.Marshal(insertFeedback)
 	    if err != nil {
@@ -201,32 +189,22 @@ type updateModel struct {
 	Boxes    int
 	Total    int
 }
-func CompletePicked (w http.ResponseWriter, r *http.Request) {
+func CompletePickList (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
 			fmt.Println("[CompletePicked] Form parse error:", err)
 		}
-		completeType := r.FormValue("completeType")
-		fmt.Println("completeType:", completeType)
+		pickDate := r.FormValue("pickDate")
+		pickStatus := r.FormValue("pickStatus")
+		
+		fmt.Println("Pick data to Complete:", pickDate)
+		fmt.Println("pick status :", pickStatus)
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
-		sqlstmt := "SELECT model, qty, location FROM picked "
-		if completeType == "Today" {
-			timenow := time.Now()
-			timePattern := timenow.Format("2006-01-02")+"%"
-			sqlstmt += "WHERE status='Pending' AND last_updated LIKE '"+timePattern+"'"
-			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
-		}
-		if completeType == "Pending" {
-			sqlstmt += "WHERE status='Pending'"
-			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
-		}
-		if completeType == "Complete" {
-			sqlstmt += "WHERE status='Complete'"
-			fmt.Printf("[db] SELECTing ... picked\n%s\n",sqlstmt)
-		}
+		sqlstmt := "SELECT model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
+		fmt.Printf("SQL STATEMENT to complete picked:\n%s\n", sqlstmt)
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
 			fmt.Println("[CompletePicked] selection error:", err)
@@ -271,19 +249,21 @@ func CompletePicked (w http.ResponseWriter, r *http.Request) {
 		}
 		for _, val := range upModels {
 			fmt.Println("Update Models :", val)
+
+			// mysql.Update("picklist").Set()
 		}
 	}
 }
 
 
-func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
+func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
 	dbPickedInfo := map[string]string{}
 
 	if r.Method == "GET" {
 		queryPID := r.URL.Query().Get("PID");
-		fmt.Println("[UpdatePickedPage] PID:", queryPID)
-		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picked").Where("PID", queryPID).Use(db)
+		fmt.Println("[PickListUpdatePage] PID:", queryPID)
+		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
 		fmt.Println("CurrentPID: info:", dbPickedInfo)
@@ -302,7 +282,6 @@ func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
 		customer := r.FormValue("customer")
 		location := r.FormValue("location")
 		status := r.FormValue("statusoption")
-		timenow := r.FormValue("timenow")
 		fmt.Printf("PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
 		fmt.Println("dbPickedInfo::", dbPickedInfo)
 		
@@ -313,8 +292,7 @@ func UpdatePickedPage(w http.ResponseWriter, r *http.Request) {
 			"customer":customer,
 			"location":location,
 			"status":status,
-			"last_updated":timenow,
 		}
-		mysql.Update("picked").Set(updateInfo).Where("PID",PID).Use(db)
+		mysql.Update("picklist").Set(updateInfo).Where("PID",PID).Use(db)
 	}
 }

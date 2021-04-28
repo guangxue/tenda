@@ -9,15 +9,16 @@ import (
 )
 
 type Statement struct {
-	SelectColumns string
-	ColumnCount   int
-	ColumnNames   []string
-	TableName     string
-	InsertStmt    string
-	InsertValues  []interface{}
-	SetExpr  	  string
-	WhereClause   string
-	QueryType  string
+	SelectColumns  string
+	ColumnCount    int
+	ColumnNames    []string
+	TableName      string
+	InsertStmt     string
+	InsertValues   []interface{}
+	SetExpr  	   string
+	WhereClause    string
+	AndWhereClause string
+	QueryType      string
 }
 
 func Connect(dbname string) *sql.DB {
@@ -104,6 +105,14 @@ func (sqlstmt *Statement) WhereLike(column string, pattern string) *Statement{
 	return sqlstmt
 }
 
+func (sqlstmt *Statement) AndWhere(column string, searchColumn string) *Statement {
+	if len(sqlstmt.WhereClause) > 0 {
+		sqlstmt.AndWhereClause = " AND " + column + "='"+searchColumn + "'"
+		return sqlstmt
+	}
+	return sqlstmt
+}
+
 func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	/***
 		returned finalColumns should be slices of maps:
@@ -121,7 +130,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	case "SELECT":
 		
 		// columnsToSelect := strings.Join(searchColumns, ", ")
-		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause
+		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
 		fmt.Printf("final stmt: %s\n", stmt)
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
@@ -153,8 +162,8 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		}
 		
 	case "UPDATE":
-		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause
-		fmt.Println("UPdate Statement:", stmt)
+		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+		fmt.Println("Update Statement:", stmt)
 		res, err := db.Exec(stmt)
 		if err != nil {
 			fmt.Println("[db *Err]: UPdate error:", err)

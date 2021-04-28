@@ -20,7 +20,7 @@ updatePickedBtn.addEventListener('click', function(e) {
 	}
 	data.append("timenow", timenow)
 
-	fetch("https://gzhang.dev/tenda/update/picked", {
+	fetch("https://gzhang.dev/tenda/update/picklist", {
 		method: "POST",
 		body: data,
 	})
