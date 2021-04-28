@@ -76,10 +76,10 @@ func Update(tableName string) *Statement{
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) Set(updateColumns map[string]string) *Statement{
+func (sqlstmt *Statement) Set(updateColumns map[string]interface{}) *Statement{
 	setExpression := " SET "
 	for col, val := range updateColumns {
-		setExpression += col + "='" +val+ "', "
+		setExpression += col + "='" + fmt.Sprintf("%v",val) + "', "
 	}
 	sqlstmt.SetExpr = setExpression[:len(setExpression)-2]
 	return sqlstmt
@@ -125,13 +125,13 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		]
 	****/
 	finalColumns := []map[string]string{}
-	fmt.Println("QueryType:", sqlstmt.QueryType)
+	fmt.Printf("\n==> QueryType:%s\n", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
 	case "SELECT":
 		
 		// columnsToSelect := strings.Join(searchColumns, ", ")
 		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf("final stmt: %s\n", stmt)
+		fmt.Printf(">> %s\n", stmt)
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
 		// convert []interface{} to slice -> for easing indexing with [1]
@@ -141,12 +141,12 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		}
 		rows, err := db.Query(stmt)
 		if err != nil {
-			fmt.Println("[stmt.Get] db.Query error line:135:", err)
+			fmt.Println("[db *Err] db.Query error:", err)
 		}
 		for rows.Next() {
 			err := rows.Scan(scannedColumns...)
 			if err != nil {
-				fmt.Println("[Get]: dbColumns Scan error:140:", err)
+				fmt.Println("[db *Err]: rows.Scan error:", err)
 			}
 			// save each scanned column to col map[string]string
 			col := map[string]string{}
@@ -163,24 +163,24 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		
 	case "UPDATE":
 		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Println("Update Statement:", stmt)
+		fmt.Printf(">> %s\n", stmt)
 		res, err := db.Exec(stmt)
 		if err != nil {
-			fmt.Println("[db *Err]: UPdate error:", err)
+			fmt.Println("[db *Err]: Update error:", err)
 		}
 		rnums, err := res.RowsAffected()
 		if err != nil {
-			fmt.Println("*Error RowsAffected:", err)
+			fmt.Println("[db *Err] RowsAffected:", err)
 		}
-		fmt.Println("[UPdated affected rows]:", rnums)
+		fmt.Println(">> Affected rows:", rnums)
 		rid := strconv.FormatInt(rnums, 10)
 		rowsFeedback := map[string]string{"rowsAffected":rid}
 		finalColumns = append(finalColumns, rowsFeedback)
 		
 
 	case "INSERT":
-		fmt.Println("INSERT statment::", sqlstmt.InsertStmt)
-		fmt.Println("INSERT values:", sqlstmt.InsertValues)
+		fmt.Println(">> ", sqlstmt.InsertStmt)
+		fmt.Println(">> VALUES:", sqlstmt.InsertValues)
 		stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
 			fmt.Println("Error sql Prepare:", err)
@@ -196,7 +196,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			fmt.Println("Error last ID:", err)
 		}
 
-		fmt.Println("[InsertPicked] Last id:", id)
+		fmt.Println(">> Last Insert Id:", id)
 		rid := strconv.FormatInt(id, 10)
 		insertFeedback := map[string]string{"lastId":rid}
 		finalColumns = append(finalColumns, insertFeedback)

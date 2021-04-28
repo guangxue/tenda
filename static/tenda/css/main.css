@@ -211,3 +211,8 @@ th, td {
   border-bottom: 1px solid #ddd;
 }
 
+input[type=submit]:hover,
+.btn:hover {
+	cursor: pointer;
+}
+

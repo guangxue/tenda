@@ -8,6 +8,7 @@ import (
 	_ "strings"
 	"encoding/json"
 	_ "time"
+	"strconv"
 	"html/template"
 	"github.com/guangxue/webapps/mysql"
 )
@@ -60,35 +61,12 @@ func Models(w http.ResponseWriter, r *http.Request) {
     // Set Header for json HTTP response
 	w.Header().Set("Content-Type", "application/json")
 
-	/**********************************
-    // model name from URL querystring
-    // -- api/models
-    // -- api/models?model=AC18
-    // -- api/models?location=0-G-1
-    ***********************************/
-
-
-    /********* TEST MySQL Statements **********
-    // mysql.Select("model", "location").From("stock_locations").Where("model", "MW6-3PK").Use(db)
-    // updateColumns := map[string]string{
-    // 	"model": "ABC9-2PK",
-    // 	"location":"0-0-0",
-    // }
-    // mysql.Update("stock_locations").Set(updateColumns).Where("SID", "12").Use(db)
-
-    // mysql.Select("model","qty", "location").From("picked").WhereLike("last_updated", "2021-04-23%").Use(db)
-    // insertColumns := []string{"PNO", "model", "qty", "customer", "location"}
-    // insertValues  := []string{"PO20210412", "AC6", "eBay", "0-G-3"}
-    // mysql.Insert("picked", insertColumns, insertValues)
-    *******************************************/
-
-
 	queryModel    := r.URL.Query().Get("model");
 	queryLocation := r.URL.Query().Get("location");
 
-	fmt.Println("[Models] Request Path:", r.URL.Path)
-	fmt.Println("[Models] query Model:", queryModel)
-	fmt.Println("[Models] query Location:", queryLocation)
+	fmt.Println("===> Request Path:", r.URL.Path)
+	fmt.Println("=> query Model:", queryModel)
+	fmt.Println("=> query Location:", queryLocation)
 
 
     // get all models
@@ -128,7 +106,10 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 		allLocations := mysql.Select("location").From("stock_update").Where("model", queryModel).Use(db)
 		LocationJSON, err := json.Marshal(allLocations)
 	    ErrorCheck(err)
-	    fmt.Printf("[Locations]\nLocationJSON:%s\n", string(LocationJSON))
+	    fmt.Printf("=> Locations\n")
+	    for _, val := range allLocations {
+	    	fmt.Printf("=> %s\n", val)
+	    }
  	    w.Write(LocationJSON)
 	}
 }
@@ -178,11 +159,13 @@ func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
 
 
 type pickcolumns struct {
+	PID      int
 	Model    string
 	Qty      int
 	Location string
 }
 type updateModel struct {
+	PID      int
 	Model    string
 	Location string
 	Cartons  int
@@ -198,20 +181,25 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		
-		fmt.Println("Pick data to Complete:", pickDate)
-		fmt.Println("pick status :", pickStatus)
+		fmt.Println("==> [Complete Pick List]")
+		fmt.Println(">> Pick data   :", pickDate)
+		fmt.Println(">> pick status :", pickStatus)
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
-		sqlstmt := "SELECT model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
-		fmt.Printf("SQL STATEMENT to complete picked:\n%s\n", sqlstmt)
+		if len(pickDate) == 0 {
+			fmt.Println(">> [return] Empty pickDate NO ACTION made.")
+			return
+		}
+		sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
+		fmt.Printf(" => :\n%s\n", sqlstmt)
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
 			fmt.Println("[CompletePicked] selection error:", err)
 		}
 
 		for rows.Next() {
-			err := rows.Scan(&p.Model, &p.Qty, &p.Location)
+			err := rows.Scan(&p.PID, &p.Model, &p.Qty, &p.Location)
 			if err != nil {
 				fmt.Println("[tenda.go CompletePicked]: dbColumns Scan error:207:", err)
 			}
@@ -220,8 +208,11 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		//-------------- Complete db.Query -------------/
 		upModels := []updateModel{}
 		for _, p := range pcols {
-			fmt.Println("====> pcols:", p)
-			fmt.Println("=> p.Model:", p.Model)
+			fmt.Println("==> current pick(p) from picklist:")
+			fmt.Println("{Model, Qty, Location}")
+			fmt.Println(p)
+			fmt.Println("==>")
+			fmt.Println(">> Model:", p.Model)
 			totals := 0
 			unit := 0
 			err := db.QueryRow("SELECT total,unit FROM stock_update WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
@@ -231,26 +222,40 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf("=> totals are %d\n", totals)
+					fmt.Printf(">> totals are %d\n", totals)
 			}
-			fmt.Println("=> current pick:", p.Qty)
+			fmt.Println(">> pick qty:", p.Qty)
 			newTotal := totals-p.Qty
-			fmt.Println("=> *NEW Total:", newTotal)
-			fmt.Printf("=> [unit are %d]\n", unit)
+			fmt.Println(">> *NEW Total:", newTotal)
+			fmt.Printf(">> *unit are %d\n", unit)
 			newCartons := newTotal/unit
-			fmt.Println("=> *NeW Cartons:", newCartons)
+			fmt.Println(">> *NEW Cartons:", newCartons)
 			newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-			fmt.Println("=> *NEW BoxeFrac:", newBoxesFrac)
+			fmt.Println(">> *NEW BoxeFrac:", newBoxesFrac)
 			newBoxesFrac = newBoxesFrac * float64(unit)
 			newBoxes := int(math.Round(newBoxesFrac))
-			fmt.Println("=> *NEW Boxes:", newBoxes)
-			upModel := updateModel{p.Model, p.Location, newCartons, newBoxes, newTotal}
+			fmt.Println(">> *NEW Boxes:", newBoxes)
+			upModel := updateModel{p.PID, p.Model, p.Location, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
 		}
 		for _, val := range upModels {
-			fmt.Println("Update Models :", val)
+			fmt.Printf("---\nUPDATE COLUMNS : [Model, Location, Cartons, Boxes, Total]\n")
+			fmt.Printf("  SET  VALUES  : %v\n", val)
+			fmt.Println("val:PID:", val.PID)
+			fmt.Println("val:Model:", val.Model)
+			fmt.Println("val:Location:", val.Location)
+			fmt.Println("val:Cartons:", val.Cartons)
+			fmt.Println("val:Boxes:", val.Boxes)
+			fmt.Println("val:Total:", val.Total)
 
-			// mysql.Update("picklist").Set()
+			updateSUInfo := map[string]interface{} {
+				"cartons":val.Cartons,
+				"boxes":val.Boxes,
+				"total":val.Total,
+			}
+			updatePLInfo := map[string]interface{} {"status":"Complete"}
+			mysql.Update("stock_update").Set(updateSUInfo).Where("model", val.Model).AndWhere("location", val.Location).Use(db)
+			mysql.Update("picklist").Set(updatePLInfo).Where("PID", strconv.Itoa(val.PID)).Use(db)
 		}
 	}
 }
@@ -262,11 +267,10 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		queryPID := r.URL.Query().Get("PID");
-		fmt.Println("[PickListUpdatePage] PID:", queryPID)
+		fmt.Printf("==> Update Pick List (PID:%s)\n", queryPID)
 		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
-		fmt.Println("CurrentPID: info:", dbPickedInfo)
 		render(w, "update_picked.html", dbPickedInfo)
 	}
 
@@ -282,10 +286,10 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 		customer := r.FormValue("customer")
 		location := r.FormValue("location")
 		status := r.FormValue("statusoption")
-		fmt.Printf("PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
-		fmt.Println("dbPickedInfo::", dbPickedInfo)
+		fmt.Printf(">> PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
+		fmt.Println(">> dbPickedInfo::", dbPickedInfo)
 		
-		updateInfo := map[string]string {
+		updateInfo := map[string]interface{} {
 			"PNO":PNO,
 			"model":model,
 			"qty":qty,
