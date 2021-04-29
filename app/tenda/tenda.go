@@ -228,13 +228,20 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 			newTotal := totals-p.Qty
 			fmt.Println(">> *NEW Total:", newTotal)
 			fmt.Printf(">> *unit are %d\n", unit)
-			newCartons := newTotal/unit
-			fmt.Println(">> *NEW Cartons:", newCartons)
-			newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-			fmt.Println(">> *NEW BoxeFrac:", newBoxesFrac)
-			newBoxesFrac = newBoxesFrac * float64(unit)
-			newBoxes := int(math.Round(newBoxesFrac))
-			fmt.Println(">> *NEW Boxes:", newBoxes)
+
+			newCartons := 0
+			newBoxes   := newTotal;
+			
+			if unit > 1 {
+				newCartons = newTotal/unit
+				fmt.Println(">> *NEW Cartons:", newCartons)
+				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
+				fmt.Println(">> *NEW BoxeFrac:", newBoxesFrac)
+				newBoxesFrac = newBoxesFrac * float64(unit)
+				newBoxes = int(math.Round(newBoxesFrac))
+				fmt.Println(">> *NEW Boxes:", newBoxes)
+			} 
+			
 			upModel := updateModel{p.PID, p.Model, p.Location, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
 		}
