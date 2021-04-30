@@ -24,7 +24,7 @@
 // 	})
 // })
 
-const pickListButton = document.querySelector(".picklist-btn")
+const pickListButton = document.querySelector(".select-picklist")
 
 pickListButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
@@ -71,14 +71,18 @@ completePickBtn.addEventListener('click', function() {
 	console.log("pick date to complete", pickDate);
 	data.append("pickDate", pickDate)
 	data.append("pickStatus", pickStatus)
-	fetch("https://gzhang.dev/tenda/api/complete/picklist", {
-		method: "POST",
-		body: data,
-	})
-	.then(resp => { 
-		return resp.json();
-	})
-	.then(data => {
-		console.log("data:",data);
-	})
+	let tableBody = document.querySelector('#picklist_table tbody')
+	let trows = tableBody.querySelectorAll('tr');
+	if (tableBody && trows.length) {
+		fetch("https://gzhang.dev/tenda/api/complete/picklist", {
+			method: "POST",
+			body: data,
+		})
+		.then(resp => { 
+			return resp.json();
+		})
+		.then(data => {
+			console.log("data:",data);
+		})
+	}
 })

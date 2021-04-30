@@ -141,15 +141,9 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		customer := r.FormValue("customer")
 		location := r.FormValue("pickLocation")
 		status := "Pending"
-		insertQuery := map[string]interface{}{
-			"PNO":PNO,
-			"model":model,
-			"qty":qty,
-			"customer":customer,
-			"location":location,
-			"status":status,
-		}
-		insertFeedback := mysql.InsertInto("picklist", insertQuery).Use(db)
+		insertColumns := []string{"PNO","model","qty","customer","location","status"}
+		insertValues  := []interface{}{PNO,model,qty,customer,location,status}
+		insertFeedback := mysql.InsertInto("picklist", insertColumns, insertValues).Use(db)
 		
 		respJSON, err := json.Marshal(insertFeedback)
 	    if err != nil {
@@ -171,9 +165,9 @@ type pickcolumns struct {
 	Location string
 }
 type updateModel struct {
-	Location string
+	PID      int
 	Model    string
-	Unit     int
+	Location string
 	Cartons  int
 	Boxes    int
 	Total    int
@@ -182,13 +176,14 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Println("[CompletePickList] Form parse error:", err)
+			fmt.Println("[CompletePicked] Form parse error:", err)
 		}
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		
-		fmt.Printf("[CompletePickList] Pick data  :%v\n", pickDate)
-		fmt.Printf("[CompletePickList] pick status:%v\n", pickStatus)
+		fmt.Println("==> [Complete Pick List]")
+		fmt.Println(">> Pick data   :", pickDate)
+		fmt.Println(">> pick status :", pickStatus)
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
@@ -197,6 +192,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 			return 
 		}
 		sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
+		fmt.Printf(" => %s\n", sqlstmt)
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
 			fmt.Println("[CompletePicked] selection error:", err)
@@ -212,12 +208,11 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		//-------------- Complete db.Query -------------/
 		upModels := []updateModel{}
 		for _, p := range pcols {
-			fmt.Println("[CompletePickList] [[current pick(p) picklist]]:")
-			// fmt.Println("{Model, Qty, Location}")
-			// fmt.Println(p)
-			// fmt.Println("==>")
-			fmt.Println("[CompletePickList] Model    :", p.Model)
-			fmt.Println("[CompletePickList] Location :", p.Location)
+			fmt.Println("==> current pick(p) from picklist:")
+			fmt.Println("{Model, Qty, Location}")
+			fmt.Println(p)
+			fmt.Println("==>")
+			fmt.Println(">> Model:", p.Model)
 			totals := 0
 			unit := 0
 			err := db.QueryRow("SELECT total,unit FROM stock_update WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
@@ -229,45 +224,45 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 				default:
 					fmt.Printf(">> totals are %d\n", totals)
 			}
-			fmt.Println("[CompletePickList] pick qty:", p.Qty)
+			fmt.Println(">> pick qty:", p.Qty)
 			newTotal := totals-p.Qty
-			fmt.Println("[CompletePickList] *NEW Total:", newTotal)
-			fmt.Printf("[CompletePickList] *unit are %d\n", unit)
+			fmt.Println(">> *NEW Total:", newTotal)
+			fmt.Printf(">> *unit are %d\n", unit)
 
 			newCartons := 0
 			newBoxes   := newTotal;
 			
 			if unit > 1 {
 				newCartons = newTotal/unit
-				fmt.Println("[CompletePickList] *NEW Cartons:", newCartons)
+				fmt.Println(">> *NEW Cartons:", newCartons)
 				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-				fmt.Println("[CompletePickList] *NEW BoxeFrac:", newBoxesFrac)
+				fmt.Println(">> *NEW BoxeFrac:", newBoxesFrac)
 				newBoxesFrac = newBoxesFrac * float64(unit)
 				newBoxes = int(math.Round(newBoxesFrac))
-				fmt.Println("[CompletePickList] *NEW Boxes:", newBoxes)
+				fmt.Println(">> *NEW Boxes:", newBoxes)
 			} 
 			
-			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
+			upModel := updateModel{p.PID, p.Model, p.Location, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
+		}
+		for _, val := range upModels {
+			fmt.Printf("---\nUPDATE COLUMNS : [Model, Location, Cartons, Boxes, Total]\n")
+			fmt.Printf("  SET  VALUES  : %v\n", val)
+			fmt.Println("val:PID:", val.PID)
+			fmt.Println("val:Model:", val.Model)
+			fmt.Println("val:Location:", val.Location)
+			fmt.Println("val:Cartons:", val.Cartons)
+			fmt.Println("val:Boxes:", val.Boxes)
+			fmt.Println("val:Total:", val.Total)
 
-			updateStockUpdate := map[string]interface{} {
-				"cartons": newCartons,
-				"boxes"  : newBoxes,
-				"total"  : newTotal,
+			updateSUInfo := map[string]interface{} {
+				"cartons":val.Cartons,
+				"boxes":val.Boxes,
+				"total":val.Total,
 			}
-			mysql.Update("stock_update",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
-
 			updatePLInfo := map[string]interface{} {"status":"Complete"}
-			mysql.Update("picklist", false).Set(updatePLInfo).Where("PID", strconv.Itoa(p.PID)).Use(db)
-			insertValues := map[string]interface{} {
-				"location": p.Location,
-				"model"   : p.Model,
-				"unit"    : unit,
-				"cartons" : newCartons,
-				"boxes"   : newBoxes,
-				"total"   : newTotal,
-			}
-			mysql.InsertInto("last_updated",insertValues).Use(db);
+			mysql.Update("stock_update",false).Set(updateSUInfo).Where("model", val.Model).AndWhere("location", val.Location).Use(db)
+			mysql.Update("picklist", false).Set(updatePLInfo).Where("PID", strconv.Itoa(val.PID)).Use(db)
 		}
 	}
 }
@@ -279,7 +274,7 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		queryPID := r.URL.Query().Get("PID");
-		fmt.Printf("[Update Pick List (PID:%s)]\n", queryPID)
+		fmt.Printf("==> Update Pick List (PID:%s)\n", queryPID)
 		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
@@ -298,8 +293,8 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 		customer := r.FormValue("customer")
 		location := r.FormValue("location")
 		status := r.FormValue("statusoption")
-		fmt.Printf("PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
-		fmt.Println("dbPickedInfo::", dbPickedInfo)
+		fmt.Printf(">> PNO:%s\nmodel:%s\nqty:%s\ncustomer:%s\nlocation:%s\nstatus:%s",PNO, model, qty, customer,location,status)
+		fmt.Println(">> dbPickedInfo::", dbPickedInfo)
 		
 		updateInfo := map[string]interface{} {
 			"PNO":PNO,

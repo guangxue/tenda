@@ -19,6 +19,7 @@ type Statement struct {
 	WhereClause    string
 	AndWhereClause string
 	QueryType      string
+	UpdateNoWhere  bool
 }
 
 func Connect(dbname string) *sql.DB {
@@ -52,25 +53,33 @@ func SelectDistinct(searchColumns ...string) *Statement{
 	return sqlstmt
 }
 
-func InsertInto(tableName string, insertColumns []string, insertValues []interface{}) *Statement{
+func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement{
 	sqlstmt := &Statement{}
 	sqlstmt.QueryType = "INSERT"
-	sqlstmt.InsertValues = insertValues
+	
 
-	placeholders := make([]string, len(insertValues))
+	placeholders := make([]string, len(insertQuery))
 	for i, _ := range placeholders {
 		placeholders[i] = "?"
 	}
 	insertPlaceholders := "("+strings.Join(placeholders, ",")+")"
-	fmt.Println("INSERT placeholders:", insertPlaceholders)
+	// fmt.Println("INSERT placeholders:", insertPlaceholders)
+	insertColumns := []string{}
+	insertValues  := []interface{}{}
+	for col, val := range insertQuery {
+		insertColumns = append(insertColumns, col)
+		insertValues  = append(insertValues, val)
+	}
+	sqlstmt.InsertValues = insertValues
 	insertStmt := "INSERT INTO "+tableName + "("+strings.Join(insertColumns, ",")+") VALUES " + insertPlaceholders
 	sqlstmt.InsertStmt = insertStmt
-	fmt.Println("insertStmt:", insertStmt)
+	// fmt.Println("insertStmt:", insertStmt)
 	return sqlstmt
 }
 
-func Update(tableName string) *Statement{
+func Update(tableName string, updateNoWhere bool) *Statement{
 	sqlstmt := &Statement{}
+	sqlstmt.UpdateNoWhere = updateNoWhere
 	sqlstmt.TableName = "Update "+tableName
 	sqlstmt.QueryType = "UPDATE"
 	return sqlstmt
@@ -125,13 +134,13 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		]
 	****/
 	finalColumns := []map[string]string{}
-	fmt.Printf("\n==> QueryType:%s\n", sqlstmt.QueryType)
+	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
 	case "SELECT":
 		
 		// columnsToSelect := strings.Join(searchColumns, ", ")
 		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf(">> %s\n", stmt)
+		fmt.Printf("[SELECT] \n%s\n", stmt)
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
 		// convert []interface{} to slice -> for easing indexing with [1]
@@ -162,25 +171,46 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		}
 		
 	case "UPDATE":
-		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf(">> %s\n", stmt)
-		// res, err := db.Exec(stmt)
-		// if err != nil {
-		// 	fmt.Println("[db *Err]: Update error:", err)
-		// }
-		// rnums, err := res.RowsAffected()
-		// if err != nil {
-		// 	fmt.Println("[db *Err] RowsAffected:", err)
-		// }
-		// fmt.Println(">> Affected rows:", rnums)
-		// rid := strconv.FormatInt(rnums, 10)
-		// rowsFeedback := map[string]string{"rowsAffected":rid}
-		// finalColumns = append(finalColumns, rowsFeedback)
+		if sqlstmt.UpdateNoWhere {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr
+			fmt.Printf("[UPDATE] \n%s\n", stmt)
+			// res, err := db.Exec(stmt)
+			// if err != nil {
+			// 	fmt.Println("[db *Err]: Update error:", err)
+			// }
+			// rnums, err := res.RowsAffected()
+			// if err != nil {
+			// 	fmt.Println("[db *Err] RowsAffected:", err)
+			// }
+			// fmt.Println(">> Affected rows:", rnums)
+			// rid := strconv.FormatInt(rnums, 10)
+			// rowsFeedback := map[string]string{"rowsAffected":rid}
+			// finalColumns = append(finalColumns, rowsFeedback)
+		} else if len(sqlstmt.WhereClause) > 0 {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[UPDATE] \n%s\n", stmt)
+			// res, err := db.Exec(stmt)
+			// if err != nil {
+			// 	fmt.Println("[db *Err]: Update error:", err)
+			// }
+			// rnums, err := res.RowsAffected()
+			// if err != nil {
+			// 	fmt.Println("[db *Err] RowsAffected:", err)
+			// }
+			// fmt.Println(">> Affected rows:", rnums)
+			// rid := strconv.FormatInt(rnums, 10)
+			// rowsFeedback := map[string]string{"rowsAffected":rid}
+			// finalColumns = append(finalColumns, rowsFeedback)
+		} else {
+			// fmt.Printf(">> %s\n", stmt)
+			fmt.Println("[db *Err] WhereClause needed!")
+		}
+		
 		
 
 	case "INSERT":
-		fmt.Println(">> ", sqlstmt.InsertStmt)
-		fmt.Println(">> VALUES:", sqlstmt.InsertValues)
+		fmt.Printf("[INSERT] \n%s\n", sqlstmt.InsertStmt)
+		fmt.Printf("[INSERT VALUES] \n%s\n", sqlstmt.InsertValues)
 		stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
 			fmt.Println("Error sql Prepare:", err)
@@ -196,7 +226,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			fmt.Println("Error last ID:", err)
 		}
 
-		fmt.Println(">> Last Insert Id:", id)
+		fmt.Println("[Last Insert Id]", id)
 		rid := strconv.FormatInt(id, 10)
 		insertFeedback := map[string]string{"lastId":rid}
 		finalColumns = append(finalColumns, insertFeedback)

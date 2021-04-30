@@ -19,6 +19,7 @@ type Statement struct {
 	WhereClause    string
 	AndWhereClause string
 	QueryType      string
+	UpdateNoWhere  bool
 }
 
 func Connect(dbname string) *sql.DB {
@@ -69,8 +70,9 @@ func InsertInto(tableName string, insertColumns []string, insertValues []interfa
 	return sqlstmt
 }
 
-func Update(tableName string) *Statement{
+func Update(tableName string, updateNoWhere bool) *Statement{
 	sqlstmt := &Statement{}
+	sqlstmt.UpdateNoWhere = updateNoWhere
 	sqlstmt.TableName = "Update "+tableName
 	sqlstmt.QueryType = "UPDATE"
 	return sqlstmt
@@ -162,20 +164,41 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		}
 		
 	case "UPDATE":
-		stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf(">> %s\n", stmt)
-		// res, err := db.Exec(stmt)
-		// if err != nil {
-		// 	fmt.Println("[db *Err]: Update error:", err)
-		// }
-		// rnums, err := res.RowsAffected()
-		// if err != nil {
-		// 	fmt.Println("[db *Err] RowsAffected:", err)
-		// }
-		// fmt.Println(">> Affected rows:", rnums)
-		// rid := strconv.FormatInt(rnums, 10)
-		// rowsFeedback := map[string]string{"rowsAffected":rid}
-		// finalColumns = append(finalColumns, rowsFeedback)
+		if sqlstmt.UpdateNoWhere {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr
+			fmt.Printf(">> %s\n", stmt)
+			// res, err := db.Exec(stmt)
+			// if err != nil {
+			// 	fmt.Println("[db *Err]: Update error:", err)
+			// }
+			// rnums, err := res.RowsAffected()
+			// if err != nil {
+			// 	fmt.Println("[db *Err] RowsAffected:", err)
+			// }
+			// fmt.Println(">> Affected rows:", rnums)
+			// rid := strconv.FormatInt(rnums, 10)
+			// rowsFeedback := map[string]string{"rowsAffected":rid}
+			// finalColumns = append(finalColumns, rowsFeedback)
+		} else if len(sqlstmt.WhereClause) > 0 {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf(">> %s\n", stmt)
+			// res, err := db.Exec(stmt)
+			// if err != nil {
+			// 	fmt.Println("[db *Err]: Update error:", err)
+			// }
+			// rnums, err := res.RowsAffected()
+			// if err != nil {
+			// 	fmt.Println("[db *Err] RowsAffected:", err)
+			// }
+			// fmt.Println(">> Affected rows:", rnums)
+			// rid := strconv.FormatInt(rnums, 10)
+			// rowsFeedback := map[string]string{"rowsAffected":rid}
+			// finalColumns = append(finalColumns, rowsFeedback)
+		} else {
+			fmt.Printf(">> %s\n", stmt)
+			fmt.Prontln("[db *Err] WhereClause needed!")
+		}
+		
 		
 
 	case "INSERT":
