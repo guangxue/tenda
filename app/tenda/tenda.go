@@ -64,24 +64,24 @@ func Models(w http.ResponseWriter, r *http.Request) {
 	queryModel    := r.URL.Query().Get("model");
 	queryLocation := r.URL.Query().Get("location");
 
-	fmt.Println("===> Request Path:", r.URL.Path)
-	fmt.Println("=> query Model:", queryModel)
-	fmt.Println("=> query Location:", queryLocation)
+	fmt.Printf("[%-18s] Request Path:%s\n", "Models", r.URL.Path)
+	fmt.Printf("[%-18s] query Model:%s\n", "Models", queryModel)
+	fmt.Printf("[%-18s] query Location:%s\n", "Models", queryLocation)
 
 
     // get all models
 	if len(queryModel) == 0 && len(queryLocation) == 0{
-        modelNames := mysql.SelectDistinct("model").From("stock_update").Use(db);
+        modelNames := mysql.SelectDistinct("model").From("stock_updated").Use(db);
 	    ModelNamesJSON, err := json.Marshal(modelNames)
 	    if err != nil {
-	    	fmt.Println("ModelsJson error: ", err)
+	    	fmt.Println("[Models] ModelsJson error: ", err)
 	    }
 		w.Write(ModelNamesJSON)
 	}
 
     // get one model
 	if len(queryModel) > 0 {
-        allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_update").Where("model", queryModel).Use(db)
+        allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_updated").Where("model", queryModel).Use(db)
 	    ModelsJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
         w.Write(ModelsJSON)
@@ -89,10 +89,10 @@ func Models(w http.ResponseWriter, r *http.Request) {
 
 	// get location data
 	if len(queryLocation) > 0 {
-		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_update").Where("location", queryLocation).Use(db)
+		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").From("stock_updated").Where("location", queryLocation).Use(db)
 		LocationJSON, err := json.Marshal(allModels)
 	    ErrorCheck(err)
-	    fmt.Println("LocationJSON", string(LocationJSON))
+	    fmt.Printf("[%-18s] LocationJSON:%v\n", "Models", string(LocationJSON))
  	    w.Write(LocationJSON)
 	}
 }
@@ -103,12 +103,11 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 	queryModel := r.URL.Query().Get("model");
 	
 	if len(queryModel) > 0 {
-		allLocations := mysql.Select("location").From("stock_update").Where("model", queryModel).Use(db)
+		allLocations := mysql.Select("location").From("stock_updated").Where("model", queryModel).Use(db)
 		LocationJSON, err := json.Marshal(allLocations)
 	    ErrorCheck(err)
-	    fmt.Printf("=> Locations\n")
 	    for _, val := range allLocations {
-	    	fmt.Printf("=> %s\n", val)
+	    	fmt.Printf("[%-18s] %v\n","Locations", val)
 	    }
  	    w.Write(LocationJSON)
 	}
@@ -182,92 +181,106 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Println("[CompletePickList] Form parse error:", err)
+			fmt.Printf("[%-18s] Form parse error:\n", "CompletePickList", err)
 		}
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		
-		fmt.Printf("[CompletePickList] Pick data  :%v\n", pickDate)
-		fmt.Printf("[CompletePickList] pick status:%v\n", pickStatus)
+		fmt.Printf("[%-18s] Pick data  :%v\n", "CompletePickList",pickDate)
+		fmt.Printf("[%-18s] pick status:%v\n", "CompletePickList",pickStatus)
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
 		if pickStatus == "Updated"  || pickDate == "" {
-			fmt.Println("[return] can not construct valid update statement for affected rows/no pickDat in stock")
+			fmt.Printf("[%-18s] return: can not construct valid update statement for affected rows/no pickDat in stock")
 			return 
 		}
 		sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
-			fmt.Println("[CompletePicked] selection error:", err)
+			fmt.Printf("[%-18s] selection error:%v\n", "CompletePickList",err)
 		}
 
 		for rows.Next() {
 			err := rows.Scan(&p.PID, &p.Model, &p.Qty, &p.Location)
 			if err != nil {
-				fmt.Println("[tenda.go CompletePicked]: dbColumns Scan error:207:", err)
+				fmt.Printf("[%-18s]: dbColumns Scan error:207:%v\n", "CompletePickList",err)
 			}
 			pcols = append(pcols, p)
 		}
 		//-------------- Complete db.Query -------------/
 		upModels := []updateModel{}
 		for _, p := range pcols {
-			fmt.Println("[CompletePickList] [[current pick(p) picklist]]:")
-			// fmt.Println("{Model, Qty, Location}")
-			// fmt.Println(p)
-			// fmt.Println("==>")
-			fmt.Println("[CompletePickList] Model    :", p.Model)
-			fmt.Println("[CompletePickList] Location :", p.Location)
+			fmt.Printf("[%-18s] Model    :%s\n", "CompletePickList *",p.Model)
+			fmt.Printf("[%-18s] Location :%s\n", "CompletePickList",p.Location)
 			totals := 0
 			unit := 0
-			err := db.QueryRow("SELECT total,unit FROM stock_update WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
+			err := db.QueryRow("SELECT total,unit FROM stock_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
 			switch {
 				case err == sql.ErrNoRows:
 					fmt.Printf("[db *ERR*] no `totals` for model %s\n", p.Model)
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf(">> totals are %d\n", totals)
+					fmt.Printf("[%-18s] totals are %d\n", "CompletePickList",totals)
 			}
-			fmt.Println("[CompletePickList] pick qty:", p.Qty)
+			fmt.Printf("[%-18s] pick qty:%d\n", "CompletePickList",p.Qty)
 			newTotal := totals-p.Qty
-			fmt.Println("[CompletePickList] *NEW Total:", newTotal)
-			fmt.Printf("[CompletePickList] *unit are %d\n", unit)
+			fmt.Printf("[%-18s] *NEW Total:%d\n", "CompletePickList",newTotal)
+			fmt.Printf("[%-18s] *unit are %d\n", "CompletePickList",unit)
 
 			newCartons := 0
 			newBoxes   := newTotal;
 			
 			if unit > 1 {
 				newCartons = newTotal/unit
-				fmt.Println("[CompletePickList] *NEW Cartons:", newCartons)
+				fmt.Printf("[%-18s] *NEW Cartons:%d\n", "CompletePickList",newCartons)
 				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-				fmt.Println("[CompletePickList] *NEW BoxeFrac:", newBoxesFrac)
+				fmt.Printf("[%-18s] *NEW BoxeFrac:%f\n", "CompletePickList",newBoxesFrac)
 				newBoxesFrac = newBoxesFrac * float64(unit)
 				newBoxes = int(math.Round(newBoxesFrac))
-				fmt.Println("[CompletePickList] *NEW Boxes:", newBoxes)
+				fmt.Printf("[%-18s] *NEW Boxes:%d\n", "CompletePickList",newBoxes)
 			} 
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
-
 			updateStockUpdate := map[string]interface{} {
 				"cartons": newCartons,
 				"boxes"  : newBoxes,
 				"total"  : newTotal,
 			}
-			mysql.Update("stock_update",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
-
+			mysql.Update("stock_updated",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
 			updatePLInfo := map[string]interface{} {"status":"Complete"}
 			mysql.Update("picklist", false).Set(updatePLInfo).Where("PID", strconv.Itoa(p.PID)).Use(db)
-			insertValues := map[string]interface{} {
-				"location": p.Location,
-				"model"   : p.Model,
-				"unit"    : unit,
-				"cartons" : newCartons,
-				"boxes"   : newBoxes,
-				"total"   : newTotal,
+
+			ckmodel := ""
+			Checkerr := db.QueryRow("SELECT model FROM last_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&ckmodel)
+			switch {
+			case Checkerr == sql.ErrNoRows:
+				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`\n", "*db Rows*", p.Model)
+				insertValues := map[string]interface{} {
+					"location": p.Location,
+					"model"   : p.Model,
+					"unit"    : unit,
+					"cartons" : newCartons,
+					"boxes"   : newBoxes,
+					"total"   : newTotal,
+				}
+				mysql.InsertInto("last_updated",insertValues).Use(db);
+			case Checkerr != nil:
+				fmt.Printf("[db *ERR*] query error: %v\n", err)
+			case len(ckmodel) > 0:
+				fmt.Printf("[%-18s] FOUND `model`:%s \n", "*db Rows*", ckmodel)
+				updateValues := map[string]interface{} {
+					"location": p.Location,
+					"model"   : p.Model,
+					"unit"    : unit,
+					"cartons" : newCartons,
+					"boxes"   : newBoxes,
+					"total"   : newTotal,
+				}
+				mysql.Update("last_updated", false).Set(updateValues).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
 			}
-			mysql.InsertInto("last_updated",insertValues).Use(db);
 		}
 	}
 }

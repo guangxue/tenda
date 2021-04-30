@@ -38,7 +38,7 @@ func main() {
 
 
 	/*------------------------------------------------------------*/
-	fmt.Println("[Main] Listening on port :8080")
+	fmt.Printf("[%-18s] Listening on port :8080\n", "Main")
 	err := http.ListenAndServe(":8080", mux)
     if err != nil {
         fmt.Println("Port listening error: ", err)
@@ -48,7 +48,7 @@ func main() {
 
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
-	fmt.Println("[Main] Request path: ", rPath)
+	fmt.Printf("[%-18s] Request path: %s\n", "Main", rPath)
 
 	if r.URL.Path != "/" {
 		// render 404 page

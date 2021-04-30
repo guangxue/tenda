@@ -32,7 +32,7 @@ func Connect(dbname string) *sql.DB {
 	if pingerr != nil {
 		fmt.Println("DB pinging error: ", pingerr)
 	}
-	fmt.Println("[DB] Connected")
+	fmt.Printf("[%-18s] Connected\n", "DB")
 	return db
 }
 
@@ -140,7 +140,11 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		
 		// columnsToSelect := strings.Join(searchColumns, ", ")
 		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf("[SELECT] \n%s\n", stmt)
+		fmt.Printf("[%-18s] %s\n", "SELECT", sqlstmt.SelectColumns)
+		fmt.Printf("[%-18s]  %s\n", "SELECT FROM", sqlstmt.TableName)
+		fmt.Printf("[%-18s]  %s\n", "SELECT WHERE", sqlstmt.WhereClause)
+		fmt.Printf("[%-18s]  %s\n", "SELECT AND", sqlstmt.AndWhereClause)
+
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
 		// convert []interface{} to slice -> for easing indexing with [1]
@@ -173,34 +177,39 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	case "UPDATE":
 		if sqlstmt.UpdateNoWhere {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr
-			fmt.Printf("[UPDATE] \n%s\n", stmt)
-			// res, err := db.Exec(stmt)
-			// if err != nil {
-			// 	fmt.Println("[db *Err]: Update error:", err)
-			// }
-			// rnums, err := res.RowsAffected()
-			// if err != nil {
-			// 	fmt.Println("[db *Err] RowsAffected:", err)
-			// }
-			// fmt.Println(">> Affected rows:", rnums)
-			// rid := strconv.FormatInt(rnums, 10)
-			// rowsFeedback := map[string]string{"rowsAffected":rid}
-			// finalColumns = append(finalColumns, rowsFeedback)
+			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
+			res, err := db.Exec(stmt)
+			if err != nil {
+				fmt.Println("[db *Err]: Update error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[UPDATE] \n%s\n", stmt)
-			// res, err := db.Exec(stmt)
-			// if err != nil {
-			// 	fmt.Println("[db *Err]: Update error:", err)
-			// }
-			// rnums, err := res.RowsAffected()
-			// if err != nil {
-			// 	fmt.Println("[db *Err] RowsAffected:", err)
-			// }
-			// fmt.Println(">> Affected rows:", rnums)
-			// rid := strconv.FormatInt(rnums, 10)
-			// rowsFeedback := map[string]string{"rowsAffected":rid}
-			// finalColumns = append(finalColumns, rowsFeedback)
+			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE WHERE", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE AND", sqlstmt.AndWhereClause)
+			
+			res, err := db.Exec(stmt)
+			if err != nil {
+				fmt.Println("[db *Err]: Update error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
 		} else {
 			// fmt.Printf(">> %s\n", stmt)
 			fmt.Println("[db *Err] WhereClause needed!")
@@ -209,8 +218,8 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		
 
 	case "INSERT":
-		fmt.Printf("[INSERT] \n%s\n", sqlstmt.InsertStmt)
-		fmt.Printf("[INSERT VALUES] \n%s\n", sqlstmt.InsertValues)
+		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
+		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)
 		stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
 			fmt.Println("Error sql Prepare:", err)
@@ -226,7 +235,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			fmt.Println("Error last ID:", err)
 		}
 
-		fmt.Println("[Last Insert Id]", id)
+		fmt.Printf("[%-18s] %s: %d\n", "INSERT","Last Insert Id",id)
 		rid := strconv.FormatInt(id, 10)
 		insertFeedback := map[string]string{"lastId":rid}
 		finalColumns = append(finalColumns, insertFeedback)
