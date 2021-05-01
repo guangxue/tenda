@@ -12,20 +12,13 @@ import (
 	"html/template"
 	"github.com/guangxue/webapps/mysql"
 )
+
 var db = mysql.Connect("tenda");
-type InsertResponse struct {
-	LastId int64 `json:"lastId"`
-}
 
 func ErrorCheck(err error) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("tenda Index URL.Path->", r.URL.Path)
-    fmt.Fprintf(w, "Tenda Pick and Pack System.")
 }
 
 func render(w http.ResponseWriter, templateName string, data interface{}) {
@@ -34,7 +27,7 @@ func render(w http.ResponseWriter, templateName string, data interface{}) {
 	if err != nil {
 		fmt.Println("template parsing errors: ", err)
 	}
-	err = tmpl.Execute(w, data)
+	err = tmpl.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		fmt.Println("template executing errors: ", err)
 	}
@@ -42,6 +35,12 @@ func render(w http.ResponseWriter, templateName string, data interface{}) {
 
 func RenderHandler(templateName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := r.Cookie("gossessid")
+		if err != nil {
+			http.Redirect(w, r, "/tenda", http.StatusSeeOther)
+			return
+		}
+		fmt.Println("c.Value:", c.Value)
 		tmplpath := "templates/tenda/" + templateName
 		tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", tmplpath)
 		if err != nil {
@@ -53,9 +52,9 @@ func RenderHandler(templateName string) http.HandlerFunc {
 		}
 	}
 }
-
-//----------------------------------------------------------*/
-/*--------------------API-----------------------------------*/
+func Login(w http.ResponseWriter, r *http.Request) {
+	render(w, "login.html", nil)
+}
 func Models(w http.ResponseWriter, r *http.Request) {
 
     // Set Header for json HTTP response

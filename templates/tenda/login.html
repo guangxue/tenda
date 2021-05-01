@@ -1,0 +1,22 @@
+{{define "content"}}
+<div class="container">
+	<div id="today"></div>
+	<form action="/login" method="post" id="pickform">
+		<div class="form-element">
+			<label for="uname">
+				<span class="title">User Name</span>
+			</label>
+			<input id="panum" type="text" name="username">
+		</div>
+		<div class="form-element">
+			<label for="pwd">
+				<span class="title">Password</span>
+			</label>
+			<input id="pwd" type="password" name="password">
+		</div>
+		<div class="form-element">
+			<input type="submit" value="Login">
+		</div>
+	</form>
+</div>
+{{end}}

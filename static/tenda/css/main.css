@@ -28,7 +28,8 @@ div.container {
 }
 input[type=text],
 input[type=tel],
-input[type=date] {
+input[type=date],
+input[type=password] {
 	width: 100%;
 	padding: 12px 20px;
 	margin: 8px 0;
