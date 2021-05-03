@@ -35,12 +35,12 @@ func render(w http.ResponseWriter, templateName string, data interface{}) {
 
 func RenderHandler(templateName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		c, err := r.Cookie("gossessid")
-		if err != nil {
-			http.Redirect(w, r, "/tenda", http.StatusSeeOther)
-			return
-		}
-		fmt.Println("c.Value:", c.Value)
+		// c, err := r.Cookie("gossessid")
+		// if err != nil {
+		// 	http.Redirect(w, r, "/tenda", http.StatusSeeOther)
+		// 	return
+		// }
+		// fmt.Println("c.Value:", c.Value)
 		tmplpath := "templates/tenda/" + templateName
 		tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", tmplpath)
 		if err != nil {
@@ -291,7 +291,7 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		queryPID := r.URL.Query().Get("PID");
-		fmt.Printf("[Update Pick List (PID:%s)]\n", queryPID)
+		fmt.Printf("[%-18s] PID:%s\n", "UpdatePickList",queryPID)
 		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
