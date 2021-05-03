@@ -23,6 +23,7 @@ func main() {
 	mux.HandleFunc("/tenda/pick", tenda.RenderHandler("pick.html"))
 	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
 	mux.HandleFunc("/tenda/query", tenda.RenderHandler("query.html"))
+	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
 	mux.HandleFunc("/tenda/update/picklist", tenda.UpdatePickList)
 

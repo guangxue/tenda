@@ -217,3 +217,23 @@ input[type=submit]:hover,
 	cursor: pointer;
 }
 
+.alert {
+	opacity:0;
+	width: 200px;
+	transition: visibility 0s, opacity 0.3s linear;
+	position: relative;
+	padding: 1rem 1rem;
+	border-radius: 5px;
+	border: 1 solid transparent;
+}
+
+.alert-success {
+	color: #0f5132;
+	background-color: #d1e7dd;
+	border-color: #badbcc;
+}
+.alert-primary {
+	color: #084298;
+	background-color: #cfe2ff;
+	border-color: #b6d4fe;
+}

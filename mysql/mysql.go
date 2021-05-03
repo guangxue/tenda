@@ -193,7 +193,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
+			fmt.Printf("[%-18s] %s\n",  "UPDATE", sqlstmt.TableName)
 			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
 			fmt.Printf("[%-18s]  %s\n", "UPDATE WHERE", sqlstmt.WhereClause)
 			fmt.Printf("[%-18s]  %s\n", "UPDATE AND", sqlstmt.AndWhereClause)

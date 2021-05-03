@@ -21,13 +21,22 @@ func ErrorCheck(err error) {
 	}
 }
 
+func WriteJSON(w http.ResponseWriter, returnRows []map[string]string) {
+	w.Header().Set("Content-Type", "application/json")
+	respJSON, err := json.Marshal(returnRows)
+    if err != nil {
+    	fmt.Println("returnRows JSON Marshal error: ", err)
+    }
+	w.Write(respJSON)
+}
+
 func render(w http.ResponseWriter, templateName string, data interface{}) {
 	tmplpath := "templates/tenda/" + templateName
 	tmpl, err := template.ParseFiles(tmplpath, "templates/tenda/base.html","templates/tenda/nav.html")
 	if err != nil {
 		fmt.Println("template parsing errors: ", err)
 	}
-	err = tmpl.ExecuteTemplate(w, "base", nil)
+	err = tmpl.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		fmt.Println("template executing errors: ", err)
 	}
@@ -157,9 +166,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func QueryPickedWithPID (w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("r.PATH :", r.URL.Path)
-}
 
 
 type pickcolumns struct {
@@ -295,6 +301,8 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
+		fmt.Printf("[%-18s] /picklist GET PID:%s\n", "UpdatePickList", queryPID)
+		fmt.Printf("[%-18s] return:%s\n", "UpdatePickList", dbPickedInfo)
 		render(w, "update_picked.html", dbPickedInfo)
 	}
 
@@ -321,6 +329,19 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 			"location":location,
 			"status":status,
 		}
-		mysql.Update("picklist", false).Set(updateInfo).Where("PID",PID).Use(db)
+		rowsAffaced := mysql.Update("picklist", false).Set(updateInfo).Where("PID",PID).Use(db)
+		WriteJSON(w, rowsAffaced)
 	}
+}
+
+
+func Stocktakes (w http.ResponseWriter, r *http.Request) {
+	tbName := r.URL.Query().Get("tbname")
+	if len(tbName) > 0 {
+		allstock := mysql.Select("location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
+		WriteJSON(w, allstock)
+	} else {
+		render(w, "stocktakes.html", nil)
+	}
+	
 }

@@ -1,9 +1,8 @@
-{{template "base" .}}
-
 {{define "content"}}
 <div class="container">
 	<h2 id="today">Today: </h2>
 	<h3>Update PID:{{.PID}}</h3>
+	<div class="alert alert-primary update-fd"></div>
 	<form action="/update/summary" method="post" id="updatePickedForm">
 		<input type="hidden" name="PID" value="{{.PID}}">
 		<div class="form-element">
@@ -41,6 +40,7 @@
 				<span class="title">Status</span>
 			</label>
 			<select name="statusoption" id="status-selection" class="select">
+				<option value="{{.status}}" selected="selected">{{.status}}</option>
 				<option value="Pending">Pending</option>
 				<option value="Complete">Complete</option>
 			</select>

@@ -8,8 +8,11 @@ inputElems.forEach( elm => {
 	};
 })
 let updatePickedBtn = document.querySelector("#updatePickedButton");
+let updateFD = document.querySelector('.update-fd')
+
 updatePickedBtn.addEventListener('click', function(e) {
 	e.preventDefault();
+
 	let form = document.querySelector('#updatePickedForm')
 	let formData = new FormData(form);
 	let data = new URLSearchParams(formData);
@@ -28,8 +31,10 @@ updatePickedBtn.addEventListener('click', function(e) {
 		return resp.json();
 	})
 	.then(data => {
-		console.log("data:",data);
-		console.log(data[0].lastId)
+		if(data[0].rowsAffected) {
+			updateFD.innerHTML = `${data[0].rowsAffected} row update successfully`;
+			updateFD.style.opacity  = 1
+		}
 	})
 })
 
