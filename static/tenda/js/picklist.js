@@ -39,25 +39,77 @@ pickListButton.addEventListener("click", function() {
 	})
 	.then( data => {
 		console.log(data)
-		let tableBody = document.querySelector('#picklist_table tbody')
-		tableBody.innerHTML = ""
-		let tplrow = document.querySelector('#htmpl_pick');
+		let table = document.querySelector('table')
+		let thead = document.createElement("thead")
+		console.log("data[0]", data[0]);
+		if (!data[0]) {
+			table.innerHTML = ""
+			return
+		}
+		if(data[0].PID) {
+			let tbheads = document.querySelector('#tmp_tbhead');
+			let theadrow = tbheads.content.cloneNode(true);
+			var ths = theadrow.querySelectorAll('th');
+			ths.item(0).textContent = "PID";
+			ths.item(1).textContent = "PNO";
+			ths.item(2).textContent = "model";
+			ths.item(3).textContent = "qty";
+			ths.item(4).textContent = "customer";
+			ths.item(5).textContent = "location";
+			ths.item(6).textContent = "status";
+			ths.item(7).textContent = "created_at";
+			ths.item(8).textContent = "updated_at";
+			ths.item(9).textContent = "Action";
+			thead.appendChild(theadrow);
+			table.appendChild(thead);
+			return data
+		}
+		if(data[0].LID) {
+			// let tbrows = document.querySelector('#tmp_tbrow');
+			// let tbcells = tbrows.content.cloneNode(true);
+			// var tds = tbcells.querySelectorAll('td');
+			// data.forEach(p=> {
+			// 	var row = tplrow.content.cloneNode(true);
+			// 	var td = row.querySelectorAll('td');
+			// 	td.item(0).textContent = p.PID;
+			// 	td.item(1).textContent = p.PNO;
+			// 	td.item(2).textContent = p.model;
+			// 	td.item(3).textContent = p.qty;
+			// 	td.item(4).textContent = p.customer;
+			// 	td.item(5).textContent = p.location;
+			// 	td.item(6).textContent = p.status;
+			// 	td.item(7).textContent = p.created_at;
+			// 	td.item(8).textContent = p.updated_at;
+			// 	td.item(9).innerHTML = `<a href="/tenda/update/picklist?PID=${p.PID}">update</a>`;
+			// 	tableBody.appendChild(row);
+			// })
+		}
 		
-		data.forEach(p=> {
-			var row = tplrow.content.cloneNode(true);
-			var td = row.querySelectorAll('td');
-			td.item(0).textContent = p.PID;
-			td.item(1).textContent = p.PNO;
-			td.item(2).textContent = p.model;
-			td.item(3).textContent = p.qty;
-			td.item(4).textContent = p.customer;
-			td.item(5).textContent = p.location;
-			td.item(6).textContent = p.status;
-			td.item(7).textContent = p.created_at;
-			td.item(8).textContent = p.updated_at;
-			td.item(9).innerHTML = `<a href="/tenda/update/picklist?PID=${p.PID}">update</a>`;
-			tableBody.appendChild(row);
-		})
+	})
+	.then( data=> {
+		if(data[0].PID) {
+			let table = document.querySelector('table')
+			let tbody = document.createElement('tbody')
+			let tbrows = document.querySelector('#tmp_tbrow');
+			let tbcells = tbrows.content.cloneNode(true);
+			var tds = tbcells.querySelectorAll('td');
+			data.forEach(p=> {
+				var row = tbrows.content.cloneNode(true);
+				var td = row.querySelectorAll('td');
+				td.item(0).textContent = p.PID;
+				td.item(1).textContent = p.PNO;
+				td.item(2).textContent = p.model;
+				td.item(3).textContent = p.qty;
+				td.item(4).textContent = p.customer;
+				td.item(5).textContent = p.location;
+				td.item(6).textContent = p.status;
+				td.item(7).textContent = p.created_at;
+				td.item(8).textContent = p.updated_at;
+				td.item(9).innerHTML = `<a href="/tenda/update/picklist?PID=${p.PID}">update</a>`;
+				tbody.appendChild(row);
+				table.appendChild(tbody)
+			})
+		}
 	})
 })
 

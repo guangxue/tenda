@@ -7,7 +7,7 @@ import (
 	"net/http"
 	_ "strings"
 	"encoding/json"
-	_ "time"
+	"time"
 	"strconv"
 	"html/template"
 	"github.com/guangxue/webapps/mysql"
@@ -28,6 +28,12 @@ func WriteJSON(w http.ResponseWriter, returnRows []map[string]string) {
     	fmt.Println("returnRows JSON Marshal error: ", err)
     }
 	w.Write(respJSON)
+}
+
+func TimeNow() string {
+	ts := time.Now()
+	now := ts.Format("2006-01-02 15:04:05")
+	return now
 }
 
 func render(w http.ResponseWriter, templateName string, data interface{}) {
@@ -188,6 +194,9 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Printf("[%-18s] Form parse error:\n", "CompletePickList", err)
 		}
+		/* {pickDate}   - POST request from Ajax
+		/* {pickStatus} - POST request from Ajax
+		/* 1. Parse POST form data {pickDate}, {pickStatus} */
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		
@@ -196,10 +205,16 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
+
+		/* if {pickDate} is empty, no db action needed. */
 		if pickStatus == "Updated"  || pickDate == "" {
 			fmt.Printf("[%-18s] return: can not construct valid update statement for affected rows/no pickDat in stock")
 			return 
 		}
+
+		/* 2. SELECT FROM `picklist` according {pickDate} and {pickStatus} which from POST data. */
+		/*   {p}   - Scaned single row */
+		/* {pcols} - array of {p}  */
 		sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
@@ -209,34 +224,44 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			err := rows.Scan(&p.PID, &p.Model, &p.Qty, &p.Location)
 			if err != nil {
-				fmt.Printf("[%-18s]: dbColumns Scan error:207:%v\n", "CompletePickList",err)
+				fmt.Printf("[%-18s]: dbColumns Scan error:%v\n", "CompletePickList",err)
 			}
 			pcols = append(pcols, p)
 		}
-		//-------------- Complete db.Query -------------/
+		/* 3. Start calculate {cartons}, {boxes}, {total} to UPDATE  */
 		upModels := []updateModel{}
 		for _, p := range pcols {
 			fmt.Printf("[%-18s] Model    :%s\n", "CompletePickList *",p.Model)
 			fmt.Printf("[%-18s] Location :%s\n", "CompletePickList",p.Location)
-			totals := 0
+			
 			unit := 0
-			err := db.QueryRow("SELECT total,unit FROM stock_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&totals, &unit)
+			oldCartons := 0
+			oldBoxes := 0
+			oldTotals := 0
+			/* 4.0 Get original {total}, {unit} from `stock_updated` */
+			err := db.QueryRow("SELECT unit, cartons, boxes, total FROM stock_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&unit, &oldCartons, &oldBoxes, &oldTotals)
 			switch {
 				case err == sql.ErrNoRows:
-					fmt.Printf("[db *ERR*] no `totals` for model %s\n", p.Model)
+					fmt.Printf("[db *ERR*] no `oldTotals` for model %s\n", p.Model)
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf("[%-18s] totals are %d\n", "CompletePickList",totals)
+					fmt.Printf("[%-18s] oldTotals are %d\n", "CompletePickList",oldTotals)
 			}
+			// {p.Qty}: quantity picked
 			fmt.Printf("[%-18s] pick qty:%d\n", "CompletePickList",p.Qty)
-			newTotal := totals-p.Qty
+
+			newTotal := oldTotals - p.Qty
 			fmt.Printf("[%-18s] *NEW Total:%d\n", "CompletePickList",newTotal)
 			fmt.Printf("[%-18s] *unit are %d\n", "CompletePickList",unit)
 
+			/* 4.1 if unit = 0, then {newCartons} = {newBox} */
 			newCartons := 0
 			newBoxes   := newTotal;
-			
+
+			/* 4.2 {newTotal}  : {total} - {p.Qty} */
+			/* 4.3 {newCartons}: {newCartons}/{unit} */
+			/* 4.4 {newBoxes}  : ({newCartons}/{unit} - {newCartons} )*{unit} */
 			if unit > 1 {
 				newCartons = newTotal/unit
 				fmt.Printf("[%-18s] *NEW Cartons:%d\n", "CompletePickList",newCartons)
@@ -249,15 +274,23 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
+			// ----------------------------------------------------
+			/* 5. Update `stock_update` table first */
 			updateStockUpdate := map[string]interface{} {
 				"cartons": newCartons,
 				"boxes"  : newBoxes,
 				"total"  : newTotal,
 			}
 			mysql.Update("stock_updated",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
+			// -----------------------------------------------------
+
+			/* 6. Update `picklist` table status to 'Complete' */
 			updatePLInfo := map[string]interface{} {"status":"Complete"}
 			mysql.Update("picklist", false).Set(updatePLInfo).Where("PID", strconv.Itoa(p.PID)).Use(db)
 
+			/* 7. Check if model (that is completed) already exists in the table `last_updated` */
+			/* 7.1            IF EXISTS, UPDATE it,
+			 * ....otherwise, INSERT: new data  */
 			ckmodel := ""
 			Checkerr := db.QueryRow("SELECT model FROM last_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&ckmodel)
 			switch {
@@ -270,6 +303,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 					"cartons" : newCartons,
 					"boxes"   : newBoxes,
 					"total"   : newTotal,
+					"completed_at": TimeNow(),
 				}
 				mysql.InsertInto("last_updated",insertValues).Use(db);
 			case Checkerr != nil:
@@ -283,6 +317,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 					"cartons" : newCartons,
 					"boxes"   : newBoxes,
 					"total"   : newTotal,
+					"completed_at": TimeNow(),
 				}
 				mysql.Update("last_updated", false).Set(updateValues).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
 			}

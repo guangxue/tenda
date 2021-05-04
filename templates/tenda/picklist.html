@@ -10,7 +10,7 @@
 			<select name="pickoptions" id="pick_status" class="select">
 				<option value="Pending">Pending</option>
 				<option value="Complete">Complete</option>
-				<option value="Updated">Updated</option>
+				<option value="completed_at">Weekly completed</option>
 			</select>
 		</div>
 		<div>
@@ -18,8 +18,8 @@
 		</div>
 	</div>
 	<div class="space-between">
-		<table id="picklist_table">
-			<thead>
+		<table>
+			<!-- <thead>
 				<tr>
 					<th>PID</th>
 					<th>PNO</th>
@@ -33,9 +33,23 @@
 					<th>Action</th>
 				</tr>
 			</thead>
-			<tbody></tbody>
+			<tbody></tbody> -->
 		</table>
-		<template id="htmpl_pick">
+		<template id="tmp_tbhead">
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</template>
+		<template id="tmp_tbrow">
 			<tr>
 				<td></td>
 				<td></td>
