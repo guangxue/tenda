@@ -131,15 +131,27 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 func PickList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == "GET" {
-		date := r.URL.Query().Get("date");
-		date = date + "%"
+		odate := r.URL.Query().Get("date");
+		date := odate + "%"
 		status := r.URL.Query().Get("status");
-		allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",date).AndWhere("status", status).Use(db)
-		PickedJSON, err := json.Marshal(allPicked)
-	    if err != nil {
-	    	fmt.Println("PickedJson error: ", err)
-	    }
-		w.Write(PickedJSON)
+		if status == "completed_at" {
+			startDate := fmt.Sprintf("'%s'", odate)
+			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", odate)
+			allPicked := mysql.Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").From("last_updated").WhereBetween("completed_at", startDate, endDate).Use(db)
+			PickedJSON, err := json.Marshal(allPicked)
+		    if err != nil {
+		    	fmt.Println("PickedJson error: ", err)
+		    }
+			w.Write(PickedJSON)
+		} else {
+			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",date).AndWhere("status", "=",status).Use(db)
+			PickedJSON, err := json.Marshal(allPicked)
+		    if err != nil {
+		    	fmt.Println("PickedJson error: ", err)
+		    }
+			w.Write(PickedJSON)
+		}
+		
 	}
 
 	// Inserting picking informations
@@ -199,9 +211,11 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		/* 1. Parse POST form data {pickDate}, {pickStatus} */
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
+		lastSaturday := r.FormValue("lastSaturday")
 		
 		fmt.Printf("[%-18s] Pick data  :%v\n", "CompletePickList",pickDate)
 		fmt.Printf("[%-18s] pick status:%v\n", "CompletePickList",pickStatus)
+		fmt.Printf("[%-18s] pick lastSaturday:%v\n", "CompletePickList",lastSaturday)
 
 		p := pickcolumns{}
 		pcols := []pickcolumns{}
@@ -281,7 +295,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 				"boxes"  : newBoxes,
 				"total"  : newTotal,
 			}
-			mysql.Update("stock_updated",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
+			mysql.Update("stock_updated",false).Set(updateStockUpdate).Where("model", p.Model).AndWhere("location", "=",p.Location).Use(db)
 			// -----------------------------------------------------
 
 			/* 6. Update `picklist` table status to 'Complete' */
@@ -292,10 +306,10 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 			/* 7.1            IF EXISTS, UPDATE it,
 			 * ....otherwise, INSERT: new data  */
 			ckmodel := ""
-			Checkerr := db.QueryRow("SELECT model FROM last_updated WHERE model=? AND location=?", p.Model, p.Location).Scan(&ckmodel)
+			Checkerr := db.QueryRow("SELECT model FROM last_updated WHERE model=? AND location=? AND completed_at > ?", p.Model, p.Location, lastSaturday).Scan(&ckmodel)
 			switch {
 			case Checkerr == sql.ErrNoRows:
-				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`\n", "*db Rows*", p.Model)
+				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "*db Rows*", p.Model)
 				insertValues := map[string]interface{} {
 					"location": p.Location,
 					"model"   : p.Model,
@@ -309,7 +323,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 			case Checkerr != nil:
 				fmt.Printf("[db *ERR*] query error: %v\n", err)
 			case len(ckmodel) > 0:
-				fmt.Printf("[%-18s] FOUND `model`:%s \n", "*db Rows*", ckmodel)
+				fmt.Printf("[%-18s] FOUND `model`:%s , then UPDATE\n", "*db Rows*", ckmodel)
 				updateValues := map[string]interface{} {
 					"location": p.Location,
 					"model"   : p.Model,
@@ -319,7 +333,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 					"total"   : newTotal,
 					"completed_at": TimeNow(),
 				}
-				mysql.Update("last_updated", false).Set(updateValues).Where("model", p.Model).AndWhere("location", p.Location).Use(db)
+				mysql.Update("last_updated", false).Set(updateValues).Where("model", p.Model).AndWhere("location", "=",p.Location).AndWhere("completed_at", ">", lastSaturday).Use(db)
 			}
 		}
 	}
@@ -372,6 +386,7 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
 func Stocktakes (w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
+
 	if len(tbName) > 0 {
 		allstock := mysql.Select("location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
 		WriteJSON(w, allstock)
@@ -379,4 +394,16 @@ func Stocktakes (w http.ResponseWriter, r *http.Request) {
 		render(w, "stocktakes.html", nil)
 	}
 	
+}
+
+func AppTest(w http.ResponseWriter, r *http.Request) {
+/*
+	select *
+	from last_updated
+	where created_at BETWEEN '2021-04-26' AND date_add('2021-04-26', INTERVAL 7 DAY);
+
+*/
+
+	
+	// fmt.Println("Return rows:", reROWS)
 }

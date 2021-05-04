@@ -7,6 +7,7 @@ function getCurrentDateTime(numonly) {
 	if(month < 10) {
 		month = `0${month}`
 	}
+	console.log("day:", date.getDate())
 	if (numonly) {
 		currentDateTime = `${date.getFullYear()}${month}${date.getDate()}`;
 	}

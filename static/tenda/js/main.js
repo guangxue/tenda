@@ -9,11 +9,15 @@ function getCurrentDateTime(numonly) {
 	if(month < 10) {
 		month = `0${month}`
 	}
+	let day = date.getDate();
+	if (day < 10) {
+		day = `0${day}`
+	}
 	if (numonly) {
-		currentDateTime = `${date.getFullYear()}${month}${date.getDate()}`;
+		currentDateTime = `${date.getFullYear()}${month}${day}`;
 	}
 	else {
-		currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
+		currentDateTime = `${date.getFullYear()}-${month}-${day} ${currTime}`;
 	}
 	return currentDateTime;
 }
@@ -141,12 +145,19 @@ let datalistElem = document.createElement('datalist');
 datalistElem.id='POAENumber';
 let PONumber = `PO${getCurrentDateTime(true)}`;
 let AENumber = `AE${getCurrentDateTime(true)}`;
+let RENumber = `RE${getCurrentDateTime(true)}`;
+
 var PO_option = document.createElement('option');
 PO_option.textContent = PONumber;
 var AE_option = document.createElement('option');
 AE_option.textContent = AENumber;
+var RE_option = document.createElement('option');
+RE_option.textContent = RENumber;
+
 datalistElem.appendChild(PO_option);
 datalistElem.appendChild(AE_option);
+datalistElem.appendChild(RE_option);
+
 let formElem = document.querySelector('form');
 if(formElem) {
 	formElem.insertAdjacentElement('afterend', datalistElem);

@@ -104,8 +104,8 @@ func (sqlstmt *Statement) Where(column string, searchColumn string) *Statement{
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) WhereBetween(value1 string, value2 string) *Statement{
-	sqlstmt.WhereClause = " Where BETWEEN" + value1 + " AND " + value2
+func (sqlstmt *Statement) WhereBetween(col string,value1 string, value2 string) *Statement{
+	sqlstmt.WhereClause = " Where "+ col +" BETWEEN " + value1 + " AND " + value2
 	return sqlstmt
 }
 
@@ -114,9 +114,9 @@ func (sqlstmt *Statement) WhereLike(column string, pattern string) *Statement{
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) AndWhere(column string, searchColumn string) *Statement {
+func (sqlstmt *Statement) AndWhere(column string, condition string, searchColumn string) *Statement {
 	if len(sqlstmt.WhereClause) > 0 {
-		sqlstmt.AndWhereClause = " AND " + column + "='"+searchColumn + "'"
+		sqlstmt.AndWhereClause += " AND " + column + " " +condition + " '"+searchColumn + "'"
 		return sqlstmt
 	}
 	return sqlstmt

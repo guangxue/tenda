@@ -6,27 +6,31 @@
 			<select name="pickoptions" id="tbvalue" class="select">
 				<option value="stock_0409">stock-04-09</option>
 				<option value="stock_0430">stock-04-30</option>
+				<option value="stock_updated">Latest</option>
 			</select>
 		</div>
 		<div>
 			<button class="btn btn-secondary select-stocktakes">Select</button>
 		</div>
 	</div>
-	<table id="ST_table">
-		<thead>
-			<tr>
-				<th>位置</th>
-				<th>产品</th>
-				<th>每箱数量</th>
-				<th>箱数</th>
-				<th>散货数</th>
-				<th>数量总计</th>
-				<th>品种</th>
-				<th>备注</th>
-			</tr>
-		</thead>
-		<tbody></tbody>
-	</table>
+	<div id="ST_Table">
+		<table id="stock_tb">
+			<thead>
+				<tr>
+					<th>位置</th>
+					<th>产品</th>
+					<th>每箱数量</th>
+					<th>箱数</th>
+					<th>散货数</th>
+					<th>数量总计</th>
+					<th>品种</th>
+					<th>备注</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	
 	<template id="htmpl_pick">
 		<tr>
 			<td></td>

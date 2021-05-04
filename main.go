@@ -27,6 +27,8 @@ func main() {
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
 	mux.HandleFunc("/tenda/update/picklist", tenda.UpdatePickList)
 
+	mux.HandleFunc("/tenda/apptest", tenda.AppTest)
+
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
