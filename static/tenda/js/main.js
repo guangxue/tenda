@@ -22,8 +22,8 @@ function getCurrentDateTime(numonly) {
 	return currentDateTime;
 }
 
-let today = 'Today: '+ getCurrentDateTime();
-document.querySelector('#today').innerHTML = today;
+// let today = 'Today: '+ getCurrentDateTime();
+// document.querySelector('#today').innerHTML = today;
 
 let modelinput = document.querySelector('input[name="model"]')
 let modelNameinput = document.querySelector('input[name="modelName"]')
@@ -43,8 +43,8 @@ if(modelinput || modelNameinput) {
 		let datalistElem = document.createElement('datalist')
 		datalistElem.id='modelist'
 
-		let formElem = document.querySelector('form');
-		formElem.insertAdjacentElement('afterend', datalistElem);
+		let container = document.querySelector('.container');
+		container.insertAdjacentElement('afterend', datalistElem);
 		let optionFragement = new DocumentFragment();
 		models.forEach( m => {
 			let currentOpt = '<option value="'+m.model+'">';

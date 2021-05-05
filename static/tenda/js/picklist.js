@@ -1,36 +1,13 @@
-// fetch("https://gzhang.dev/tenda/api/picked?date=today")
-// .then( resp => {
-// 	return resp.json();
-// })
-// .then( data => {
-// 	console.log(data)
-// 	let tableBody = document.querySelector('#picklist_table tbody')
-// 	tableBody.innerHTML = ""
-// 	let tplrow = document.querySelector('#htmpl_pick');
-	
-// 	data.forEach(p=> {
-// 		var row = tplrow.content.cloneNode(true);
-// 		var td = row.querySelectorAll('td');
-// 		td.item(0).textContent = p.PID;
-// 		td.item(1).textContent = p.PNO;
-// 		td.item(2).textContent = p.model;
-// 		td.item(3).textContent = p.qty;
-// 		td.item(4).textContent = p.customer;
-// 		td.item(5).textContent = p.location;
-// 		td.item(6).textContent = p.status;
-// 		td.item(7).textContent = p.last_updated;
-// 		td.item(8).innerHTML = `<a href="/tenda/update/picked?PID=${p.PID}">update</a>`;
-// 		tableBody.appendChild(row);
-// 	})
-// })
 
 const pickListButton = document.querySelector(".select-picklist")
 
 pickListButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
 	let pickStatus = document.querySelector("#pick_status").value;
+	let table = document.querySelector('table')
 	console.log("pick date is:", pickDate)
 	console.log("pick status is:", pickStatus)
+	table.innerHTML = ""
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	console.log("fetch_url:", fetch_url)
 	if(pickStatus == 'completed_at' && !pickDate) {
@@ -38,7 +15,7 @@ pickListButton.addEventListener("click", function() {
 		return;
 	}
 
-	if(pickDate) {
+	if(pickStatus == "Pending" || pickStatus == "Complete") {
 		
 		fetch(fetch_url)
 		.then( resp => {
@@ -46,7 +23,7 @@ pickListButton.addEventListener("click", function() {
 		})
 		.then( data => {
 			console.log(data)
-			let table = document.querySelector('table')
+			
 			let thead = document.createElement("thead")
 			console.log("data[0]", data[0]);
 			table.innerHTML = ""

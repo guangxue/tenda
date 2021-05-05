@@ -1,0 +1,18 @@
+{{define "content"}}
+	<div class="content-wrapper">
+		<h2 id="today">Today: </h2>
+		<div class="space-between select-options">
+			<div>
+				<input list="modelist" id="mod" type="text" name="model" placeholder="Model Name">
+			</div>
+			<div>
+				<input list="loclist" id="loc" type="text" name="location" placeholder="Location">
+			</div>
+			<div>
+				<button class="btn btn-primary select-picklist" id="querybutton">Find</button>
+			</div>
+		</div>
+		<div id="mfb"></div>
+		<div id="lfb"></div>
+	</div>
+{{end}}

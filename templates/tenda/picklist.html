@@ -1,72 +1,69 @@
-{{define "content"}}
 
-<div class="container">
-	<h2 id="today">Today: </h2>
-	<div class="space-between select-options">
-		<div>
-			<input type="date" id="pick_date">
-		</div>
-		<div>
-			<select name="pickoptions" id="pick_status" class="select">
-				<option value="Pending">Pending</option>
-				<option value="Complete">Complete</option>
-				<option value="completed_at">Weekly completed</option>
-			</select>
-		</div>
-		<div>
-			<button class="btn btn-secondary select-picklist">Select</button>
-		</div>
+{{define "content"}}
+<div class="space-between select-options">
+	<div>
+		<input type="date" id="pick_date">
 	</div>
-	<div class="space-between">
-		<table>
-			<!-- <thead>
-				<tr>
-					<th>PID</th>
-					<th>PNO</th>
-					<th>Model</th>
-					<th>Qty</th>
-					<th>Customer</th>
-					<th>Location</th>
-					<th>Status</th>
-					<th>created_at</th>
-					<th>updated_at</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody></tbody> -->
-		</table>
-		<template id="tmp_tbhead">
-			<tr>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-			</tr>
-		</template>
-		<template id="tmp_tbrow">
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</template>
+	<div>
+		<select name="pickoptions" id="pick_status" class="select">
+			<option value="Pending">Pending</option>
+			<option value="Complete">Complete</option>
+			<option value="completed_at">Weekly completed</option>
+		</select>
 	</div>
-	<div class="space-between">
-		<button class="btn btn-primary" id="completeBtn">Complete</button>
-	</div>	
+	<div>
+		<button class="btn btn-secondary select-picklist">Select</button>
+	</div>
 </div>
+<div class="space-between">
+	<table>
+		<!-- <thead>
+			<tr>
+				<th>PID</th>
+				<th>PNO</th>
+				<th>Model</th>
+				<th>Qty</th>
+				<th>Customer</th>
+				<th>Location</th>
+				<th>Status</th>
+				<th>created_at</th>
+				<th>updated_at</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody></tbody> -->
+	</table>
+	<template id="tmp_tbhead">
+		<tr>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+	</template>
+	<template id="tmp_tbrow">
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</template>
+</div>
+<div class="space-between">
+	<button class="btn btn-primary" id="completeBtn">Complete</button>
+</div>	
 <script type="text/javascript" src="/static/tenda/js/picklist.js"></script>
 {{end}}

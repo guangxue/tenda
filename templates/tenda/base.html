@@ -13,8 +13,9 @@
 </head>
 <body>
 	{{ template "nav" .}}
-	{{ template "content" .}}
-
+	<div class="container">
+		{{template "content" .}}
+	</div>
 	<script type="module" src="/static/tenda/js/main.js"></script>
 </body>
 </html>
