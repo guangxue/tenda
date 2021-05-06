@@ -6,7 +6,7 @@ body {
 }
 .btn {
 	width: 100%;
-	padding: 10px 33px;
+	padding: 9px 30px;
 	box-sizing: border-box;
 	border: none;
 	font-size: 1em;
@@ -27,12 +27,8 @@ div.container {
 	flex-direction: column;
 	width: 100%;
 }
-input {
-	padding: 14px 30px;
-	box-sizing: border-box;
-	background-color: #fff;
-	border: 1px solid #eee;
-	color: #000;
+#insertFB {
+	display: none;
 }
 /*input[type=text],
 input[type=tel],
@@ -60,6 +56,13 @@ input[type=submit] {
 	font-size: 1em;
 	border: 1px solid #eee;
 }*/
+input {
+	padding: 10px 30px;
+	box-sizing: border-box;
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	color: #000;
+}
 .select {
 	border: 1px solid #eee;
 	-moz-appearance: none;
@@ -67,7 +70,7 @@ input[type=submit] {
 	appearance: none;
 	outline: none;
 	background-color: #fff;
-	padding: 12px 32px;
+	padding: 10px 30px;
 	background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
 	background-repeat: no-repeat;
   	background-position-x: 5px;
@@ -158,11 +161,18 @@ table {
 	border-collapse: collapse;
 	border: 1px solid #d5d5d5;
 }
+table#pick-table{
+	width: 50%;
+}
 table#pick-table tbody tr{
 	line-height: 3.5;
 }
 table#pick-table tbody tr:hover {
 	background-color: #fff;
+}
+table#pick-table thead th {
+	border-right: 1px solid #fff;
+	padding: 0 2em;
 }
 table thead {
 	background-color: #c6d8db;
@@ -219,10 +229,17 @@ div.content-wrapper {
 div.form-line {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+	padding: 1em 0em;
+}
+div.form-line > div:first-child {
+	width:28%;
 }
 div.form-wrapper {
-	width: 80%;
+	width: 50%;
+	height: 60%;
+	border: 1px solid #bebebe;
+	padding: 1em 3em;
+	border-radius: 2px;
 }
 
 input.form-line-input {

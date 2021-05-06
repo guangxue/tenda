@@ -1,71 +1,50 @@
 {{define "content"}}
 <div class="content-wrapper">
+	
 	<div class="form-wrapper">
+		<h1>Packing Slip</h1>
 		<form action="" method="post" id="pickform">
 			<div class="form-line">
-				<div class="form-element">
-					<label for="customer">
-						<span class="title">Customer</span>
-					</label>
-					<input type="text"  class="form-line-input" name="customer">
-				</div>
-				<div class="form-element">
-					<label for="pano">
-						<span class="title">PO/AE Number</span>
-					</label>
-					<input id="panum"  class="form-line-input" type="text" name="PNO" list="POAENumber">
-				</div>
-				
-			</div>
-			<table id="pick-table">
-				<thead>
-					<tr>
-						<th>Item</th>
-						<th>Model</th>
-						<th>Quantity</th>
-						<th>Location</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>1</td>
-						<td><input list="modelist" id="mod" type="text" name="modelName"></td>
-						<td><input type="tel" name="qty"></td>
-						<td><select name="pickLocation" id="pick-location" class="select"></select></td>
-						<td><button id="pickbtn" class="btn btn-primary">Pick</button></td>
-					</tr>
-				</tbody>
-			</table>
-			<!-- <div class="form-line">
-				<div class="form-title">Item</div>
-				<div class="form-title">Model</div>
-				<div class="form-title">Quantity</div>
-				<div class="form-title">Location</div>
-				<div class="form-title">Action</div>
+				<div><label for="">PO Number</label></div>
+				<div><input id="panum" type="text" name="PNO" list="POAENumber"></div>
 			</div>
 			<div class="form-line">
-				<div class="form-element">
-					<label for="">1</label>
-				</div>
-				<div class="form-element">
-					<input list="modelist"  class="form-line-input" id="mod" type="text" name="modelName">
-				</div>
-				<div class="form-element">
-					<input type="tel" name="qty" class="form-line-input" >
-				</div>
-				
-				<div class="form-element">
-					<select name="pickLocation" id="pick-location" class="select"></select>
-				</div>
-				<div class="form-element">
-					<input type="submit" value="Pick" id="pickbtn">
-				</div>
+				<div><label for="">Customer</label></div>
+				<div><input type="text" name="customer"></div>
 			</div>
- -->
-			<div id="po"></div>
-			<template id="htmpl_order"><tr><td></td><td></td><td></td><td></td></tr></template>
+			<div class="form-line">
+				<div><label for="">Model</label></div>
+				<div><input list="modelist" id="mod" type="text" name="modelName"></div>
+			</div>
+			<div class="form-line">
+				<div><label for="">Quantity</label></div>
+				<div><input type="tel" name="qty"></div>
+			</div>
+			<div class="form-line">
+				<div><label for="">Location</label></div>
+				<div><select name="pickLocation" id="pick-location" class="select"></select></div>
+			</div>
+			<div class="form-line">
+				<div><button id="pickbtn" class="btn btn-primary">Pick</button></div>
+			</div>
 		</form>
+		<template id="htmpl_order"><tr><td></td><td></td><td></td><td></td></tr></template>
+	</div>
+	<div id="insertFB">
+		<table>
+			<thead>
+				<tr>
+					<th>PID</th>
+					<th>PNO</th>
+					<th>model</th>
+					<th>qty</th>
+					<th>customer</th>
+					<th>location</th>
+					<th>status</th>
+					<th>created_at</th>
+				</tr>
+			</thead>
+		</table>
 	</div>
 </div>
 

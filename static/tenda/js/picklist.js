@@ -14,6 +14,10 @@ pickListButton.addEventListener("click", function() {
 		console.log("pickDate is empty")
 		return;
 	}
+	let cmpbtn = document.querySelector("#completeBtn")
+	if(cmpbtn) {
+		cmpbtn.remove();
+	}
 
 	if(pickStatus == "Pending" || pickStatus == "Complete") {
 		
@@ -109,6 +113,52 @@ pickListButton.addEventListener("click", function() {
 				})
 			}
 		})
+		.then(()=>{
+
+			if(!cmpbtn && pickStatus == "Pending") {
+				let cpBtn = document.createElement("button")
+				cpBtn.id = "completeBtn"
+				cpBtn.classList.add("btn", "btn-info")
+				cpBtn.textContent = "Complete"
+				let cwrapper = document.querySelector(".content-wrapper")
+				cwrapper.appendChild(cpBtn)
+			}
+
+		})
+		.then(()=>{
+			const completePickBtn = document.querySelector('#completeBtn')
+			if(!completePickBtn) {
+				return
+			}
+			completePickBtn.addEventListener('click', function() {
+				let formData = new FormData();
+				let data = new URLSearchParams(formData);
+				let pickStatus = document.querySelector('#pick_status').value
+				let pickDate   = document.querySelector("#pick_date").value
+				console.log("pick status to Complete:", pickStatus);
+				console.log("pick date to complete", pickDate);
+				console.log("lastSaturday", lastSaturdayTS());
+
+				data.append("pickDate", pickDate)
+				data.append("pickStatus", pickStatus)
+				data.append("lastSaturday", lastSaturdayTS());
+
+				let tableBody = document.querySelector('table tbody')
+				let trows = tableBody.querySelectorAll('tr');
+				if (tableBody && trows.length) {
+					fetch("https://gzhang.dev/tenda/api/complete/picklist", {
+						method: "POST",
+						body: data,
+					})
+					.then(resp => { 
+						return resp.json();
+					})
+					.then(data => {
+						console.log("data:",data);
+					})
+				}
+			})
+		})
 	}
 	
 })
@@ -130,32 +180,3 @@ function lastSaturdayTS() {
 	return lastSaturday;
 }
 
-const completePickBtn = document.querySelector('#completeBtn')
-completePickBtn.addEventListener('click', function() {
-	let formData = new FormData();
-	let data = new URLSearchParams(formData);
-	let pickStatus = document.querySelector('#pick_status').value
-	let pickDate   = document.querySelector("#pick_date").value
-	console.log("pick status to Complete:", pickStatus);
-	console.log("pick date to complete", pickDate);
-	console.log("lastSaturday", lastSaturdayTS());
-
-	data.append("pickDate", pickDate)
-	data.append("pickStatus", pickStatus)
-	data.append("lastSaturday", lastSaturdayTS());
-
-	let tableBody = document.querySelector('table tbody')
-	let trows = tableBody.querySelectorAll('tr');
-	if (tableBody && trows.length) {
-		fetch("https://gzhang.dev/tenda/api/complete/picklist", {
-			method: "POST",
-			body: data,
-		})
-		.then(resp => { 
-			return resp.json();
-		})
-		.then(data => {
-			console.log("data:",data);
-		})
-	}
-})

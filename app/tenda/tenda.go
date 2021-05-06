@@ -131,10 +131,19 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 func PickList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == "GET" {
-		odate := r.URL.Query().Get("date");
-		date := odate + "%"
+		date := r.URL.Query().Get("date");
 		status := r.URL.Query().Get("status");
+		PID := r.URL.Query().Get("PID");
+
+		fmt.Printf("[%-18s] date  :%s\n", "PickList", date);
+		fmt.Printf("[%-18s] status:%s\n", "PickList", status);
+		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
+
 		if status == "completed_at" {
+			odate := ""
+			if date == "" {
+				odate = "%"
+			}
 			startDate := fmt.Sprintf("'%s'", odate)
 			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", odate)
 			allPicked := mysql.Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").From("last_updated").WhereBetween("completed_at", startDate, endDate).Use(db)
@@ -143,8 +152,21 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		    	fmt.Println("PickedJson error: ", err)
 		    }
 			w.Write(PickedJSON)
+		} else if len(PID) > 0 && len(status) > 0 {
+			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").Where("PID",PID).AndWhere("status", "=",status).Use(db)
+			PickedJSON, err := json.Marshal(allPicked)
+		    if err != nil {
+		    	fmt.Println("PickedJson error: ", err)
+		    }
+			w.Write(PickedJSON)
 		} else {
-			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",date).AndWhere("status", "=",status).Use(db)
+			odate := ""
+			if date == "" {
+				odate = "%"
+			} else {
+				odate = date + "%"
+			}
+			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",odate).AndWhere("status", "=",status).Use(db)
 			PickedJSON, err := json.Marshal(allPicked)
 		    if err != nil {
 		    	fmt.Println("PickedJson error: ", err)
@@ -213,7 +235,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		pickStatus := r.FormValue("pickStatus")
 		lastSaturday := r.FormValue("lastSaturday")
 		
-		fmt.Printf("[%-18s] Pick data  :%v\n", "CompletePickList",pickDate)
+		fmt.Printf("[%-18s] Pick date  :%v\n", "CompletePickList",pickDate)
 		fmt.Printf("[%-18s] pick status:%v\n", "CompletePickList",pickStatus)
 		fmt.Printf("[%-18s] pick lastSaturday:%v\n", "CompletePickList",lastSaturday)
 
