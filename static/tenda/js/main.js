@@ -73,14 +73,14 @@ if(queryButton) {
 			fetch(url).then(response => { return response.json()})
 			.then(data => {
 				let sum_total = 0;
-				let table = "<table><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr>";
+				let table = "<table><thead><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr></thead><tbody>";
 				data.forEach(m => {
 					console.log("m.total ->", m.total);
 					let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 					table += row
 					sum_total += parseFloat(m.total);
 				});
-				table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></table>`
+				table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></tbody></table>`
 				document.querySelector("#mfb").innerHTML = table;
 			})
 			.catch( err => {

@@ -6,11 +6,11 @@ body {
 }
 .btn {
 	width: 100%;
-	padding: 12px 20px;
+	padding: 10px 33px;
 	box-sizing: border-box;
 	border: none;
 	font-size: 1em;
-	border-radius: 4px;
+	/*border-radius: 4px;*/
 	color: #fff;
 }
 .btn-primary {
@@ -27,23 +27,27 @@ div.container {
 	flex-direction: column;
 	width: 100%;
 }
-
-input[type=text],
+input {
+	padding: 14px 30px;
+	box-sizing: border-box;
+	background-color: #fff;
+	border: 1px solid #eee;
+	color: #000;
+}
+/*input[type=text],
 input[type=tel],
 input[type=date],
 input[type=password] {
-	
-	padding: 12px 20px;
+	padding: 10px 30px;
 	margin: 8px 0;
 	box-sizing: border-box;
-	background-color: #e0e5eb;
-	border: none;
+	background-color: #fff;
+	border: 1px solid #eee;
 	color: #000;
-}
+}*/
 
-input[type=button],
+/*input[type=button],
 input[type=submit] {
-
 	-webkit-appearance: none;
 	background-color: #f96b2a;
 	color: #fff;
@@ -54,8 +58,21 @@ input[type=submit] {
 	margin: 4px 2px;
 	cursor: pointer;
 	font-size: 1em;
+	border: 1px solid #eee;
+}*/
+.select {
+	border: 1px solid #eee;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+	outline: none;
+	background-color: #fff;
+	padding: 12px 32px;
+	background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+	background-repeat: no-repeat;
+  	background-position-x: 5px;
+  	background-position-y: 50%;
 }
-
 div.form-element,
 .space-between {
 	margin-top: 1em;
@@ -67,13 +84,13 @@ div.form-element,
 .select-options {
 	display: flex;
 	flex-direction: row;
-	justify-content: flex-end;
+	justify-content: flex-start;
 }
 .select-options > div {
 	align-self: baseline;
-	margin-left: 2em;
+	margin-right: 1.5em;
+	align-self: center;
 }
-
 .select-btn {
 	justify-content: flex-end;
 }
@@ -118,7 +135,6 @@ nav.main-navbar ul li a {
 	border-radius: 3px;
 	text-decoration: none;
 }
-
 nav.main-navbar ul li a:active,
 nav.main-navbar ul li a:hover {
 	color: #fd4f00;
@@ -136,25 +152,30 @@ nav.main-navbar ul li a:hover {
 #check {
 	display: none;
 }
-.select {
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	appearance: none;
-	border: none;
-	outline: none;
-	background-color: #e0e5eb;
-	padding: 12px 32px;
-	background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-	background-repeat: no-repeat;
-  	background-position-x: 5px;
-  	background-position-y: 50%;
-}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
+	border: 1px solid #d5d5d5;
+}
+table#pick-table tbody tr{
+	line-height: 3.5;
+}
+table#pick-table tbody tr:hover {
+	background-color: #fff;
+}
+table thead {
+	background-color: #c6d8db;
+}
+table tbody tr {
+	line-height: 2.2;
+}
+table tbody tr:hover {
+	background-color: #f5f5f5;
 }
 th {
-  height: 50px;
+  height: 38px;
+  font-weight: bold;
 }
 td {
   text-align: center;
@@ -167,7 +188,6 @@ input[type=submit]:hover,
 .btn:hover {
 	cursor: pointer;
 }
-
 .alert {
 	opacity:0;
 	width: 200px;
@@ -190,6 +210,8 @@ input[type=submit]:hover,
 }
 
 div.content-wrapper {
+	display: flex;
+	flex-direction: column;
 	padding: 1rem 1.5rem;
 	background-color: #fff;
 	height: 100vh;
@@ -200,16 +222,23 @@ div.form-line {
 	justify-content: space-between;
 }
 div.form-wrapper {
-	width: 60%;
+	width: 80%;
 }
 
 input.form-line-input {
 	background-color: #fff;
 	border-bottom: 1px solid black;
 }
+div.table-wrapper {
+	width:60%;
+}
 
 /* Media queries */
 @media (max-width: 800px) {
+	.select-options {
+		display: flex;
+		flex-direction: column;
+	}
 	label.logo {
 		font-size: 30px;
 		padding-left: 50px;
