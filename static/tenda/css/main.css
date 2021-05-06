@@ -61,6 +61,8 @@ input {
 	box-sizing: border-box;
 	background-color: #fff;
 	border: 1px solid #ced4da;
+	-webkit-appearance: none;
+	border-radius: 2px;
 	color: #000;
 }
 .select {
@@ -132,7 +134,7 @@ nav.main-navbar ul li {
 }
 nav.main-navbar ul li a {
 	color: #555;
-	font-size: 14px;
+	font-size: 15px;
 	text-transform: uppercase;
 	padding: 8px;
 	border-radius: 3px;
@@ -159,7 +161,7 @@ nav.main-navbar ul li a:hover {
 table {
 	width: 100%;
 	border-collapse: collapse;
-	border: 1px solid #d5d5d5;
+	/*border: 1px solid #d5d5d5;*/
 }
 table#pick-table{
 	width: 50%;
@@ -175,7 +177,7 @@ table#pick-table thead th {
 	padding: 0 2em;
 }
 table thead {
-	background-color: #c6d8db;
+	/*background-color: #c6d8db;*/
 }
 table tbody tr {
 	line-height: 2.2;
@@ -186,9 +188,11 @@ table tbody tr:hover {
 th {
   height: 38px;
   font-weight: bold;
+  font-size: 13px;
 }
 td {
   text-align: center;
+  font-size: 13px;
 }
 th, td {
   border-bottom: 1px solid #ddd;
@@ -205,7 +209,7 @@ input[type=submit]:hover,
 	position: relative;
 	padding: 1rem 1rem;
 	border-radius: 5px;
-	border: 1 solid transparent;
+	border: 1px solid transparent;
 }
 
 .alert-success {
@@ -232,29 +236,61 @@ div.form-line {
 	padding: 1em 0em;
 }
 div.form-line > div:first-child {
-	width:28%;
+	width: 33%;
 }
 div.form-wrapper {
-	width: 50%;
-	height: 60%;
+	width: 478px;
 	border: 1px solid #bebebe;
-	padding: 1em 3em;
+	padding: 1em 0 3em 3.5em;
 	border-radius: 2px;
 }
-
+div.form-title {
+	margin: 0 0 2em 0;
+}
 input.form-line-input {
 	background-color: #fff;
 	border-bottom: 1px solid black;
-}
-div.table-wrapper {
-	width:60%;
+	margin: 1.8em 0;
 }
 
+div.table-wrapper {
+	width: 90%;
+	margin: 2em 0;
+}
+
+div.table-title-wrapper {
+	margin: 1em 0;
+}
+
+div.table-title {
+	font-weight: bold;
+	color: #e86427;
+	/*border: 1px solid #ced4da;*/
+	display: inline;
+}
+div.space-around {
+	justify-content: space-around;
+}
+
+/*div#mfb {
+	border: 1px solid #ced4da;
+}*/
 /* Media queries */
+
 @media (max-width: 800px) {
+	div.select-wrapper {
+	    border: 1px solid #bebebe;
+	    width: 77%;
+	    padding: 3em 2em;
+	}
+
 	.select-options {
 		display: flex;
 		flex-direction: column;
+	}
+	.select-options > div {
+		align-self: start;
+		margin: 0.5em;
 	}
 	label.logo {
 		font-size: 30px;

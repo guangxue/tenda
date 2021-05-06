@@ -120,7 +120,7 @@ pickListButton.addEventListener("click", function() {
 				cpBtn.id = "completeBtn"
 				cpBtn.classList.add("btn", "btn-info")
 				cpBtn.textContent = "Complete"
-				let cwrapper = document.querySelector(".content-wrapper")
+				let cwrapper = document.querySelector(".table-wrapper")
 				cwrapper.appendChild(cpBtn)
 			}
 

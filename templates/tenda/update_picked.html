@@ -1,56 +1,77 @@
+{{define "PageTitle"}}Update Picked{{end}}
 {{define "content"}}
-<div class="container">
-	<h2 id="today">Today: </h2>
-	<h3>Update PID:{{.PID}}</h3>
-	<div class="alert alert-primary update-fd"></div>
-	<form action="/update/summary" method="post" id="updatePickedForm">
-		<input type="hidden" name="PID" value="{{.PID}}">
-		<div class="form-element">
-			<label for="pno">
-				<span class="title">PNO</span>
-			</label>
-			<input id="pno" type="text" name="PNO" value="{{.PNO}}">
+<div class="content-wrapper">
+	<div class="form-wrapper">
+		<div class="alert alert-primary update-fd"></div>
+		<div class="form-title">
+			<h2 id="today">Today: </h2>
+			<h3>Update PID:{{.PID}}</h3>
 		</div>
-		<div class="form-element">
-			<label for="mod">
-				<span class="title">Model</span>
-			</label>
-			<input list="modelist" id="mod" type="text" name="model" value="{{.model}}">
-		</div>
-		<div class="form-element">
-			<label for="pqty">
-				<span class="title">Picked Qty</span>
-			</label>
-			<input id="pqty" type="tel" name="qty" value="{{.qty}}">
-		</div>
-		<div class="form-element">
-			<label for="custm">
-				<span class="title">Customer</span>
-			</label>
-			<input id="custm" type="text" name="customer" value="{{.customer}}">
-		</div>
-		<div class="form-element">
-			<label for="loc">
-				<span class="title">Location</span>
-			</label>
-			<input list="loclist" id="loc" type="text" name="location" value="{{.location}}">
-		</div>
-		<div class="form-element">
-			<label for="stat">
-				<span class="title">Status</span>
-			</label>
-			<select name="statusoption" id="status-selection" class="select">
-				<option value="{{.status}}" selected="selected">{{.status}}</option>
-				<option value="Pending">Pending</option>
-				<option value="Complete">Complete</option>
-			</select>
-		</div>
-		<div class="form-element">	
-			<button class="btn btn-secondary" id="putBackButton">Put Back</button>
-			<input type="submit" value="Update" id="updatePickedButton">
-		</div>
-		<div id="inputchanged"></div>
-	</form>
+		<form action="/update/summary" method="post" id="updatePickedForm">
+			<input type="hidden" name="PID" value="{{.PID}}">
+			<div class="form-line">
+				<div>
+					<label for="pno">
+						<span class="title">PNO</span>
+					</label>
+				</div>
+				<div>
+					<input id="pno" type="text" name="PNO" value="{{.PNO}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div><label for="mod"><span class="title">Model</span></label></div>
+				<div>
+				<input list="modelist" id="mod" type="text" name="model" value="{{.model}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div><label for="pqty">
+					<span class="title">Picked Qty</span>
+				</label></div>
+				<div><input id="pqty" type="tel" name="qty" value="{{.qty}}"></div>
+			</div>
+			<div class="form-line">
+				<div><label for="custm">
+					<span class="title">Customer</span>
+				</label></div>
+				<div>
+					<input id="custm" type="text" name="customer" value="{{.customer}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div>
+					<label for="loc">
+						<span class="title">Location</span>
+					</label>
+				</div>
+				<div>
+					<input list="loclist" id="loc" type="text" name="location" value="{{.location}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div><label for="stat">
+					<span class="title">Status</span>
+				</label></div>
+				<div>
+					<select name="statusoption" id="status-selection" class="select">
+						<option value="{{.status}}" selected="selected">{{.status}}</option>
+						<option value="Pending">Pending</option>
+						<option value="Complete">Complete</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-line">
+				<div>
+					<button class="btn btn-primary" id="updatePickedButton">Update</button>
+				</div>
+				<div style="margin-left: 3em;">
+					<button style="padding: 9px 45px;" class="btn btn-info" id="putBackButton">Put Back</button>
+				</div>
+			</div>
+			<div id="inputchanged"></div>
+		</form>
+	</div>
 </div>
 <script type="module" src="/static/tenda/js/updatepicked.js"></script>
 {{end}}

@@ -22,8 +22,8 @@ function getCurrentDateTime(numonly) {
 	return currentDateTime;
 }
 
-// let today = 'Today: '+ getCurrentDateTime();
-// document.querySelector('#today').innerHTML = today;
+let today = '<strong style="font-weight:bold;">Date:</strong> '+ getCurrentDateTime();
+document.querySelector('#today').innerHTML = today;
 
 let modelinput = document.querySelector('input[name="model"]')
 let modelNameinput = document.querySelector('input[name="modelName"]')
@@ -73,15 +73,19 @@ if(queryButton) {
 			fetch(url).then(response => { return response.json()})
 			.then(data => {
 				let sum_total = 0;
-				let table = "<table><thead><tr><th>Model</th><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr></thead><tbody>";
+				let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr></thead><tbody>";
 				data.forEach(m => {
 					console.log("m.total ->", m.total);
-					let row = `<tr><td>${m.model}</td><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
+					let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 					table += row
 					sum_total += parseFloat(m.total);
 				});
-				table += `<tr><td></td><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></tbody></table>`
+				table += `<tr><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></tbody></table>`
 				document.querySelector("#mfb").innerHTML = table;
+			})
+			.then(()=>{
+				let tableTitle = document.querySelector(".model-title")
+				tableTitle.innerHTML = `<div class="table-title">Model: ${model}</div>`
 			})
 			.catch( err => {
 				console.log("model query FAILED:", err);
@@ -96,12 +100,16 @@ if(queryButton) {
 			})
 			.then(data => {
 				console.log("location json:", data);
-				let table = "<table><tr><th>Location</th><th>model</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
+				let table = "<table><tr><th>model</th><th>Unit</th><th>Cartons</th><th>Loose</th><th>Total</th></tr>";
 				data.forEach( m=> {
-					let row = `<tr><td>${m.location}</td><td>${m.model}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
+					let row = `<tr><td>${m.model}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 					table += row
 				})
 				document.querySelector("#lfb").innerHTML = table;
+			})
+			.then(()=> {
+				let tableTitle = document.querySelector(".location-title")
+				tableTitle.innerHTML = `<div class="table-title">Model: ${location}</div>`
 			})
 			.catch( err => {
 				console.log("location query FAILED:", err);
