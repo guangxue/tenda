@@ -13,11 +13,11 @@
 			</select>
 		</div>
 		<div>
-			<button class="btn btn-primary select-picklist">Select</button>
+			<button class="btn btn-primary picklist-select-btn">Select</button>
 		</div>
 	</div>
 	<div class="table-wrapper">
-		<table></table>
+		<table id="picklist-table"></table>
 		<template id="tmp_tbhead">
 			<tr>
 				<th></th>
@@ -46,10 +46,10 @@
 				<td></td>
 			</tr>
 		</template>
-	</div>
-	<!-- <div class="space-between">
-		<button class="btn btn-primary" id="completeBtn">Complete</button>
-	</div> -->	
+	</div>	
 </div>
+{{end}}
+
+{{define "jsfiles"}}
 <script type="text/javascript" src="/static/tenda/js/picklist.js"></script>
 {{end}}

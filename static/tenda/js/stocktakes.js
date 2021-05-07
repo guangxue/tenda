@@ -1,6 +1,4 @@
-document.querySelector("#tbvalue").addEventListener('change', function() {
-	window.location.reload(false)
-})
+
 let ST_Btn = document.querySelector(".select-stocktakes")
 ST_Btn.addEventListener("click", function() {
 	const tbvalue = document.querySelector("#tbvalue").value;
@@ -31,13 +29,22 @@ ST_Btn.addEventListener("click", function() {
 		})
 	})
 	.then(()=>{
-		
-		$('#stock_tb').DataTable({
-			dom: 'Bfrtip',
-			"ordering": false,
-			buttons: [
-				'excel'
-			]
-		});
+		if($.fn.dataTable.isDataTable("#stock_tb")) {
+			var table = $('#stock_tb').DataTable({
+				dom: 'Bfrtip',
+				"ordering": false,
+				buttons: [
+					'excel'
+				]
+			});
+		} else {
+			var table = $('#stock_tb').DataTable({
+				dom: 'Bfrtip',
+				"ordering": false,
+				buttons: [
+					'excel'
+				]
+			});
+		}
 	})
 })

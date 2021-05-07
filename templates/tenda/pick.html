@@ -1,7 +1,6 @@
 {{define "PageTitle"}}Packing Slip{{end}}
 {{define "content"}}
 <div class="content-wrapper">
-	
 	<div class="form-wrapper">
 		<div class="form-title">
 			<h1>Packing Slip</h1>
@@ -34,7 +33,7 @@
 		</form>
 		<template id="htmpl_order"><tr><td></td><td></td><td></td><td></td></tr></template>
 	</div>
-	<div id="insertFB">
+	<div id="insertFB" class="table-wrapper">
 		<table>
 			<thead>
 				<tr>
@@ -52,5 +51,8 @@
 	</div>
 </div>
 
+{{end}}
+
+{{define "jsfiles"}}
 <script type="text/javascript" src="/static/tenda/js/pick.js"></script>
 {{end}}

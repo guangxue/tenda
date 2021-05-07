@@ -23,7 +23,10 @@ function getCurrentDateTime(numonly) {
 }
 
 let today = '<strong style="font-weight:bold;">Date:</strong> '+ getCurrentDateTime();
-document.querySelector('#today').innerHTML = today;
+let dateElm = document.querySelector('#today');
+if(dateElm) {
+	dateElm.innerHTML = today;
+}
 
 let modelinput = document.querySelector('input[name="model"]')
 let modelNameinput = document.querySelector('input[name="modelName"]')

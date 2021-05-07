@@ -140,12 +140,8 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
 
 		if status == "completed_at" {
-			odate := ""
-			if date == "" {
-				odate = "%"
-			}
-			startDate := fmt.Sprintf("'%s'", odate)
-			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", odate)
+			startDate := fmt.Sprintf("'%s'", date)
+			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", date)
 			allPicked := mysql.Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").From("last_updated").WhereBetween("completed_at", startDate, endDate).Use(db)
 			PickedJSON, err := json.Marshal(allPicked)
 		    if err != nil {

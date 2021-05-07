@@ -1,5 +1,5 @@
 
-const pickListButton = document.querySelector(".select-picklist")
+const pickListButton = document.querySelector(".picklist-select-btn")
 
 pickListButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
@@ -11,7 +11,7 @@ pickListButton.addEventListener("click", function() {
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	console.log("fetch_url:", fetch_url)
 	if(pickStatus == 'completed_at' && !pickDate) {
-		console.log("pickDate is empty")
+		console.log("return: pickDate is empty")
 		return;
 	}
 	let cmpbtn = document.querySelector("#completeBtn")
@@ -19,8 +19,8 @@ pickListButton.addEventListener("click", function() {
 		cmpbtn.remove();
 	}
 
-	if(pickStatus == "Pending" || pickStatus == "Complete") {
-		
+	if(pickStatus) {
+		console.log("pick status is:", pickStatus)
 		fetch(fetch_url)
 		.then( resp => {
 			return resp.json();
@@ -54,8 +54,8 @@ pickListButton.addEventListener("click", function() {
 				let theadrow = tbheads.content.cloneNode(true);
 				var ths = theadrow.querySelectorAll('th');
 				ths.item(0).textContent = "LID";
-				ths.item(1).textContent = "model";
-				ths.item(2).textContent = "location";
+				ths.item(1).textContent = "location";
+				ths.item(2).textContent = "model";
 				ths.item(3).textContent = "cartons";
 				ths.item(4).textContent = "boxes";
 				ths.item(5).textContent = "total";
@@ -101,8 +101,8 @@ pickListButton.addEventListener("click", function() {
 					var row = tbrows.content.cloneNode(true);
 					var td = row.querySelectorAll('td');
 					td.item(0).textContent = p.LID;
-					td.item(1).textContent = p.model;
-					td.item(2).textContent = p.location;
+					td.item(1).textContent = p.location;
+					td.item(2).textContent = p.model;
 					td.item(3).textContent = p.cartons;
 					td.item(4).textContent = p.boxes;
 					td.item(5).textContent = p.total;
@@ -114,8 +114,21 @@ pickListButton.addEventListener("click", function() {
 			}
 		})
 		.then(()=>{
-
-			if(!cmpbtn && pickStatus == "Pending") {
+			if(pickStatus==="Complete") {
+				let table = $('#picklist-table').DataTable();
+				if($.fn.dataTable.isDataTable("#picklist-table")) {
+					table.destory()
+					$('#picklist-table').DataTable({"paging":"simple"});
+				} else {
+					$('#picklist-table').DataTable({"paging":"simple"});
+				}
+			}
+		})
+		.then(()=>{
+			console.log("=> PENDING pickStatus:", pickStatus)
+			let cmpbtn1 = document.querySelector("#completeBtn")
+			console.log("=> CMB :", cmpbtn1)
+			if(!cmpbtn1 && pickStatus === "Pending") {
 				let cpBtn = document.createElement("button")
 				cpBtn.id = "completeBtn"
 				cpBtn.classList.add("btn", "btn-info")

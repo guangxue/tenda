@@ -30,6 +30,14 @@ div.container {
 #insertFB {
 	display: none;
 }
+div.content-wrapper {
+	display: flex;
+	flex-direction: column;
+	padding: 1rem 1.5rem;
+	background-color: #fff;
+	height: 100vh;
+	width:100%;
+}
 /*input[type=text],
 input[type=tel],
 input[type=date],
@@ -202,6 +210,11 @@ input[type=submit]:hover,
 .btn:hover {
 	cursor: pointer;
 }
+#completeBtn {
+	width: 18%;
+	float: right;
+	margin: 1em 0;
+}
 .alert {
 	opacity:0;
 	width: 200px;
@@ -223,13 +236,7 @@ input[type=submit]:hover,
 	border-color: #b6d4fe;
 }
 
-div.content-wrapper {
-	display: flex;
-	flex-direction: column;
-	padding: 1rem 1.5rem;
-	background-color: #fff;
-	height: 100vh;
-}
+
 div.form-line {
 	display: flex;
 	flex-direction: row;
