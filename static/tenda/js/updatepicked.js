@@ -1,12 +1,5 @@
 import { getCurrentDateTime } from './helper.js';
 
-let inputElems = document.querySelectorAll("input")
-inputElems.forEach( elm => {
-	elm.oninput = function() {
-		console.log("elem on input:", elm);
-		document.querySelector("#inputchanged").innerHTML = elm.value
-	};
-})
 let updatePickedBtn = document.querySelector("#updatePickedButton");
 let updateFD = document.querySelector('.update-fd')
 
@@ -36,6 +29,20 @@ updatePickedBtn.addEventListener('click', function(e) {
 			updateFD.style.opacity  = 1
 		}
 	})
-})
+});
 
 
+let pbackBtn = document.querySelector('#putBackBtn');
+pbackBtn.addEventListener("click", function(e) {
+	e.preventDefault();
+	let form = document.querySelector('#updatePickedForm')
+	let formData = new FormData(form);
+	let data = new URLSearchParams(formData);
+	console.log("data:",data.toString());
+
+	console.log("[clicked] putBackBtn");
+	fetch("/tenda/api/picked/delete", {
+		method: "POST",
+		body: data,
+	});
+});

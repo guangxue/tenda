@@ -1,13 +1,15 @@
+import { createTable, rebuild_dbtable, getCurrentDateTime } from "./helper.js"
 
-const pickListButton = document.querySelector(".picklist-select-btn")
 
-pickListButton.addEventListener("click", function() {
+const selectButton= document.querySelector(".picklist-select-btn")
+
+selectButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
 	let pickStatus = document.querySelector("#pick_status").value;
-	let table = document.querySelector('table')
+
 	console.log("pick date is:", pickDate)
 	console.log("pick status is:", pickStatus)
-	table.innerHTML = ""
+
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	console.log("fetch_url:", fetch_url)
 	if(pickStatus == 'completed_at' && !pickDate) {
@@ -26,119 +28,71 @@ pickListButton.addEventListener("click", function() {
 			return resp.json();
 		})
 		.then( data => {
-			console.log(data)
-			
-			let thead = document.createElement("thead")
-			console.log("data[0]", data[0]);
-			table.innerHTML = ""
+			console.log(data[0]);
 			if(data[0].PID) {
-				let tbheads = document.querySelector('#tmp_tbhead');
-				let theadrow = tbheads.content.cloneNode(true);
-				var ths = theadrow.querySelectorAll('th');
-				ths.item(0).textContent = "PID";
-				ths.item(1).textContent = "PNO";
-				ths.item(2).textContent = "model";
-				ths.item(3).textContent = "qty";
-				ths.item(4).textContent = "customer";
-				ths.item(5).textContent = "location";
-				ths.item(6).textContent = "status";
-				ths.item(7).textContent = "created_at";
-				ths.item(8).textContent = "updated_at";
-				ths.item(9).textContent = "Action";
-				thead.appendChild(theadrow);
-				table.appendChild(thead);
-				return data
+				let titles = ["PNO","customer", "model", "quantity", "status","location", "created_at", "Action"];
+				let objNames =   ["PNO","customer", "model", "qty", "status","location", "created_at", "update"];
+				let tbData = data;
+				tbData.forEach( d => {
+					d.update = `<a href="/tenda/update/picklist?PID=${d.PID}">update</a>`;
+				})
+				return {
+					"titles": titles,
+					"data": tbData,
+					"names": objNames,
+				}
 			}
 			if(data[0].LID) {
-				let tbheads = document.querySelector('#tmp_tbhead');
-				let theadrow = tbheads.content.cloneNode(true);
-				var ths = theadrow.querySelectorAll('th');
-				ths.item(0).textContent = "LID";
-				ths.item(1).textContent = "location";
-				ths.item(2).textContent = "model";
-				ths.item(3).textContent = "cartons";
-				ths.item(4).textContent = "boxes";
-				ths.item(5).textContent = "total";
-				ths.item(6).textContent = "completed_at";
-				ths.item(7).textContent = "Action";
-				thead.appendChild(theadrow);
-				table.appendChild(thead);
-				return data
-			}
-			
-		})
-		.then( data=> {
-			if(data[0].PID) {
-				let table = document.querySelector('table')
-				let tbody = document.createElement('tbody')
-				let tbrows = document.querySelector('#tmp_tbrow');
-				let tbcells = tbrows.content.cloneNode(true);
-				var tds = tbcells.querySelectorAll('td');
-				data.forEach(p=> {
-					var row = tbrows.content.cloneNode(true);
-					var td = row.querySelectorAll('td');
-					td.item(0).textContent = p.PID;
-					td.item(1).textContent = p.PNO;
-					td.item(2).textContent = p.model;
-					td.item(3).textContent = p.qty;
-					td.item(4).textContent = p.customer;
-					td.item(5).textContent = p.location;
-					td.item(6).textContent = p.status;
-					td.item(7).textContent = p.created_at;
-					td.item(8).textContent = p.updated_at;
-					td.item(9).innerHTML = `<a href="/tenda/update/picklist?PID=${p.PID}">update</a>`;
-					tbody.appendChild(row);
-					table.appendChild(tbody)
-				})
-			}
-			if(data[0].LID) {
-				let table = document.querySelector('table')
-				let tbody = document.createElement('tbody')
-				let tbrows = document.querySelector('#tmp_tbrow');
-				let tbcells = tbrows.content.cloneNode(true);
-				var tds = tbcells.querySelectorAll('td');
-				data.forEach(p=> {
-					var row = tbrows.content.cloneNode(true);
-					var td = row.querySelectorAll('td');
-					td.item(0).textContent = p.LID;
-					td.item(1).textContent = p.location;
-					td.item(2).textContent = p.model;
-					td.item(3).textContent = p.cartons;
-					td.item(4).textContent = p.boxes;
-					td.item(5).textContent = p.total;
-					td.item(6).textContent = p.completed_at;
-					td.item(7).innerHTML = `<a href="/tenda/update/picklist?PID=${p.PID}">update</a>`;
-					tbody.appendChild(row);
-					table.appendChild(tbody)
-				})
-			}
-		})
-		.then(()=>{
-			if(pickStatus==="Complete") {
-				let table = $('#picklist-table').DataTable();
-				if($.fn.dataTable.isDataTable("#picklist-table")) {
-					table.destory()
-					$('#picklist-table').DataTable({"paging":"simple"});
-				} else {
-					$('#picklist-table').DataTable({"paging":"simple"});
+				let titles = ["LID","location", "model", "cartons", "boxes", "completed_at", "Action"];
+				let objNames =   ["LID","location", "model", "cartons", "boxes", "completed_at", "update"];
+				let tbData = data;
+				tbData.forEach( d => {
+					d.update = `<a href="/tenda/update/picklist?LID=${d.LID}">update</a>`;
+				});
+				return {
+					"titles": titles,
+					"data": tbData,
+					"names": objNames,
 				}
 			}
 		})
-		.then(()=>{
+		.then( tableObj => {
+			let newtable = createTable(tableObj.titles, tableObj.data, tableObj.names)
+			let dbtable_container = document.querySelector("#dbtable_container");
+			let insDom = document.querySelector("#dbtable_container")
+			if (insDom.innerHTML !== "") {
+				insDom.innerHTML = ""
+			}
+			newtable.id = "dbtable"
+			insDom.appendChild(newtable);
+			$("#dbtable").DataTable({
+				dom: 'Bfrtip',
+				buttons: ['print'],
+				order: [5, "des"],
+			});
+
+			let table_width = rebuild_dbtable();
+			return table_width;
+		})
+		.then((tw)=>{
 			console.log("=> PENDING pickStatus:", pickStatus)
 			let cmpbtn1 = document.querySelector("#completeBtn")
 			console.log("=> CMB :", cmpbtn1)
 			if(!cmpbtn1 && pickStatus === "Pending") {
-				let cpBtn = document.createElement("button")
-				cpBtn.id = "completeBtn"
-				cpBtn.classList.add("btn", "btn-info")
-				cpBtn.textContent = "Complete"
-				let cwrapper = document.querySelector(".table-wrapper")
-				cwrapper.appendChild(cpBtn)
+				let completeButton = document.createElement("button")
+				completeButton.id = "completeBtn"
+				completeButton.classList.add("btn", "btn-info")
+				completeButton.textContent = "Complete"
+				let dbtable_info = document.querySelector("#dbtable_info");
+				let actionbtn_wrapper = document.createElement("div");
+				actionbtn_wrapper.id="actionbtn_wrapper"
+				actionbtn_wrapper.style.width=`${tw}px`
+				actionbtn_wrapper.appendChild(completeButton)
+				dbtable_info.insertAdjacentElement('afterend', actionbtn_wrapper)
 			}
-
 		})
 		.then(()=>{
+			// Add Event Listenser to appened `complete` Button
 			const completePickBtn = document.querySelector('#completeBtn')
 			if(!completePickBtn) {
 				return
@@ -158,23 +112,22 @@ pickListButton.addEventListener("click", function() {
 
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
-				if (tableBody && trows.length) {
-					fetch("https://gzhang.dev/tenda/api/complete/picklist", {
-						method: "POST",
-						body: data,
-					})
-					.then(resp => { 
-						return resp.json();
-					})
-					.then(data => {
-						console.log("data:",data);
-					})
-				}
+				// if (tableBody && trows.length) {
+				// 	fetch("https://gzhang.dev/tenda/api/complete/picklist", {
+				// 		method: "POST",
+				// 		body: data,
+				// 	})
+				// 	.then(resp => { 
+				// 		return resp.json();
+				// 	})
+				// 	.then(data => {
+				// 		console.log("data:",data);
+				// 	})
+				// }
 			})
 		})
 	}
-	
-})
+});
 
 function lastSaturdayTS() {
 	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
@@ -192,4 +145,5 @@ function lastSaturdayTS() {
 	console.log(lastSaturday);
 	return lastSaturday;
 }
+
 

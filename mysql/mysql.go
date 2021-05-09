@@ -20,6 +20,7 @@ type Statement struct {
 	AndWhereClause string
 	QueryType      string
 	UpdateNoWhere  bool
+	DeleteNoWhere  bool
 }
 
 func Connect(dbname string) *sql.DB {
@@ -80,8 +81,16 @@ func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement
 func Update(tableName string, updateNoWhere bool) *Statement{
 	sqlstmt := &Statement{}
 	sqlstmt.UpdateNoWhere = updateNoWhere
-	sqlstmt.TableName = "Update "+tableName
+	sqlstmt.TableName = "UPDATE "+tableName
 	sqlstmt.QueryType = "UPDATE"
+	return sqlstmt
+}
+
+func DeleteFrom(tableName string, deleteNoWhere bool) *Statement {
+	sqlstmt := &Statement{}
+	sqlstmt.DeleteNoWhere = deleteNoWhere
+	sqlstmt.TableName = "DELETE FROM "+tableName
+	sqlstmt.QueryType = "DELETE"
 	return sqlstmt
 }
 
@@ -173,7 +182,9 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			// append scanned column{map} to slice of maps
 			finalColumns = append(finalColumns, col)
 		}
-		
+	case "DELETE": {
+
+	}
 	case "UPDATE":
 		if sqlstmt.UpdateNoWhere {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr
@@ -214,9 +225,6 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			// fmt.Printf(">> %s\n", stmt)
 			fmt.Println("[db *Err] WhereClause needed!")
 		}
-		
-		
-
 	case "INSERT":
 		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
 		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)

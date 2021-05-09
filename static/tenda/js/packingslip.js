@@ -1,4 +1,27 @@
+import {getCurrentDateTime} from "./helper.js"
+
 /** INSERT INTO picked **/
+let datalistElem = document.createElement('datalist');
+datalistElem.id='POAENumber';
+let PONumber = `PO${getCurrentDateTime(true)}`;
+let AENumber = `AE${getCurrentDateTime(true)}`;
+let RENumber = `RE${getCurrentDateTime(true)}`;
+
+var PO_option = document.createElement('option');
+PO_option.textContent = PONumber;
+var AE_option = document.createElement('option');
+AE_option.textContent = AENumber;
+var RE_option = document.createElement('option');
+RE_option.textContent = RENumber;
+
+datalistElem.appendChild(PO_option);
+datalistElem.appendChild(AE_option);
+datalistElem.appendChild(RE_option);
+
+let formElem = document.querySelector('form');
+if(formElem) {
+	formElem.insertAdjacentElement('afterend', datalistElem);
+}
 const pickButton = document.querySelector("#pickbtn")
 let currentLN = 1;
 pickButton.addEventListener('click', function(e) {

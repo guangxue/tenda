@@ -23,11 +23,12 @@ func ErrorCheck(err error) {
 
 func WriteJSON(w http.ResponseWriter, returnRows []map[string]string) {
 	w.Header().Set("Content-Type", "application/json")
-	respJSON, err := json.Marshal(returnRows)
-    if err != nil {
-    	fmt.Println("returnRows JSON Marshal error: ", err)
-    }
-	w.Write(respJSON)
+	// respJSON, err := json.Marshal(returnRows)
+ //    if err != nil {
+ //    	fmt.Println("returnRows JSON Marshal error: ", err)
+ //    }
+	// w.Write(respJSON)
+	json.NewEncoder(w).Encode(returnRows)
 }
 
 func TimeNow() string {
@@ -143,18 +144,10 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			startDate := fmt.Sprintf("'%s'", date)
 			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", date)
 			allPicked := mysql.Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").From("last_updated").WhereBetween("completed_at", startDate, endDate).Use(db)
-			PickedJSON, err := json.Marshal(allPicked)
-		    if err != nil {
-		    	fmt.Println("PickedJson error: ", err)
-		    }
-			w.Write(PickedJSON)
+			json.NewEncoder(w).Encode(allPicked)
 		} else if len(PID) > 0 && len(status) > 0 {
 			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").Where("PID",PID).AndWhere("status", "=",status).Use(db)
-			PickedJSON, err := json.Marshal(allPicked)
-		    if err != nil {
-		    	fmt.Println("PickedJson error: ", err)
-		    }
-			w.Write(PickedJSON)
+			json.NewEncoder(w).Encode(allPicked)
 		} else {
 			odate := ""
 			if date == "" {
@@ -163,11 +156,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				odate = date + "%"
 			}
 			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",odate).AndWhere("status", "=",status).Use(db)
-			PickedJSON, err := json.Marshal(allPicked)
-		    if err != nil {
-		    	fmt.Println("PickedJson error: ", err)
-		    }
-			w.Write(PickedJSON)
+			json.NewEncoder(w).Encode(allPicked)
 		}
 		
 	}
@@ -397,7 +386,7 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 			"status":status,
 		}
 		rowsAffaced := mysql.Update("picklist", false).Set(updateInfo).Where("PID",PID).Use(db)
-		WriteJSON(w, rowsAffaced)
+		json.NewEncoder(w).Encode(rowsAffaced)
 	}
 }
 
@@ -406,22 +395,30 @@ func Stocktakes (w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
 
 	if len(tbName) > 0 {
-		allstock := mysql.Select("location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
-		WriteJSON(w, allstock)
+		allstocks := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
+		json.NewEncoder(w).Encode(allstocks)
 	} else {
 		render(w, "stocktakes.html", nil)
 	}
 	
 }
 
-func AppTest(w http.ResponseWriter, r *http.Request) {
-/*
-	select *
-	from last_updated
-	where created_at BETWEEN '2021-04-26' AND date_add('2021-04-26', INTERVAL 7 DAY);
+func UpdateStock(w http.ResponseWriter, r *http.Request) {
+	SID := r.URL.Query().Get("SID")
+	tbName := r.URL.Query().Get("tbname")
 
-*/
+	if SID != "" && r.Method == http.MethodGet {
+		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total").From(tbName).Where("SID", SID).Use(db);
+		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
+		render(w, "update_stock.html", currentStockToUpdate[0])
+	}
+}
 
-	
-	// fmt.Println("Return rows:", reROWS)
+func PickedDelete(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println("Form parse error:", err)
+	}
+	PID := r.FormValue("PID");
+	fmt.Println("Delete from picked where PID=", PID)
 }

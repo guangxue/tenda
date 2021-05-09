@@ -7,14 +7,16 @@ function getCurrentDateTime(numonly) {
 	if(month < 10) {
 		month = `0${month}`
 	}
-	console.log("day:", date.getDate())
+	let day = date.getDate();
+	if (day < 10) {
+		day = `0${day}`
+	}
 	if (numonly) {
-		currentDateTime = `${date.getFullYear()}${month}${date.getDate()}`;
+		currentDateTime = `${date.getFullYear()}${month}${day}`;
 	}
 	else {
-		currentDateTime = `${date.getFullYear()}-${month}-${date.getDate()} ${currTime}`;
+		currentDateTime = `${date.getFullYear()}-${month}-${day} ${currTime}`;
 	}
-	console.log(currentDateTime)
 	return currentDateTime;
 }
 
@@ -60,9 +62,66 @@ function WhenClick(elem, listener) {
 	}
 }
 
+function createTable(tableTitles, data, objNames) {
+	let table = document.createElement("table");
+	let theader = table.createTHead();
+	let tbody = table.createTBody();
+	let trow = theader.insertRow(0);
+
+	tableTitles.forEach( (tht,idx) =>{
+		let cell = trow.insertCell(idx);
+		cell.innerHTML = tht;
+	});
+
+	let cells = tableTitles.length
+	console.log(`[createTable] creating ${cells} celles`);
+	data.forEach( (d, i)=> {
+		let tbrow = tbody.insertRow(i);
+		for(let i = 0; i < cells; i++) {
+			let cell = tbrow.insertCell(i);
+			cell.innerHTML = d[objNames[i]]
+		}
+	})
+	return table;
+}
+
+function rebuild_dbtable() {
+	let dbtable = document.querySelector("#dbtable")
+	let dbtable_wrapper = document.querySelector("#dbtable_wrapper");
+	// dbtable width
+	let dbtable_width = dbtable.offsetWidth;
+
+	// set pagination width = dbtable width
+	let paginate = document.querySelector("div#dbtable_paginate");
+	paginate.style.width = `${dbtable_width}px`;
+
+	// wrap dt-buttons and dt-filter with `div.dbtable_header`
+	let dbtable_header = document.createElement("div");
+	dbtable_header.id = "dbtable_header";
+	let dtbtns = document.querySelector("#dbtable_wrapper .dt-buttons");
+	let dtfilter = document.querySelector("#dbtable_filter");
+	dbtable_header.appendChild(dtbtns);
+	dbtable_header.appendChild(dtfilter);
+	// set dbtable_header = dbtable width
+	dbtable_header.style.width = `${dbtable_width}px`;
+	
+	// append dbtable_header to dbtable_wrapper
+	dbtable_wrapper.insertAdjacentElement('afterbegin', dbtable_header)
+
+	let dtBtn = document.querySelector("#dbtable_wrapper .dt-button");
+	dtBtn.classList.add("btn", "btn-table")
+
+	// set searchBar placeholder and styling
+	let searchBar = document.querySelector("#dbtable_filter input[type='search']");
+	searchBar.setAttribute("placeholder", "Search...")
+	searchBar.style.marginLeft = "2em"
+	return dbtable_width
+}
 
 export {
 	getCurrentDateTime,
 	fetchDataList,
 	WhenClick,
+	createTable,
+	rebuild_dbtable,
 };

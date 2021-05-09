@@ -3,11 +3,10 @@
 <div class="content-wrapper">
 	<div class="form-wrapper">
 		<div class="alert alert-primary update-fd"></div>
-		<div class="form-title">
-			<h2 id="today">Today: </h2>
-			<h3>Update PID:{{.PID}}</h3>
+		<div class="form-title-update">
+			<h1>Update {{.customer}}</h1>
 		</div>
-		<form action="/update/summary" method="post" id="updatePickedForm">
+		<form action="" method="post" id="updatePickedForm">
 			<input type="hidden" name="PID" value="{{.PID}}">
 			<div class="form-line">
 				<div>
@@ -17,6 +16,14 @@
 				</div>
 				<div>
 					<input id="pno" type="text" name="PNO" value="{{.PNO}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div><label for="custm">
+					<span class="title">Customer</span>
+				</label></div>
+				<div>
+					<input id="custm" type="text" name="customer" value="{{.customer}}">
 				</div>
 			</div>
 			<div class="form-line">
@@ -31,14 +38,7 @@
 				</label></div>
 				<div><input id="pqty" type="tel" name="qty" value="{{.qty}}"></div>
 			</div>
-			<div class="form-line">
-				<div><label for="custm">
-					<span class="title">Customer</span>
-				</label></div>
-				<div>
-					<input id="custm" type="text" name="customer" value="{{.customer}}">
-				</div>
-			</div>
+			
 			<div class="form-line">
 				<div>
 					<label for="loc">
@@ -63,14 +63,14 @@
 			</div>
 			<div class="form-line">
 				<div>
-					<button class="btn btn-primary" id="updatePickedButton">Update</button>
+					<button class="btn btn-info" id="putBackBtn">Put Back</button>
 				</div>
-				<div style="margin-left: 3em;">
-					<button style="padding: 9px 45px;" class="btn btn-info" id="putBackButton">Put Back</button>
+				<div style="margin-left: auto;">
+					<button style="padding: 9px 45px;" class="btn btn-primary" id="updatePickedButton">Update</button>
 				</div>
 			</div>
-			<div id="inputchanged"></div>
 		</form>
+		
 	</div>
 </div>
 {{end}}

@@ -1,0 +1,35 @@
+{{define "PageTitle"}}Update stock{{end}}
+{{define "content"}}
+<div class="content-wrapper">
+	<div class="form-title"><h2>Update Stock: {{.SID}}</h2></div>
+		<table style="width: 50%;">
+			<thead>
+				<tr>
+					<th>SID</th>
+					<th>位置</th>
+					<th>产品</th>
+					<th>每箱数量</th>
+					<th>散货数</th>
+					<th>数量总计</th>
+					<th>更新数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{{.SID}}</td>
+					<td><input style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
+					<td><input style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
+					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
+					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
+					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+					<td><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
+				</tr>
+			</tbody>
+		</table>
+	<div class="alert alert-primary update-fd"></div>
+</div>
+{{end}}
+
+{{define "jsfiles"}}
+<script type="module" src="/static/tenda/js/updatestock.js"></script>
+{{end}}
