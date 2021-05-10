@@ -148,6 +148,12 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		} else if len(PID) > 0 && len(status) > 0 {
 			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").Where("PID",PID).AndWhere("status", "=",status).Use(db)
 			json.NewEncoder(w).Encode(allPicked)
+		} else if len(date) > 0 && status== "weeklypicked" { 
+			stmt := fmt.Sprintf("WITH weeklypicked AS (select model, qty, customer, location, status, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)) SELECT model, SUM(qty) as total from weeklypicked group by model", date, date)
+
+			allPicked := mysql.SelectRaw(stmt, "model", "total").Use(db)
+			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
+			json.NewEncoder(w).Encode(allPicked)
 		} else {
 			odate := ""
 			if date == "" {
@@ -250,6 +256,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		}
 		/* 3. Start calculate {cartons}, {boxes}, {total} to UPDATE  */
 		upModels := []updateModel{}
+
 		for _, p := range pcols {
 			fmt.Printf("[%-18s] Model    :%s\n", "CompletePickList *",p.Model)
 			fmt.Printf("[%-18s] Location :%s\n", "CompletePickList",p.Location)
@@ -347,9 +354,6 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 }
 
 
-
-
-
 func Stocktakes (w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
 
@@ -383,6 +387,12 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 		currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From("picklist").Where("PID", queryPID).Use(db)
 		dbPickedInfo = currentPID[0]
 		dbPickedInfo["PID"] = queryPID
+		dbPickedInfo["status2"] = ""
+		if dbPickedInfo["status"] == "Pending" {
+			dbPickedInfo["status2"] = "Complete"
+		} else {
+			dbPickedInfo["status2"] = "Pending"
+		}
 		fmt.Printf("[%-18s] /picklist GET PID:%s\n", "UpdatePickList", queryPID)
 		fmt.Printf("[%-18s] return:%s\n", "UpdatePickList", dbPickedInfo)
 		render(w, "update_picked.html", dbPickedInfo)
@@ -423,9 +433,12 @@ func PickedDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	PID := r.FormValue("PID");
 	status := r.FormValue("status");
+	fmt.Println("PID:", PID)
+	fmt.Println("status:",status)
 	
 	if status == "Pending" {
 		// delete
+		mysql.DeleteFrom("picklist", false).Where("PID", PID).Use(db)
 	}
 
 	if status == "Complete" {

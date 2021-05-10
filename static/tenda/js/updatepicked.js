@@ -41,7 +41,7 @@ delBtn.addEventListener("click", function(e) {
 	console.log("data:",data.toString());
 
 	console.log("[clicked] delBtn");
-	fetch("/tenda/api/picked/delete", {
+	fetch("https://gzhang.dev/tenda/api/picked/delete", {
 		method: "POST",
 		body: data,
 	});

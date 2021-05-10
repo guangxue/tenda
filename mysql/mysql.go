@@ -21,6 +21,7 @@ type Statement struct {
 	QueryType      string
 	UpdateNoWhere  bool
 	DeleteNoWhere  bool
+	RawStatment    string
 }
 
 func Connect(dbname string) *sql.DB {
@@ -94,6 +95,15 @@ func DeleteFrom(tableName string, deleteNoWhere bool) *Statement {
 	return sqlstmt
 }
 
+func SelectRaw(rawStmt string, columnNames ...string) *Statement {
+	sqlstmt := &Statement{}
+	sqlstmt.RawStatment = rawStmt
+	sqlstmt.ColumnNames = columnNames
+	sqlstmt.ColumnCount = len(columnNames)
+	sqlstmt.QueryType = "SELECTRAW"
+	return sqlstmt
+}
+
 func (sqlstmt *Statement) Set(updateColumns map[string]interface{}) *Statement{
 	setExpression := " SET "
 	for col, val := range updateColumns {
@@ -131,6 +141,7 @@ func (sqlstmt *Statement) AndWhere(column string, condition string, searchColumn
 	return sqlstmt
 }
 
+
 func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	/***
 		returned finalColumns should be slices of maps:
@@ -145,14 +156,24 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	finalColumns := []map[string]string{}
 	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
-	case "SELECT":
+	case "SELECT", "SELECTRAW":
 		
 		// columnsToSelect := strings.Join(searchColumns, ", ")
-		stmt := sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-		fmt.Printf("[%-18s] %s\n", "SELECT", sqlstmt.SelectColumns)
-		fmt.Printf("[%-18s]  %s\n", "SELECT FROM", sqlstmt.TableName)
-		fmt.Printf("[%-18s]  %s\n", "SELECT WHERE", sqlstmt.WhereClause)
-		fmt.Printf("[%-18s]  %s\n", "SELECT AND", sqlstmt.AndWhereClause)
+		stmt := ""
+		if sqlstmt.QueryType == "SELECT" {
+			stmt = sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[%-18s] %s\n", "SELECT", sqlstmt.SelectColumns)
+			fmt.Printf("[%-18s]  %s\n", "SELECT FROM", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "SELECT WHERE", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", "SELECT AND", sqlstmt.AndWhereClause)
+
+		} else {
+			stmt = sqlstmt.RawStatment
+			fmt.Printf("[%-18s] %s\n", "SelectRaw", sqlstmt.RawStatment)
+		}
+		
+		
+		
 
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
@@ -182,9 +203,6 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			// append scanned column{map} to slice of maps
 			finalColumns = append(finalColumns, col)
 		}
-	case "DELETE": {
-
-	}
 	case "UPDATE":
 		if sqlstmt.UpdateNoWhere {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr
@@ -247,8 +265,28 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		rid := strconv.FormatInt(id, 10)
 		insertFeedback := map[string]string{"lastId":rid}
 		finalColumns = append(finalColumns, insertFeedback)
-		
-
+	case "DELETE":
+		if sqlstmt.DeleteNoWhere {
+			fmt.Printf("[%-18s] %s\n", "DELETE","!!! Deleting with NO WHERE !!!")
+		} else if len(sqlstmt.WhereClause) > 0 {
+			
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
+			res, err := db.Exec(stmt)
+			if err != nil {
+				fmt.Println("[db *Err]: Delete error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "Delete rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
+		} else {
+			fmt.Printf("[%-18s] %s: %d\n", "DELETE","WRONG SQL Stmt")
+		}
 	} // EOS: end of switch
 
 	return finalColumns

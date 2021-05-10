@@ -11,18 +11,20 @@
 					<th>每箱数量</th>
 					<th>散货数</th>
 					<th>数量总计</th>
-					<th>更新数量</th>
+					<th>更新理由</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>{{.SID}}</td>
-					<td><input style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
-					<td><input style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
-					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
-					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
-					<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
-					<td><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
+				<td>{{.SID}}</td>
+				<td><input style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
+				<td><input style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
+				<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
+				<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
+				<td><input style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+				<td><input type="text" name="update_comments"></td>
+				<td><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
 				</tr>
 			</tbody>
 		</table>

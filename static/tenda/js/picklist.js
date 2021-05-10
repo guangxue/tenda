@@ -20,7 +20,6 @@ selectButton.addEventListener("click", function() {
 	if(cmpbtn) {
 		cmpbtn.remove();
 	}
-
 	if(pickStatus) {
 		console.log("pick status is:", pickStatus)
 		fetch(fetch_url)
@@ -112,6 +111,7 @@ selectButton.addEventListener("click", function() {
 
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
+				console.log("Complete Button Disabled");
 				// if (tableBody && trows.length) {
 				// 	fetch("https://gzhang.dev/tenda/api/complete/picklist", {
 				// 		method: "POST",
