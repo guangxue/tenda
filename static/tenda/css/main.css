@@ -26,11 +26,18 @@ div.content-wrapper {
 	/*border-radius: 4px;*/
 	color: #fff;
 }
+.btn-main {
+	background-color: #0d6efd;
+}
 .btn-primary {
 	background-color: #f96b2a;
 }
 .btn-secondary {
 	background-color: #919496;
+}
+.btn-warning {
+	color:#000;
+	background-color: #ffc107;
 }
 .btn-info {
 	background-color: #17a2b8;

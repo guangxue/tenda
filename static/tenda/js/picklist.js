@@ -81,7 +81,7 @@ selectButton.addEventListener("click", function() {
 			if(!cmpbtn1 && pickStatus === "Pending") {
 				let completeButton = document.createElement("button")
 				completeButton.id = "completeBtn"
-				completeButton.classList.add("btn", "btn-info")
+				completeButton.classList.add("btn", "btn-table")
 				completeButton.textContent = "Complete"
 				let dbtable_info = document.querySelector("#dbtable_info");
 				let actionbtn_wrapper = document.createElement("div");

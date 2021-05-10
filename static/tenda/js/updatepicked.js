@@ -32,15 +32,15 @@ updatePickedBtn.addEventListener('click', function(e) {
 });
 
 
-let pbackBtn = document.querySelector('#putBackBtn');
-pbackBtn.addEventListener("click", function(e) {
+let delBtn = document.querySelector('#delBtn');
+delBtn.addEventListener("click", function(e) {
 	e.preventDefault();
 	let form = document.querySelector('#updatePickedForm')
 	let formData = new FormData(form);
 	let data = new URLSearchParams(formData);
 	console.log("data:",data.toString());
 
-	console.log("[clicked] putBackBtn");
+	console.log("[clicked] delBtn");
 	fetch("/tenda/api/picked/delete", {
 		method: "POST",
 		body: data,

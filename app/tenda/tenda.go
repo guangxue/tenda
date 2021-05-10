@@ -24,9 +24,9 @@ func ErrorCheck(err error) {
 func WriteJSON(w http.ResponseWriter, returnRows []map[string]string) {
 	w.Header().Set("Content-Type", "application/json")
 	// respJSON, err := json.Marshal(returnRows)
- //    if err != nil {
- //    	fmt.Println("returnRows JSON Marshal error: ", err)
- //    }
+	// if err != nil {
+	// 	fmt.Println("returnRows JSON Marshal error: ", err)
+	// }
 	// w.Write(respJSON)
 	json.NewEncoder(w).Encode(returnRows)
 }
@@ -158,7 +158,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").WhereLike("created_at",odate).AndWhere("status", "=",status).Use(db)
 			json.NewEncoder(w).Encode(allPicked)
 		}
-		
 	}
 
 	// Inserting picking informations
@@ -343,9 +342,36 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 				mysql.Update("last_updated", false).Set(updateValues).Where("model", p.Model).AndWhere("location", "=",p.Location).AndWhere("completed_at", ">", lastSaturday).Use(db)
 			}
 		}
+		// end for loop
 	}
 }
 
+
+
+
+
+func Stocktakes (w http.ResponseWriter, r *http.Request) {
+	tbName := r.URL.Query().Get("tbname")
+
+	if len(tbName) > 0 {
+		allstocks := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
+		json.NewEncoder(w).Encode(allstocks)
+	} else {
+		render(w, "stocktakes.html", nil)
+	}
+	
+}
+
+func UpdateStock(w http.ResponseWriter, r *http.Request) {
+	SID := r.URL.Query().Get("SID")
+	tbName := r.URL.Query().Get("tbname")
+
+	if SID != "" && r.Method == http.MethodGet {
+		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total").From(tbName).Where("SID", SID).Use(db);
+		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
+		render(w, "update_stock.html", currentStockToUpdate[0])
+	}
+}
 
 func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 
@@ -390,35 +416,19 @@ func UpdatePickList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-func Stocktakes (w http.ResponseWriter, r *http.Request) {
-	tbName := r.URL.Query().Get("tbname")
-
-	if len(tbName) > 0 {
-		allstocks := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
-		json.NewEncoder(w).Encode(allstocks)
-	} else {
-		render(w, "stocktakes.html", nil)
-	}
-	
-}
-
-func UpdateStock(w http.ResponseWriter, r *http.Request) {
-	SID := r.URL.Query().Get("SID")
-	tbName := r.URL.Query().Get("tbname")
-
-	if SID != "" && r.Method == http.MethodGet {
-		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total").From(tbName).Where("SID", SID).Use(db);
-		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
-		render(w, "update_stock.html", currentStockToUpdate[0])
-	}
-}
-
 func PickedDelete(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		fmt.Println("Form parse error:", err)
 	}
 	PID := r.FormValue("PID");
-	fmt.Println("Delete from picked where PID=", PID)
+	status := r.FormValue("status");
+	
+	if status == "Pending" {
+		// delete
+	}
+
+	if status == "Complete" {
+		// rollback
+	}
 }
