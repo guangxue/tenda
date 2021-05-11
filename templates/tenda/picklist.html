@@ -3,15 +3,15 @@
 <div class="content-wrapper">
 	<div class="space-between select-options">
 		<div>
-			<input type="date" id="pick_date">
-		</div>
-		<div>
 			<select name="pickoptions" id="pick_status" class="select">
 				<option value="Pending">Pending</option>
 				<option value="Complete">Complete</option>
 				<option value="completed_at">Weekly completed</option>
-				<option value="weeklypicked">Weekly picked</option>
+				<option value="created_at">Weekly picked</option>
 			</select>
+		</div>
+		<div>
+			<input type="date" min="2021-04-04" step="7" required id="pick_date">
 		</div>
 		<div>
 			<button class="btn btn-primary picklist-select-btn">Select</button>

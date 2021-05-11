@@ -11,7 +11,6 @@ queryButton.addEventListener('click', function(e) {
 			let sum_total = 0;
 			let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr></thead><tbody>";
 			data.forEach(m => {
-				console.log("m.total ->", m.total);
 				let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
 				table += row
 				sum_total += parseFloat(m.total);

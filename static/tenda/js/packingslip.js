@@ -24,6 +24,7 @@ if(formElem) {
 }
 const pickButton = document.querySelector("#pickbtn")
 let currentLN = 1;
+
 pickButton.addEventListener('click', function(e) {
 	e.preventDefault();
 	console.log("Pick clicked")

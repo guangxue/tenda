@@ -1,7 +1,22 @@
 import { createTable, rebuild_dbtable, getCurrentDateTime } from "./helper.js"
 
 
-const selectButton= document.querySelector(".picklist-select-btn")
+const selectButton= document.querySelector(".picklist-select-btn");
+const pickStatusOpt = document.querySelector("#pick_status");
+
+
+pickStatusOpt.addEventListener("change", function() {
+	let pickDate = document.querySelector("#pick_date");
+	if(pickStatusOpt.value.includes("_at")) {
+		console.log("option:", pickStatusOpt.value)
+		
+		pickDate.setAttribute("min", "2021-04-04");
+		pickDate.setAttribute("step", "7");
+	} else {
+		pickDate.removeAttribute("min")
+		pickDate.removeAttribute("step")
+	}
+});
 
 selectButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
@@ -12,8 +27,15 @@ selectButton.addEventListener("click", function() {
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	console.log("fetch_url:", fetch_url)
-	if(pickStatus == 'completed_at' && !pickDate) {
-		console.log("return: pickDate is empty")
+	let dbtable_container = document.querySelector("#dbtable_container");
+	if (dbtable_container.innerHTML !== "") {
+		dbtable_container.innerHTML = ""
+	}
+	if(!pickDate) {
+		dbtable_container.innerHTML = `<div class="alert alert-danger">error: pick date is empty</div>`;
+		let alertDanger = document.querySelector("#dbtable_container div.alert-danger")
+		alertDanger.style.width  = "500px";
+		alertDanger.style.opacity  = 1;
 		return;
 	}
 	let cmpbtn = document.querySelector("#completeBtn")
@@ -26,8 +48,13 @@ selectButton.addEventListener("click", function() {
 		.then( resp => {
 			return resp.json();
 		})
-		.then( data => {
-			console.log(data[0]);
+		.then( data  => {
+			if(!data[0]) {
+				console.log("!data")
+				const err = new Error("no rows return from database table: `picklist`")
+				err.name = "Empty set"
+				throw err;
+			}
 			if(data[0].PID) {
 				let titles = ["PNO","customer", "model", "quantity", "status","location", "created_at", "Action"];
 				let objNames =   ["PNO","customer", "model", "qty", "status","location", "created_at", "update"];
@@ -54,20 +81,36 @@ selectButton.addEventListener("click", function() {
 					"names": objNames,
 				}
 			}
+			if(data[0].model) {
+				let titles = ["item", "model", "total"];
+				let tbData = data;
+				let i = 0;
+				tbData.forEach( d=> {
+					d.item = i + 1;
+					i++;
+				})
+				let objNames = ["item", "model", "total"];
+				return {
+					"titles":titles,
+					"data": tbData,
+					"names": objNames,
+				}
+			}
+			
 		})
 		.then( tableObj => {
 			let newtable = createTable(tableObj.titles, tableObj.data, tableObj.names)
 			let dbtable_container = document.querySelector("#dbtable_container");
-			let insDom = document.querySelector("#dbtable_container")
-			if (insDom.innerHTML !== "") {
-				insDom.innerHTML = ""
+			if (dbtable_container.innerHTML !== "") {
+				dbtable_container.innerHTML = ""
 			}
 			newtable.id = "dbtable"
-			insDom.appendChild(newtable);
+			console.log("newtable:", newtable)
+			dbtable_container.appendChild(newtable);
 			$("#dbtable").DataTable({
 				dom: 'Bfrtip',
 				buttons: ['print'],
-				order: [5, "des"],
+				// order: [5, "des"],
 			});
 
 			let table_width = rebuild_dbtable();
@@ -76,7 +119,6 @@ selectButton.addEventListener("click", function() {
 		.then((tw)=>{
 			console.log("=> PENDING pickStatus:", pickStatus)
 			let cmpbtn1 = document.querySelector("#completeBtn")
-			console.log("=> CMB :", cmpbtn1)
 			if(!cmpbtn1 && pickStatus === "Pending") {
 				let completeButton = document.createElement("button")
 				completeButton.id = "completeBtn"
@@ -111,20 +153,27 @@ selectButton.addEventListener("click", function() {
 
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
-				console.log("Complete Button Disabled");
-				// if (tableBody && trows.length) {
-				// 	fetch("https://gzhang.dev/tenda/api/complete/picklist", {
-				// 		method: "POST",
-				// 		body: data,
-				// 	})
-				// 	.then(resp => { 
-				// 		return resp.json();
-				// 	})
-				// 	.then(data => {
-				// 		console.log("data:",data);
-				// 	})
-				// }
+				// console.log("Complete Button Disabled");
+				if (tableBody && trows.length) {
+					fetch("https://gzhang.dev/tenda/api/complete/picklist", {
+						method: "POST",
+						body: data,
+					})
+					.then(resp => { 
+						return resp.json();
+					})
+					.then(data => {
+						console.log("data:",data);
+					})
+				}
 			})
+		})
+		.catch(err => {
+			console.log("err:", err)
+			dbtable_container.innerHTML = `<div class="alert alert-info">${err.name} : ${err.message}`;
+			let alertInfo = document.querySelector("#dbtable_container div.alert-info")
+			alertInfo.style.width  = "500px";
+			alertInfo.style.opacity  = 1;
 		})
 	}
 });

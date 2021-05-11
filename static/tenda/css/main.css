@@ -115,6 +115,7 @@ label.logo {
 	line-height: 80px;
 	padding: 0 1rem;
 	font-weight: bold;
+	margin: 0 1em;
 }
 nav.main-navbar ul {
 	float: right;
@@ -253,6 +254,16 @@ input[type=submit]:hover,
 	background-color: #d1e7dd;
 	border-color: #badbcc;
 }
+.alert-danger {
+	color: #842029;
+	background-color: #f8d7da;
+	border-color: #f5c2c7;
+}
+.alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+}
 .alert-primary {
 	color: #084298;
 	background-color: #cfe2ff;
@@ -302,7 +313,6 @@ div.space-around {
 	div.select-wrapper {
 	    width: 77%;
 	}
-
 	.select-options {
 		display: flex;
 		flex-direction: column;
@@ -321,14 +331,13 @@ div.space-around {
 	nav.main-navbar {
 		background-color: #fff;
 	}
-
 	.checkbtn {
 		display: block;
 	}
 	nav.main-navbar ul {
 		position: fixed;
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		padding: 0 28px;
 		background-color: #f7f8f9;
 		top: 80px;
@@ -362,5 +371,8 @@ div.space-around {
 	    padding: 3px 12px;
 	    border: 1px solid #e1e1e1;
 	    white-space: nowrap;
+	}
+	table, thead, tbody, th, td, tr {
+		/*display: block;*/
 	}
 }

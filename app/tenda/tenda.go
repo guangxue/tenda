@@ -13,6 +13,21 @@ import (
 	"github.com/guangxue/webapps/mysql"
 )
 
+type pickcolumns struct {
+	PID      int
+	Model    string
+	Qty      int
+	Location string
+}
+type updateModel struct {
+	Location string
+	Model    string
+	Unit     int
+	Cartons  int
+	Boxes    int
+	Total    int
+}
+
 var db = mysql.Connect("tenda");
 
 func ErrorCheck(err error) {
@@ -68,6 +83,7 @@ func RenderHandler(templateName string) http.HandlerFunc {
 		}
 	}
 }
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	render(w, "login.html", nil)
 }
@@ -112,7 +128,6 @@ func Models(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func Locations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	queryModel := r.URL.Query().Get("model");
@@ -128,7 +143,6 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func PickList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == "GET" {
@@ -141,16 +155,18 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
 
 		if status == "completed_at" {
+			// Weekly completed orders
 			startDate := fmt.Sprintf("'%s'", date)
 			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", date)
 			allPicked := mysql.Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").From("last_updated").WhereBetween("completed_at", startDate, endDate).Use(db)
 			json.NewEncoder(w).Encode(allPicked)
 		} else if len(PID) > 0 && len(status) > 0 {
+			// Picked orders
 			allPicked := mysql.Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").From("picklist").Where("PID",PID).AndWhere("status", "=",status).Use(db)
 			json.NewEncoder(w).Encode(allPicked)
-		} else if len(date) > 0 && status== "weeklypicked" { 
+		} else if len(date) > 0 && status == "created_at" { 
+			// Weekly picked
 			stmt := fmt.Sprintf("WITH weeklypicked AS (select model, qty, customer, location, status, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)) SELECT model, SUM(qty) as total from weeklypicked group by model", date, date)
-
 			allPicked := mysql.SelectRaw(stmt, "model", "total").Use(db)
 			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
 			json.NewEncoder(w).Encode(allPicked)
@@ -196,22 +212,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
-type pickcolumns struct {
-	PID      int
-	Model    string
-	Qty      int
-	Location string
-}
-type updateModel struct {
-	Location string
-	Model    string
-	Unit     int
-	Cartons  int
-	Boxes    int
-	Total    int
-}
 func CompletePickList (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
@@ -234,7 +234,8 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 
 		/* if {pickDate} is empty, no db action needed. */
 		if pickStatus == "Updated"  || pickDate == "" {
-			fmt.Printf("[%-18s] return: can not construct valid update statement for affected rows/no pickDat in stock")
+			fmt.Printf("[%-18s] *Stmt Err*: Invalid update statement for complete orders, want {pickStatus} and {pickDate}.", "CompletePickList")
+			fmt.Printf("[%-18s] *Stmt Err*: Want {pickStatus} and {pickDate} to complete.", "CompletePickList")
 			return 
 		}
 
@@ -244,7 +245,7 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 		rows, err := db.Query(sqlstmt)
 		if err != nil {
-			fmt.Printf("[%-18s] selection error:%v\n", "CompletePickList",err)
+			fmt.Printf("[%-18s] *SELECT Err*:%v\n", "CompletePickList", err)
 		}
 
 		for rows.Next() {
@@ -353,7 +354,6 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func Stocktakes (w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
 
@@ -444,4 +444,8 @@ func PickedDelete(w http.ResponseWriter, r *http.Request) {
 	if status == "Complete" {
 		// rollback
 	}
+}
+
+func AddStock(w http.ResponseWriter, r *http.Request) {
+	render(w, "addstock.html", nil)
 }

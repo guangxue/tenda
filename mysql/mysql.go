@@ -172,9 +172,6 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			fmt.Printf("[%-18s] %s\n", "SelectRaw", sqlstmt.RawStatment)
 		}
 		
-		
-		
-
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
 		
 		// convert []interface{} to slice -> for easing indexing with [1]

@@ -74,14 +74,14 @@ function createTable(tableTitles, data, objNames) {
 	});
 
 	let cells = tableTitles.length
-	console.log(`[createTable] creating ${cells} celles`);
+	console.log(`[createTable] creating ${cells} cells`);
 	data.forEach( (d, i)=> {
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
 			cell.innerHTML = d[objNames[i]]
 		}
-	})
+	});
 	return table;
 }
 
