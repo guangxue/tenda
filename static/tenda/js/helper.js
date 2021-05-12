@@ -118,10 +118,18 @@ function rebuild_dbtable() {
 	return dbtable_width
 }
 
+function fadeOut(elem, time=1500) {
+	elem.style.opacity  = 1;
+	setTimeout(()=>{
+		elem.style.opacity  = 0;
+	}, time);
+}
+
 export {
 	getCurrentDateTime,
 	fetchDataList,
 	WhenClick,
 	createTable,
 	rebuild_dbtable,
+	fadeOut,
 };

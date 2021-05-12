@@ -1,12 +1,16 @@
-import { createTable, rebuild_dbtable, getCurrentDateTime } from "./helper.js"
+import { createTable, rebuild_dbtable, getCurrentDateTime,fadeOut } from "./helper.js"
 
 
 const selectButton= document.querySelector(".picklist-select-btn");
 const pickStatusOpt = document.querySelector("#pick_status");
+const pickDate = document.querySelector("#pick_date");
 
+if(!pickStatusOpt.value.includes("_at")) {
+	pickDate.removeAttribute("min")
+	pickDate.removeAttribute("step")
+}
 
 pickStatusOpt.addEventListener("change", function() {
-	let pickDate = document.querySelector("#pick_date");
 	if(pickStatusOpt.value.includes("_at")) {
 		console.log("option:", pickStatusOpt.value)
 		
@@ -31,11 +35,11 @@ selectButton.addEventListener("click", function() {
 	if (dbtable_container.innerHTML !== "") {
 		dbtable_container.innerHTML = ""
 	}
-	if(!pickDate) {
+	if((!pickDate && pickStatus == "completed_at") || (!pickDate && pickStatus == "created_at")) {
 		dbtable_container.innerHTML = `<div class="alert alert-danger">error: pick date is empty</div>`;
 		let alertDanger = document.querySelector("#dbtable_container div.alert-danger")
 		alertDanger.style.width  = "500px";
-		alertDanger.style.opacity  = 1;
+		fadeOut(alertDanger)
 		return;
 	}
 	let cmpbtn = document.querySelector("#completeBtn")
@@ -173,7 +177,7 @@ selectButton.addEventListener("click", function() {
 			dbtable_container.innerHTML = `<div class="alert alert-info">${err.name} : ${err.message}`;
 			let alertInfo = document.querySelector("#dbtable_container div.alert-info")
 			alertInfo.style.width  = "500px";
-			alertInfo.style.opacity  = 1;
+			fadeOut(alertInfo)
 		})
 	}
 });
