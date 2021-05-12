@@ -24,6 +24,33 @@ div.content-wrapper {
 	border: none;
 	font-size: 1em;
 	/*border-radius: 4px;*/
+	overflow: hidden;
+	color: #fff;
+	text-align: center;
+	position: relative;
+	-webkit-transition-duration: 0.4s; /* Safari */
+  	transition-duration: 0.4s;
+}
+.btn:after {
+	content: "";
+	background: #ff5b10;
+	display: block;
+	position: absolute;
+	padding-top: 299%;
+	padding-left: 330%;
+	margin-left: -34px !important;
+	margin-top: -120%;
+	opacity: 0;
+	transition: all 0.8s
+}
+.btn:active:after {
+	padding: 0;
+	margin: 0;
+	opacity: 1;
+	transition: 0s
+}
+.btn:hover {
+	background-color: #ff5b10;
 	color: #fff;
 }
 .btn-main {
@@ -31,6 +58,11 @@ div.content-wrapper {
 }
 .btn-primary {
 	background-color: #f96b2a;
+}
+.btn-cancel {
+	background-color: #fff;
+	border:1px solid #6c757d;
+	color: #000;
 }
 .btn-secondary {
 	background-color: #919496;
@@ -48,6 +80,42 @@ div.content-wrapper {
 #insertFB {
 	display: none;
 }
+.modal {
+	border: 1px solid black;
+    overflow:auto;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	transform: scale(1.1);
+	visibility: hidden;
+	background-color: rgba(0, 0, 0, 0.25);
+}
+.modal-content {
+	/*border: 1px solid black;*/ 
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 1rem 1.5rem;
+	background-color: #fff;
+}
+
+.show-modal {
+	opacity: 1;
+	visibility: visible;
+	transform: scale(1.0);
+}
+.complete-fd {
+	margin: 3em 0;
+}
+#complete-commits {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
 input {
 	padding: 10px 30px;
 	box-sizing: border-box;
@@ -57,6 +125,7 @@ input {
 	border-radius: 2px;
 	color: #000;
 }
+
 .select {
 	border: 1px solid #eee;
 	-moz-appearance: none;
@@ -153,6 +222,7 @@ nav.main-navbar ul li a:hover {
 
 /* Default Table Styling */
 table {
+	/*width:82%;*/
 	border-collapse: collapse;
 }
 table thead {
@@ -179,7 +249,7 @@ table th, td {
 	border: 1px solid #fff;
 }
 table tbody tr:hover {
-	background-color: #f5f5f5;
+	background-color: #f0faff;
 }
 div#dbtable_container {
 	margin: 2.3em 0;
@@ -304,9 +374,6 @@ div.space-around {
 	justify-content: space-around;
 }
 
-/*div#mfb {
-	border: 1px solid #ced4da;
-}*/
 /* Media queries */
 
 @media (max-width: 800px) {
@@ -343,6 +410,7 @@ div.space-around {
 		top: 80px;
 		left: 100%;
 		transition: all .2s;
+		z-index: 1;
 	}
 	#check:checked ~ ul {
 		left: 0;
@@ -359,6 +427,7 @@ div.space-around {
 		margin: 50px 0;
 		line-height: 30px;
 		border-bottom: 1px solid #ccc;
+		z-index: 1;
 	}
 	a:active, a:hover {
 		background: none;

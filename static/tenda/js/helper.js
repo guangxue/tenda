@@ -76,6 +76,7 @@ function createTable(tableTitles, data, objNames) {
 	let cells = tableTitles.length
 	console.log(`[createTable] creating ${cells} cells`);
 	data.forEach( (d, i)=> {
+		console.log("each data:", d[objNames[i]]);
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
@@ -125,6 +126,40 @@ function fadeOut(elem, time=1500) {
 	}, time);
 }
 
+function lastSaturdayTS() {
+	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
+	const lfri = new Date();
+	lfri.setDate(t);
+	var month = lfri.getMonth()+1;
+	if(month < 10) {
+		month = `0${month}`
+	}
+	let day = lfri.getDate();
+	if (day < 10) {
+		day = `0${day}`
+	}
+	let lastSaturday = `${lfri.getFullYear()}-${month}-${day}`;
+	console.log(lastSaturday);
+	return lastSaturday;
+}
+
+function lastSunTS() {
+	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 5 ;
+	const lfri = new Date();
+	lfri.setDate(t);
+	var month = lfri.getMonth()+1;
+	if(month < 10) {
+		month = `0${month}`
+	}
+	let day = lfri.getDate();
+	if (day < 10) {
+		day = `0${day}`
+	}
+	let lastSaturday = `${lfri.getFullYear()}-${month}-${day}`;
+	console.log(lastSaturday);
+	return lastSaturday;
+}
+
 export {
 	getCurrentDateTime,
 	fetchDataList,
@@ -132,4 +167,6 @@ export {
 	createTable,
 	rebuild_dbtable,
 	fadeOut,
+	lastSaturdayTS,
+	lastSunTS,
 };

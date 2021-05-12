@@ -1,4 +1,4 @@
-import { createTable, rebuild_dbtable, getCurrentDateTime,fadeOut } from "./helper.js"
+import { createTable, rebuild_dbtable, getCurrentDateTime,fadeOut,lastSaturdayTS, lastSunTS } from "./helper.js"
 
 
 const selectButton= document.querySelector(".picklist-select-btn");
@@ -11,9 +11,11 @@ if(!pickStatusOpt.value.includes("_at")) {
 }
 
 pickStatusOpt.addEventListener("change", function() {
+	// weekly picked
 	if(pickStatusOpt.value.includes("_at")) {
 		console.log("option:", pickStatusOpt.value)
-		
+		let lastSun = lastSunTS();
+		// pickDate.setAttribute("min", lastSun);
 		pickDate.setAttribute("min", "2021-04-04");
 		pickDate.setAttribute("step", "7");
 	} else {
@@ -25,11 +27,16 @@ pickStatusOpt.addEventListener("change", function() {
 selectButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
 	let pickStatus = document.querySelector("#pick_status").value;
+	let pickModel = document.querySelector("input[name=model]").value;
 
 	console.log("pick date is:", pickDate)
 	console.log("pick status is:", pickStatus)
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
+	if(pickModel) {
+		fetch_url = `https://gzhang.dev/tenda/api/picklist?model=${pickModel}`
+	}
+
 	console.log("fetch_url:", fetch_url)
 	let dbtable_container = document.querySelector("#dbtable_container");
 	if (dbtable_container.innerHTML !== "") {
@@ -42,9 +49,9 @@ selectButton.addEventListener("click", function() {
 		fadeOut(alertDanger)
 		return;
 	}
-	let cmpbtn = document.querySelector("#completeBtn")
-	if(cmpbtn) {
-		cmpbtn.remove();
+	let cbtn = document.querySelector("#completeBtn")
+	if(cbtn) {
+		cbtn.remove();
 	}
 	if(pickStatus) {
 		console.log("pick status is:", pickStatus)
@@ -122,8 +129,8 @@ selectButton.addEventListener("click", function() {
 		})
 		.then((tw)=>{
 			console.log("=> PENDING pickStatus:", pickStatus)
-			let cmpbtn1 = document.querySelector("#completeBtn")
-			if(!cmpbtn1 && pickStatus === "Pending") {
+			let cbtn1 = document.querySelector("#completeBtn")
+			if(!cbtn1 && pickStatus === "Pending") {
 				let completeButton = document.createElement("button")
 				completeButton.id = "completeBtn"
 				completeButton.classList.add("btn", "btn-table")
@@ -168,6 +175,113 @@ selectButton.addEventListener("click", function() {
 					})
 					.then(data => {
 						console.log("data:",data);
+						if(data) {
+							const modal = document.querySelector(".modal");
+							modal.classList.toggle("show-modal");
+						}
+						let model = document.querySelector(".model");
+						let location = document.querySelector(".location");
+						let sqlinfo = document.querySelector(".sqlinfo");
+						let oldTotal = document.querySelector(".oldTotal");
+						let pickQty = document.querySelector(".pickQty");
+						let unit = document.querySelector(".unit");
+						let newCartons = document.querySelector(".newCartons");
+						let newBoxes = document.querySelector(".newBoxes");
+						let newTotal = document.querySelector(".newTotal");
+
+						// model.textContent = `Model: ${data[0].model}`
+						// location.textContent = `Location: ${data[0].location}`
+						// sqlinfo.textContent = `SQL: ${data[0].sqlinfo}`
+						// oldTotal.textContent = `oldTotal: ${data[0].oldTotal}`
+						// pickQty.textContent = `pickQty: ${data[0].pickQty}`
+						// unit.textContent = `unit: ${data[0].unit}`
+						// newCartons.textContent = `newCartons: ${data[0].newCartons}`
+						// newBoxes.textContent = `newBoxes: ${data[0].newBoxes}`
+						// newTotal.textContent = `newTotal: ${data[0].newTotal}`
+						let newTotalTitle = ["oldTotal", "Pick Qty", "NEW Total", "CalcTotal"];
+						let newCartonsTitle = ["NEW Total", "unit", "NEW Cartons", "CalcCartons"];
+						let newBoxesTitle = ["NEW Total", "unit", "NEW Boxes", "CalcBoxes"];
+						let newTotalData = []
+						let newCartonsData = []
+						let newBoxesData = []
+						data.forEach( (d,i) => {
+							// d.calcTotal = d.oldTotal - d.pickQty
+							// console.log("d.calcTotal:", d.calcTotal);
+							// let newTotalOrders = ['oldTotal', 'pickQty', 'newTotal', 'calcTotal']
+							// let newTotalData = []
+							// newTotalData.push(d)
+							// let newTotalTble = createTable(newTotalTitle, newTotalData, newTotalOrders);
+
+							// d.calcCartons = Math.trunc(d.calcTotal/d.unit)
+							// let newCartonsOrders = ['newTotal', 'unit', 'newCartons', 'calcCartons']
+							// let newCartonsData = []
+							// newCartonsData.push(d)
+							// let newCartonsTble = createTable(newCartonsTitle, newCartonsData, newCartonsOrders);
+
+							// d.calcBoxes = ((d.calcTotal/d.unit) % 1).toFixed(2) * d.unit
+							// d.calcBoxes = parseInt(d.calcBoxes)
+							// let newBoxesOrders = ['newTotal', 'unit', 'newBoxes', 'calcBoxes']
+							// let newBoxesData = []
+							// newBoxesData.push(d)
+							// let newBoxesTble = createTable(newBoxesTitle, newBoxesData, newBoxesOrders);
+
+							// let cmpinfo = document.querySelector('.complete-info');
+							// cmpinfo.appendChild(newTotalTble)
+							// cmpinfo.appendChild(newCartonsTble)
+							// cmpinfo.appendChild(newBoxesTble)
+							let completeInfoTitle = ['Complete Model','SQL Info','NEW cartons', 'NEW boxes', 'NEW total'];
+							let completeInfoOrders = ['model','sqlinfo','newCartons', 'newBoxes', 'newTotal']
+							let completeData = []
+							d.rowTitle = `${d.sqlinfo.split(' ')[0]} last_updated`
+							completeData.push(d);
+
+							let completeInfoTable = createTable(completeInfoTitle,completeData,completeInfoOrders)
+							
+							let calcTotal = d.oldTotal - d.pickQty
+							let calcCartons = Math.trunc(calcTotal/d.unit)
+							let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
+							calcBoxes = parseInt(calcBoxes)
+							let ciTbody = completeInfoTable.tBodies[0]
+							let ciRow = ciTbody.insertRow(1);
+
+							let ciCell0 = ciRow.insertCell(0);
+							ciCell0.textContent = d.location;
+
+							let ciCell1 = ciRow.insertCell(1);
+							ciCell1.textContent = 'UPDATE stock_updated';
+
+							let ciCell2 = ciRow.insertCell(2);
+							ciCell2.textContent = calcCartons;
+
+
+							
+							let ciCell3 = ciRow.insertCell(3);
+							ciCell3.textContent = calcBoxes;
+							let ciCell4 = ciRow.insertCell(4);
+							ciCell4.textContent = calcTotal;
+							let completefb = document.createElement("div");
+							completefb.classList.add("complete-fd");
+							completefb.appendChild(completeInfoTable)
+							let cmpinfo = document.querySelector('#complete-info');
+							cmpinfo.appendChild(completefb);
+
+							// let calcTitle = ['CALC cartons', 'CALC boxes', 'CALC total'];
+							// let calcOrders = ['calcCartons', 'calcBoxes', 'calcTotal']
+							// let calcData = []
+							// let calcTotal = d.oldTotal - d.pickQty
+							// let calcCartons = Math.trunc(calcTotal/d.unit)
+							// let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
+							// calcBoxes = parseInt(calcBoxes)
+							// let calcdt = {
+							// 	"calcTotal": calcTotal,
+							// 	"calcCartons": calcCartons,
+							// 	"calcBoxes": calcBoxes,
+							// }
+							// calcData.push(calcdt);
+							// let calcTable = createTable(calcTitle,calcData,calcOrders)
+							// cmpinfo.appendChild(calcTable);
+						})
+
 					})
 				}
 			})
@@ -182,21 +296,36 @@ selectButton.addEventListener("click", function() {
 	}
 });
 
-function lastSaturdayTS() {
-	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
-	const lfri = new Date();
-	lfri.setDate(t);
-	var month = lfri.getMonth()+1;
-	if(month < 10) {
-		month = `0${month}`
-	}
-	let day = lfri.getDate();
-	if (day < 10) {
-		day = `0${day}`
-	}
-	let lastSaturday = `${lfri.getFullYear()}-${month}-${day}`;
-	console.log(lastSaturday);
-	return lastSaturday;
+let closeBtn = document.querySelector(".btn-cancel");
+if(closeBtn) {
+	closeBtn.addEventListener('click', function() {
+		let fetch_url = "https://gzhang.dev/tenda/api/txrb?rbname=CompletePickList&urlname=/tenda/picklist"
+		fetch(fetch_url)
+		.then(()=>{
+			const modal = document.querySelector(".modal");
+			modal.classList.toggle("show-modal");
+		})
+		.then(()=>{
+			let cmpinfo = document.querySelector('#complete-info');
+			cmpinfo.innerHTML = ""
+		})
+	})
 }
+let commitBtn = document.querySelector(".btn-commit");
+if(commitBtn) {
+	commitBtn.addEventListener('click', function() {
+		let fetch_url = "https://gzhang.dev/tenda/api/txcm?cmname=CompletePickList&urlname=/tenda/picklist"
+		fetch(fetch_url)
+		.then(()=>{
+			const modal = document.querySelector(".modal");
+			modal.classList.toggle("show-modal");
+		})
+		.then(()=>{
+			let cmpinfo = document.querySelector('#complete-info');
+			cmpinfo.innerHTML = ""
+		})
+	})
+}
+
 
 

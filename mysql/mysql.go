@@ -1,13 +1,13 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"database/sql"
 	"strings"
 	"strconv"
-	_ "github.com/go-sql-driver/mysql"	
+	_ "github.com/go-sql-driver/mysql"
 )
-
 
 type Statement struct {
 	SelectColumns  string
@@ -16,7 +16,7 @@ type Statement struct {
 	TableName      string
 	InsertStmt     string
 	InsertValues   []interface{}
-	SetExpr  	   string
+	SetExpr	       string
 	WhereClause    string
 	AndWhereClause string
 	QueryType      string
@@ -25,25 +25,28 @@ type Statement struct {
 	RawStatment    string
 }
 
-var Ctx context.Context = context.Background()
-
-
-func Connect(dbname string) *sql.Tx {
+func Connect(dbname string) *sql.DB {
 	dsn := "gzhang:guangxue@/" + dbname
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		fmt.Println("DB connection error: ", err)
+		panic(err)
 	}
 	var pingerr = db.Ping()
 	if pingerr != nil {
 		fmt.Println("DB pinging error: ", pingerr)
 	}
-	tx, err := db.BeginTx(Ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+
+	fmt.Printf("[%-18s] Connected\n", "DB")
+	return db
+}
+
+func Begin(db *sql.DB) (*sql.Tx, context.Context) {
+	ctx := context.Background()
+	tx, err := db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		fmt.Println("DB BeginTx error: ", err)
 	}
-	fmt.Printf("[%-18s] Connected\n", "DB")
-	return db
+	return tx, ctx
 }
 
 func Select(searchColumns ...string) *Statement{
@@ -150,17 +153,7 @@ func (sqlstmt *Statement) AndWhere(column string, condition string, searchColumn
 	return sqlstmt
 }
 
-/***
-	returned finalColumns should be slices of maps:
-	[
-		{model:MW6-3PK, location: 1-G-1},
-		{model:MW6-3PK, location: 5-G-1},
-		{model:MW6-3PK, location: 7-3-1},
-		{model:MW6-3PK, location: 8-1-2},
-		{model:MW6-3PK, location: 0-G-5},
-	]
-****/
-func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
+func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 	
 	finalColumns := []map[string]string{}
 	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
@@ -189,10 +182,9 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 		for idx, _ := range sqlstmt.ColumnNames {
 			scannedColumns[idx] = new(string)
 		}
-		rows, err := tx.QueryContext(Ctx, stmt)
+		rows, err := db.Query(stmt)
 		if err != nil {
 			fmt.Println("[db *Err] tx.QueryContext error:", err)
-			tx.Rollback()
 		}
 		for rows.Next() {
 			err := rows.Scan(scannedColumns...)
@@ -216,10 +208,8 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr
 			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
 			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
-			res, err := tx.ExecContext(Ctx, stmt)
-			// res, err := db.Exec(stmt)
+			res, err := db.Exec(stmt)
 			if err != nil {
-				tx.Rollback()
 				fmt.Println("[db *Err]: Update error:", err)
 			}
 			rnums, err := res.RowsAffected()
@@ -237,10 +227,8 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 			fmt.Printf("[%-18s]  %s\n", "UPDATE WHERE", sqlstmt.WhereClause)
 			fmt.Printf("[%-18s]  %s\n", "UPDATE AND", sqlstmt.AndWhereClause)
 			
-			res, err := tx.ExecContext(Ctx, stmt)
-			// res, err := db.Exec(stmt)
+			res, err := db.Exec(stmt)
 			if err != nil {
-				tx.Rollback()
 				fmt.Println("[db *Err]: Update error:", err)
 			}
 			rnums, err := res.RowsAffected()
@@ -258,13 +246,156 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 	case "INSERT":
 		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
 		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)
-		stmt, err := tx.PrepareContext(Ctx, sqlstmt.InsertStmt)
+		stmt, err := db.Prepare(sqlstmt.InsertStmt)
+		if err != nil {
+			fmt.Println("Error sql Prepare:", err)
+		}
+		res, err := stmt.Exec(sqlstmt.InsertValues...)
+		if err != nil {
+			fmt.Println("Error exectue sql:", err)
+		}
+
+		id, err := res.LastInsertId()
+
+		if err != nil {
+			fmt.Println("Error last ID:", err)
+		}
+
+		fmt.Printf("[%-18s] %s: %d\n", "INSERT","Last Insert Id",id)
+		rid := strconv.FormatInt(id, 10)
+		insertFeedback := map[string]string{"lastId":rid}
+		finalColumns = append(finalColumns, insertFeedback)
+	case "DELETE":
+		if sqlstmt.DeleteNoWhere {
+			fmt.Printf("[%-18s] %s\n", "DELETE","!!! Deleting with NO WHERE !!!")
+		} else if len(sqlstmt.WhereClause) > 0 {
+			
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
+			res, err := db.Exec(stmt)
+			if err != nil {
+				fmt.Println("[db *Err]: Delete error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "Delete rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
+		} else {
+			fmt.Printf("[%-18s] %s: %d\n", "DELETE","WRONG SQL Stmt")
+		}
+	} // EOS: end of switch
+
+	return finalColumns
+}
+
+func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]string{
+	
+	finalColumns := []map[string]string{}
+	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
+	switch sqlstmt.QueryType {
+	case "SELECT", "SELECTRAW":
+		
+		// columnsToSelect := strings.Join(searchColumns, ", ")
+		stmt := ""
+		if sqlstmt.QueryType == "SELECT" {
+			stmt = sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[%-18s] %s\n", "SELECT", sqlstmt.SelectColumns)
+			fmt.Printf("[%-18s]  %s\n", "SELECT FROM", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "SELECT WHERE", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", "SELECT AND", sqlstmt.AndWhereClause)
+
+		} else {
+			stmt = sqlstmt.RawStatment
+			fmt.Printf("[%-18s] %s\n", "SelectRaw", sqlstmt.RawStatment)
+		}
+		
+		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
+		
+		/* convert []interface{} to slice -> for easing indexing with [1]
+		 | save each interface{} with string poiner -> for rows.Scan()
+		 */
+		for idx, _ := range sqlstmt.ColumnNames {
+			scannedColumns[idx] = new(string)
+		}
+		rows, err := tx.QueryContext(ctx, stmt)
+		if err != nil {
+			tx.Rollback()
+			fmt.Println("[db *Err] tx.QueryContext error:", err)
+		}
+		for rows.Next() {
+			err := rows.Scan(scannedColumns...)
+			if err != nil {
+				fmt.Println("[db *Err]: rows.Scan error:", err)
+			}
+			// save each scanned column to col map[string]string
+			col := map[string]string{}
+			for idx, val := range sqlstmt.ColumnNames {
+				colstr, ok := scannedColumns[idx].(*string)
+				if !ok {
+					fmt.Println("Cannot convert *interface{} to *string")
+				}
+				col[val] = *colstr
+			}
+			// append scanned column{map} to slice of maps
+			finalColumns = append(finalColumns, col)
+		}
+	case "UPDATE":
+		if sqlstmt.UpdateNoWhere {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr
+			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
+			res, err := tx.ExecContext(ctx, stmt)
+			if err != nil {
+				tx.Rollback()
+				fmt.Println("[db *Err]: Update error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
+		} else if len(sqlstmt.WhereClause) > 0 {
+			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
+			fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
+			fmt.Printf("[%-18s] %s\n",  "UPDATE", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE WHERE", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", "UPDATE AND", sqlstmt.AndWhereClause)
+			
+			res, err := tx.ExecContext(ctx, stmt)
+			if err != nil {
+				tx.Rollback()
+				fmt.Println("[db *Err]: Update error:", err)
+			}
+			rnums, err := res.RowsAffected()
+			if err != nil {
+				fmt.Println("[db *Err] RowsAffected:", err)
+			}
+			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			rid := strconv.FormatInt(rnums, 10)
+			rowsFeedback := map[string]string{"rowsAffected":rid}
+			finalColumns = append(finalColumns, rowsFeedback)
+		} else {
+			// fmt.Printf(">> %s\n", stmt)
+			fmt.Println("[db *Err] WhereClause needed!")
+		}
+	case "INSERT":
+		fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
+		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
+		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)
+		stmt, err := tx.PrepareContext(ctx, sqlstmt.InsertStmt)
 		// stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
 			fmt.Println("Error sql Prepare:", err)
 		}
-		res, err := tx.StmtContext(Ctx, stmt).Exec(sqlstmt.InsertValues...)
-		// res, err := stmt.Exec(sqlstmt.InsertValues...)
+		res, err := tx.StmtContext(ctx, stmt).Exec(sqlstmt.InsertValues...)
 		if err != nil {
 			tx.Rollback()
 			fmt.Println("Error exectue sql:", err)
@@ -287,7 +418,7 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 			
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
 			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
-			res, err := tx.ExecContext(Ctx, stmt)
+			res, err := tx.ExecContext(ctx, stmt)
 			// res, err := db.Exec(stmt)
 			if err != nil {
 				fmt.Println("[db *Err]: Delete error:", err)
@@ -308,3 +439,4 @@ func (sqlstmt *Statement) Use(db *sql.Tx) []map[string]string{
 
 	return finalColumns
 }
+

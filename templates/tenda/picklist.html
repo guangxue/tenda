@@ -3,11 +3,15 @@
 <div class="content-wrapper">
 	<div class="space-between select-options">
 		<div>
+			<input style="width: 150px;" list="modelist" id="mod" type="text" name="model" placeholder="Model Name">
+		</div>
+		<div>
 			<select name="pickoptions" id="pick_status" class="select">
 				<option value="Pending">Pending</option>
 				<option value="Complete">Complete</option>
 				<option value="completed_at">Weekly completed</option>
 				<option value="created_at">Weekly picked</option>
+				<option value="from">From</option>
 			</select>
 		</div>
 		<div>
@@ -17,7 +21,17 @@
 			<button class="btn btn-primary picklist-select-btn">Select</button>
 		</div>
 	</div>
-	<div id="dbtable_container"></div>	
+	<div id="dbtable_container"></div>
+	<div class="modal">
+		<div class="modal-content">
+			<h1>Complete picks</h1>
+			<div id="complete-info"></div>
+			<div id="complete-commits">
+				<button class="btn btn-cancel" style="width:150px;">Cancel</button>
+				<button class="btn btn-primary btn-commit" style="width:150px;">Comfirm</button>
+			</div>
+		</div>
+	</div>
 </div>
 {{end}}
 

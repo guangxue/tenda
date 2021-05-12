@@ -1,8 +1,8 @@
-{{define "PageTitle"}}Update Picked{{end}}
+{{define "PageTitle"}}Update {{.PID}}{{end}}
 {{define "content"}}
 <div class="content-wrapper">
 	<div class="form-wrapper">
-		<div class="alert alert-primary update-fd"></div>
+		<div class="alert update-fd"></div>
 		<div class="form-title-update">
 			<h1>Update {{.customer}}</h1>
 		</div>
@@ -62,18 +62,18 @@
 			</div>
 			<div class="form-line">
 				<div>
-					<button class="btn btn-warning" id="delBtn">Undo</button>
+					<button class="btn btn-secondary" id="delBtn">Delete</button>
 				</div>
 				<div style="margin-left: auto;">
 					<button style="padding: 9px 45px;" class="btn btn-primary" id="updatePickedButton">Update</button>
 				</div>
 			</div>
 		</form>
-		
+		<div id="updated-picked"></div>
 	</div>
 </div>
 {{end}}
 
 {{define "jsfiles"}}
-<script type="module" src="/static/tenda/js/updatepicked.js"></script>
+<script type="module" src="/static/tenda/js/updatepicklist.js"></script>
 {{end}}
