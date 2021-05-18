@@ -33,7 +33,7 @@ func main() {
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
 	mux.HandleFunc("/tenda/api/picklist",tenda.PickList)
-	mux.HandleFunc("/tenda/api/picked/delete",tenda.PickedDelete)
+	mux.HandleFunc("/tenda/api/picklist/delete",tenda.PickListDelete)
 	mux.HandleFunc("/tenda/api/complete/picklist",tenda.CompletePickList)
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)

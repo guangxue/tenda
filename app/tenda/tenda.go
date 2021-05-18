@@ -30,15 +30,15 @@ type updateModel struct {
 
 var db = mysql.Connect("tenda");
 func init() {
-	tbname["stock_updated"] = "stock_updated_test"
-	tbname["last_updated"] = "last_updated_test"
-	tbname["picklist"] = "picklist_test"
+	tbname["stock_updated"] = "stock_updated"
+	tbname["last_updated"] = "last_updated"
+	tbname["picklist"] = "picklist"
 	tbname["stocktakes"] = "stocktakes"
 
 	// tbname["stock_updated"] = "stock_updated_test"
 	// tbname["last_updated"] = "last_updated_test"
 	// tbname["picklist"] = "picklist_test"
-	// tbname["stocktakes"] = "stocktakes_test"
+	// tbname["stocktakes"] = "stocktakes"
 }
 
 func ErrorCheck(err error) {
