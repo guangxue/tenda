@@ -12,12 +12,6 @@ import (
 
 var tbname map[string]string = map[string]string{}
 var dbCommits map[string]*sql.Tx = map[string]*sql.Tx{}
-func init() {
-	tbname["stock_updated"] = "stock_updated"
-	tbname["last_updated"] = "last_updated"
-	tbname["picklist"] = "picklist"
-	tbname["stocktakes"] = "stocktakes"
-}
 
 type pickcolumns struct {
 	PID      int
@@ -35,6 +29,17 @@ type updateModel struct {
 }
 
 var db = mysql.Connect("tenda");
+func init() {
+	tbname["stock_updated"] = "stock_updated_test"
+	tbname["last_updated"] = "last_updated_test"
+	tbname["picklist"] = "picklist_test"
+	tbname["stocktakes"] = "stocktakes"
+
+	// tbname["stock_updated"] = "stock_updated_test"
+	// tbname["last_updated"] = "last_updated_test"
+	// tbname["picklist"] = "picklist_test"
+	// tbname["stocktakes"] = "stocktakes_test"
+}
 
 func ErrorCheck(err error) {
 	if err != nil {
@@ -43,6 +48,15 @@ func ErrorCheck(err error) {
 }
 
 func returnJson(w http.ResponseWriter, data []map[string]string) {
+	jsn, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("data JSON Marshal error: ", err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsn)
+}
+
+func returnJs(w http.ResponseWriter, data map[string]string) {
 	jsn, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println("data JSON Marshal error: ", err)
@@ -161,7 +175,8 @@ func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmname")
 	redirectURL := r.URL.Query().Get("newurl");
 	UPID := r.URL.Query().Get("UPID")
-	fmt.Printf("Committing => ", commitName);
+	fmt.Printf("[%-18s] Commit name : %s\n", "TxCommit",commitName)
+	fmt.Printf("[%-18s] redirectURL : %s\n", "TxCommit",redirectURL)
 	fmt.Println("redirectURL:", redirectURL)
 
 	tx, ok := dbCommits[commitName]
@@ -183,13 +198,13 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 	rollbackName := r.URL.Query().Get("rbname")
 	redirectURL := r.URL.Query().Get("urlname")
 	UPID := r.URL.Query().Get("UPID")
-	fmt.Println("Rollback =>", rollbackName);
-	fmt.Println("redirectURL:", redirectURL)
-	fmt.Println("UPID:", UPID)
+	fmt.Printf("[%-18s] Rollback name : %s\n", "TxRollback",rollbackName)
+	fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
+	fmt.Printf("[%-18s] UPID : %s\n", "TxRollback",UPID)
 	
 	tx, ok := dbCommits[rollbackName]
 	if !ok {
-		fmt.Println("Rollback Name NOT FOUND!")
+		fmt.Printf("[%-18s] Rollback name NOT FOUND: %s\n", "TxRollback",rollbackName)
 	}
 	
 	tx.Rollback()

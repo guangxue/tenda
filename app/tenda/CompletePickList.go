@@ -34,14 +34,18 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		pcols := []pickcolumns{}
 
 		/* if {pickDate} is empty, no db action needed. */
-		if pickStatus == "Updated"  || pickDate == "" {
+		// if pickStatus == "Updated"  || pickDate == "" {
 			
-			fmt.Printf("[%-18s] *Stmt Err*: Invalid update statement for complete orders, want {pickStatus} and {pickDate}.\n", "CompletePickList")
-			fmt.Printf("[%-18s] *Stmt Err*: Want {pickStatus} and {pickDate} to complete.\n", "CompletePickList")
-			// completeInfo["stmtErr"]= "PickStatus is empty, no DB query made\nWant {pickStatus} and {pickDate} to complete.\n"
-			// json.NewEncoder(w).Encode(completeInfo)
-			return 
-		}
+		// 	fmt.Printf("[%-18s] *Stmt Err*: Invalid update statement for complete orders, want {pickStatus} and {pickDate}.\n", "CompletePickList")
+		// 	fmt.Printf("[%-18s] *Stmt Err*: Want {pickStatus} and {pickDate} to complete.\n", "CompletePickList")
+		// 	stmtErr := map[string]string{
+		// 		"stmtErr": "Need {pickStatus} and {pickDate} to complete picklist",
+		// 	}
+		// 	stmtErrors := []map[string]string{}
+		// 	stmtErrors = append(stmtErrors, stmtErr)
+		// 	returnJson(w, stmtErrors)
+		// 	return
+		// }
 
 		/* 2. SELECT FROM `picklist` according {pickDate} and {pickStatus} which from POST data. */
 		/*   {p}   - Scaned single row */

@@ -5,14 +5,14 @@ const selectButton= document.querySelector(".picklist-select-btn");
 const pickStatusOpt = document.querySelector("#pick_status");
 const pickDate = document.querySelector("#pick_date");
 
-if(!pickStatusOpt.value.includes("_at")) {
+if(!pickStatusOpt.value.includes("weekly")) {
 	pickDate.removeAttribute("min")
 	pickDate.removeAttribute("step")
 }
 
 pickStatusOpt.addEventListener("change", function() {
 	// weekly picked
-	if(pickStatusOpt.value.includes("_at")) {
+	if(pickStatusOpt.value.includes("weekly")) {
 		console.log("option:", pickStatusOpt.value)
 		let lastSun = lastSunTS();
 		// pickDate.setAttribute("min", lastSun);
@@ -42,7 +42,7 @@ selectButton.addEventListener("click", function() {
 	if (dbtable_container.innerHTML !== "") {
 		dbtable_container.innerHTML = ""
 	}
-	if((!pickDate && pickStatus == "completed_at") || (!pickDate && pickStatus == "created_at")) {
+	if((!pickDate && pickStatus == "weeklycompleted") || (!pickDate && pickStatus == "weeklypicked")) {
 		dbtable_container.innerHTML = `<div class="alert alert-danger">error: pick date is empty</div>`;
 		let alertDanger = document.querySelector("#dbtable_container div.alert-danger")
 		alertDanger.style.width  = "500px";
@@ -189,48 +189,15 @@ selectButton.addEventListener("click", function() {
 						let newBoxes = document.querySelector(".newBoxes");
 						let newTotal = document.querySelector(".newTotal");
 
-						// model.textContent = `Model: ${data[0].model}`
-						// location.textContent = `Location: ${data[0].location}`
-						// sqlinfo.textContent = `SQL: ${data[0].sqlinfo}`
-						// oldTotal.textContent = `oldTotal: ${data[0].oldTotal}`
-						// pickQty.textContent = `pickQty: ${data[0].pickQty}`
-						// unit.textContent = `unit: ${data[0].unit}`
-						// newCartons.textContent = `newCartons: ${data[0].newCartons}`
-						// newBoxes.textContent = `newBoxes: ${data[0].newBoxes}`
-						// newTotal.textContent = `newTotal: ${data[0].newTotal}`
-						let newTotalTitle = ["oldTotal", "Pick Qty", "NEW Total", "CalcTotal"];
-						let newCartonsTitle = ["NEW Total", "unit", "NEW Cartons", "CalcCartons"];
-						let newBoxesTitle = ["NEW Total", "unit", "NEW Boxes", "CalcBoxes"];
-						let newTotalData = []
-						let newCartonsData = []
-						let newBoxesData = []
+						// let newTotalTitle = ["oldTotal", "Pick Qty", "NEW Total", "CalcTotal"];
+						// let newCartonsTitle = ["NEW Total", "unit", "NEW Cartons", "CalcCartons"];
+						// let newBoxesTitle = ["NEW Total", "unit", "NEW Boxes", "CalcBoxes"];
+						// let newTotalData = []
+						// let newCartonsData = []
+						// let newBoxesData = []
 						data.forEach( (d,i) => {
-							// d.calcTotal = d.oldTotal - d.pickQty
-							// console.log("d.calcTotal:", d.calcTotal);
-							// let newTotalOrders = ['oldTotal', 'pickQty', 'newTotal', 'calcTotal']
-							// let newTotalData = []
-							// newTotalData.push(d)
-							// let newTotalTble = createTable(newTotalTitle, newTotalData, newTotalOrders);
-
-							// d.calcCartons = Math.trunc(d.calcTotal/d.unit)
-							// let newCartonsOrders = ['newTotal', 'unit', 'newCartons', 'calcCartons']
-							// let newCartonsData = []
-							// newCartonsData.push(d)
-							// let newCartonsTble = createTable(newCartonsTitle, newCartonsData, newCartonsOrders);
-
-							// d.calcBoxes = ((d.calcTotal/d.unit) % 1).toFixed(2) * d.unit
-							// d.calcBoxes = parseInt(d.calcBoxes)
-							// let newBoxesOrders = ['newTotal', 'unit', 'newBoxes', 'calcBoxes']
-							// let newBoxesData = []
-							// newBoxesData.push(d)
-							// let newBoxesTble = createTable(newBoxesTitle, newBoxesData, newBoxesOrders);
-
-							// let cmpinfo = document.querySelector('.complete-info');
-							// cmpinfo.appendChild(newTotalTble)
-							// cmpinfo.appendChild(newCartonsTble)
-							// cmpinfo.appendChild(newBoxesTble)
-							let completeInfoTitle = ['Complete Model','SQL Info','NEW cartons', 'NEW boxes', 'NEW total'];
-							let completeInfoOrders = ['model','sqlinfo','newCartons', 'newBoxes', 'newTotal']
+							let completeInfoTitle = ['Location',"Unit",'OLD total','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
+							let completeInfoOrders = ['location','unit','oldTotal','pickQty','newCartons', 'newBoxes', 'newTotal']
 							let completeData = []
 							d.rowTitle = `${d.sqlinfo.split(' ')[0]} last_updated`
 							completeData.push(d);
@@ -248,40 +215,33 @@ selectButton.addEventListener("click", function() {
 							ciCell0.textContent = d.location;
 
 							let ciCell1 = ciRow.insertCell(1);
-							ciCell1.textContent = 'UPDATE stock_updated';
+							ciCell1.textContent = "";
 
 							let ciCell2 = ciRow.insertCell(2);
-							ciCell2.textContent = calcCartons;
+							ciCell2.textContent = "";
 
 
-							
 							let ciCell3 = ciRow.insertCell(3);
-							ciCell3.textContent = calcBoxes;
+							ciCell3.textContent = "";
+
 							let ciCell4 = ciRow.insertCell(4);
-							ciCell4.textContent = calcTotal;
+							ciCell4.textContent = calcCartons;
+
+							let ciCell5 = ciRow.insertCell(5);
+							ciCell5.textContent = calcBoxes;
+
+							let ciCell6 = ciRow.insertCell(6);
+							ciCell6.textContent = calcTotal;
+
 							let completefb = document.createElement("div");
+							let completefb_title = document.createElement("h3");
+							completefb_title.textContent = `Model: ${d.model}`;
+							completefb.appendChild(completefb_title);
 							completefb.classList.add("complete-fd");
-							completefb.appendChild(completeInfoTable)
+							completefb.appendChild(completeInfoTable);
 							let cmpinfo = document.querySelector('#complete-info');
 							cmpinfo.appendChild(completefb);
-
-							// let calcTitle = ['CALC cartons', 'CALC boxes', 'CALC total'];
-							// let calcOrders = ['calcCartons', 'calcBoxes', 'calcTotal']
-							// let calcData = []
-							// let calcTotal = d.oldTotal - d.pickQty
-							// let calcCartons = Math.trunc(calcTotal/d.unit)
-							// let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
-							// calcBoxes = parseInt(calcBoxes)
-							// let calcdt = {
-							// 	"calcTotal": calcTotal,
-							// 	"calcCartons": calcCartons,
-							// 	"calcBoxes": calcBoxes,
-							// }
-							// calcData.push(calcdt);
-							// let calcTable = createTable(calcTitle,calcData,calcOrders)
-							// cmpinfo.appendChild(calcTable);
 						})
-
 					})
 				}
 			})

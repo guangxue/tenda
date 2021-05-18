@@ -36,6 +36,7 @@ func Connect(dbname string) *sql.DB {
 		fmt.Println("DB pinging error: ", pingerr)
 	}
 
+    // fmt.Printf("[%-18s] Running on `dev` branch\n", "...")
 	fmt.Printf("[%-18s] Connected\n", "DB")
 	return db
 }
@@ -439,4 +440,3 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 
 	return finalColumns
 }
-

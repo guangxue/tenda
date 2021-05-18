@@ -57,8 +57,17 @@ delBtn.addEventListener("click", function(e) {
 	console.log("data:",data.toString());
 
 	console.log("[clicked] delBtn");
-	fetch("https://gzhang.dev/tenda/api/picked/delete", {
+	fetch("https://gzhang.dev/tenda/api/picklist/delete", {
 		method: "POST",
 		body: data,
+	})
+	.then(response => { return response.json()})
+	.then(data=>{
+		if(data["affectRow"]) {
+			let updatefd = document.querySelector(".update-fd");
+			updatefd.textContent = `Row affect: ${data["affectRow"]}`;
+			updatefd.classList.add("alert-info");
+			updatefd.style.opacity = 1;
+		}
 	});
 });

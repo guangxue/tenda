@@ -19,7 +19,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
 		fmt.Printf("[%-18s] PNO   :%s\n", "PickList", PNO);
 
-		if status == "completed_at" {
+		if status == "weeklycompleted" {
 			// Weekly completed orders
 			startDate := fmt.Sprintf("'%s'", date)
 			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", date)
@@ -38,7 +38,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				AndWhere("status", "=",status).
 			Use(db)
 			returnJson(w, allPicked)
-		} else if len(date) > 0 && status == "created_at" { 
+		} else if len(date) > 0 && status == "weeklypicked" { 
 			// Weekly picked
 			stmt := fmt.Sprintf("WITH weeklypicked AS (select model, qty, customer, location, status, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)) SELECT model, SUM(qty) as total from weeklypicked group by model", date, date)
 			allPicked := mysql.
@@ -103,26 +103,5 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Commit error:", err)
 		}
 		returnJson(w, insertFeedback)
-	}
-}
-
-func PickedDelete(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		fmt.Println("Form parse error:", err)
-	}
-	PID := r.FormValue("PID");
-	status := r.FormValue("status");
-	fmt.Println("PID:", PID)
-	fmt.Println("status:",status)
-	
-	if status == "Pending" {
-		// delete
-		tx,ctx := mysql.Begin(db)
-		mysql.DeleteFrom(tbname["picklist"], false).Where("PID", PID).With(tx,ctx)
-	}
-
-	if status == "Complete" {
-		// rollback
 	}
 }
