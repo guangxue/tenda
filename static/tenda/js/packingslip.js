@@ -27,6 +27,29 @@ let currentLN = 1;
 
 const inputPNO = document.querySelector("#panum")
 const tbody = document.querySelector("#insertFB table tbody")
+let fbTable = document.createElement("table");
+let fbThead = fbTable.createTHead();
+let fbThrow = fbThead.insertRow(0);
+let cell0 = fbThrow.insertCell(0);
+let cell1 = fbThrow.insertCell(1);
+let cell2 = fbThrow.insertCell(2);
+let cell3 = fbThrow.insertCell(3);
+let cell4 = fbThrow.insertCell(4);
+let cell5 = fbThrow.insertCell(5);
+let cell6 = fbThrow.insertCell(6);
+let cell7 = fbThrow.insertCell(7);
+let cell8 = fbThrow.insertCell(8);
+
+cell0.textContent = "PID";
+cell1.textContent = "PNO";
+cell2.textContent = "model";
+cell3.textContent = "qty";
+cell4.textContent = "customer";
+cell5.textContent = "location";
+cell6.textContent = "status";
+cell7.textContent = "created_at";
+cell8.textContent = "Action";
+
 
 inputPNO.addEventListener("input", function() {
 	if(inputPNO.value && !tbody) {
@@ -36,6 +59,7 @@ inputPNO.addEventListener("input", function() {
 			return resp.json();
 		})
 		.then(data => {
+			console.log("return from input changed (dat):", data)
 			if(data[0]) {
 				let titles = ["PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
@@ -44,12 +68,18 @@ inputPNO.addEventListener("input", function() {
 				let table = createTable(titles, data, titles);
 				let insertFB = document.querySelector("#insertFB")
 				insertFB.innerHTML = table.outerHTML;
-				insertFB.style.display= "block"
+				insertFB.style.display = "block"
+			} else {
+				insertFB.innerHTML = ""
+				insertFB.appendChild(fbTable)
+				insertFB.style.display = "none"
 			}
 		})
 	}
 	else {
 		insertFB.innerHTML = ""
+		insertFB.appendChild(fbTable);
+		fbTable.style.display="none";
 	}
 });
 
