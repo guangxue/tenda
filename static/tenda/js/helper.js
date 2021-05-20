@@ -160,6 +160,24 @@ function lastSunTS() {
 	return lastSaturday;
 }
 
+function formDataCollect(formElement) {
+	let form = document.querySelector(formElement)
+	let formData = new FormData(form);
+	let data = new URLSearchParams(formData);
+	let timenow = getCurrentDateTime();
+	for(const pair of formData) {
+		if(!pair[1]) {
+			console.log(`${pair[0]} is ${pair[1]} <empty>, then return`);
+			let inputName = document.querySelector(`input[name=${pair[0]}]`)
+			inputName.style.border="1px solid red"
+			return
+		}
+		console.log(`${pair[0]} is ${pair[1]}`)
+		data.append(pair[0], pair[1])
+	}
+	return data
+}
+
 export {
 	getCurrentDateTime,
 	fetchDataList,
@@ -169,4 +187,5 @@ export {
 	fadeOut,
 	lastSaturdayTS,
 	lastSunTS,
+	formDataCollect,
 };

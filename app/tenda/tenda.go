@@ -100,6 +100,7 @@ func RenderHandler(templateName string) http.HandlerFunc {
 func Index(w http.ResponseWriter, r *http.Request) {
 	render(w, "login.html", nil)
 }
+
 func Models(w http.ResponseWriter, r *http.Request) {
 
 	queryModel    := r.URL.Query().Get("model");
@@ -161,7 +162,7 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
 
 	if SID != "" && r.Method == http.MethodGet {
-		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total").From(tbName).Where("SID", SID).Use(db);
+		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").From(tbName).Where("SID", SID).Use(db);
 		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
 		render(w, "updatestock.html", currentStockToUpdate[0])
 	}
@@ -173,22 +174,31 @@ func AddStock(w http.ResponseWriter, r *http.Request) {
 
 func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmname")
-	redirectURL := r.URL.Query().Get("newurl");
+	redirectURL := r.URL.Query().Get("urlname");
 	UPID := r.URL.Query().Get("UPID")
 	fmt.Printf("[%-18s] Commit name : %s\n", "TxCommit",commitName)
-	fmt.Printf("[%-18s] redirectURL : %s\n", "TxCommit",redirectURL)
+
 	fmt.Println("redirectURL:", redirectURL)
+	fmt.Println("[* END Transaction *]");
 
 	tx, ok := dbCommits[commitName]
 	if !ok {
 		fmt.Println("Commit Name not found!")
 	}
-	
-	tx.Commit()
+	if commitName == "StockUpdate" {
+        SID := r.URL.Query().Get("SID")
+        newURL := fmt.Sprintf("%s&SID=%s",redirectURL,SID)
+	    tx.Commit()
+        fmt.Println("newURL", newURL)
+		http.Redirect(w, r, newURL, http.StatusSeeOther)
+    } else {
+	    tx.Commit()
+    }
 	if len(UPID)>0 {
 		redirectURL = fmt.Sprintf("/tenda/update/picklist?PID=%s", UPID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}else {
+	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}
 }
@@ -199,19 +209,29 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 	redirectURL := r.URL.Query().Get("urlname")
 	UPID := r.URL.Query().Get("UPID")
 	fmt.Printf("[%-18s] Rollback name : %s\n", "TxRollback",rollbackName)
-	fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
+
 	fmt.Printf("[%-18s] UPID : %s\n", "TxRollback",UPID)
-	
+	fmt.Println("[* END Transaction *]");
+
 	tx, ok := dbCommits[rollbackName]
 	if !ok {
 		fmt.Printf("[%-18s] Rollback name NOT FOUND: %s\n", "TxRollback",rollbackName)
 	}
-	
-	tx.Rollback()
+	if rollbackName == "StockUpdate" {
+        SID := r.URL.Query().Get("SID")
+        newURL := fmt.Sprintf("%s&SID=%s",redirectURL,SID)
+        fmt.Println("newURL", newURL)
+	    tx.Rollback()
+		http.Redirect(w, r, newURL, http.StatusSeeOther)
+    } else {
+	    tx.Rollback()
+    }
 	if len(UPID)>0 {
 		redirectURL = fmt.Sprintf("/tenda/update/picklist?PID=%s", UPID)
+	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}else {
+	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}
 }
