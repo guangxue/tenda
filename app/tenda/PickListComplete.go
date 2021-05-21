@@ -10,7 +10,7 @@ import (
 	"github.com/guangxue/webapps/mysql"
 )
 
-func CompletePickList (w http.ResponseWriter, r *http.Request) {
+func PickListComplete (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -22,8 +22,6 @@ func CompletePickList (w http.ResponseWriter, r *http.Request) {
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		lastSaturday := r.FormValue("lastSaturday")
-		
-		
 
 		fmt.Printf("[%-18s] Pick date   :%v\n", "CompletePickList",pickDate)
 		fmt.Printf("[%-18s] pick status :%v\n", "CompletePickList",pickStatus)

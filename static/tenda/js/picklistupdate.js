@@ -10,6 +10,7 @@ updatePickedBtn.addEventListener('click', function(e) {
 	let formData = new FormData(form);
 	let data = new URLSearchParams(formData);
 	let timenow = getCurrentDateTime();
+	let PID = document.querySelector("input[name=PID]").value;
 	console.log("timenow:", timenow);
 	for(const pair of formData) {
 		if(!pair[1]) {
@@ -23,8 +24,8 @@ updatePickedBtn.addEventListener('click', function(e) {
 	}
 	data.append("timenow", timenow)
 
-	fetch("https://gzhang.dev/tenda/update/picklist", {
-		method: "POST",
+	fetch(`https://gzhang.dev/tenda/api/picklist/PID/${PID}`, {
+		method: "PUT",
 		body: data,
 	})
 	.then(resp => { 
@@ -51,15 +52,11 @@ updatePickedBtn.addEventListener('click', function(e) {
 let delBtn = document.querySelector('#delBtn');
 delBtn.addEventListener("click", function(e) {
 	e.preventDefault();
-	let form = document.querySelector('#updatePickedForm')
-	let formData = new FormData(form);
-	let data = new URLSearchParams(formData);
-	console.log("data:",data.toString());
-
+	let PID = document.querySelector("input[name=PID]").value;
+	let status = document.querySelector("#status-selection").value;
 	console.log("[clicked] delBtn");
-	fetch("https://gzhang.dev/tenda/api/picklist/delete", {
-		method: "POST",
-		body: data,
+	fetch(`https://gzhang.dev/tenda/api/picklist/${PID}?status=${status}`, {
+		method: "DELETE",
 	})
 	.then(response => { return response.json()})
 	.then(data=>{

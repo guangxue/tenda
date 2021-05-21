@@ -53,17 +53,19 @@ cell8.textContent = "Action";
 
 inputPNO.addEventListener("input", function() {
 	if(inputPNO.value && !tbody) {
-		let fetch_url = `https://gzhang.dev/tenda/api/picklist?PNO=${inputPNO.value}`;
-		fetch(fetch_url)
+		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputPNO.value}`;
+		fetch(fetch_url, {
+			method: "GET"
+		})
 		.then(resp => {
 			return resp.json();
 		})
 		.then(data => {
-			console.log("return from input changed (dat):", data)
+			console.log("return from input changed (data):", data)
 			if(data[0]) {
 				let titles = ["PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
-					d.Action = `<a href="/tenda/update/picklist?PID=${d.PID}">Modify</a>`;
+					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
 				});
 				let table = createTable(titles, data, titles);
 				let insertFB = document.querySelector("#insertFB")
@@ -144,7 +146,7 @@ pickButton.addEventListener('click', function(e) {
 					cell6.innerHTML = p.location;
 					cell7.innerHTML = p.status;
 					cell8.innerHTML = p.created_at;
-					cell9.innerHTML = `<a href='/tenda/update/picklist?PID=${p.PID}'>Modify</a>`;
+					cell9.innerHTML = `<a href='/tenda/picklist/update?PID=${p.PID}'>Modify</a>`;
 				})
 			})
 		}

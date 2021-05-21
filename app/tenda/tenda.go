@@ -168,10 +168,6 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AddStock(w http.ResponseWriter, r *http.Request) {
-	render(w, "addstock.html", nil)
-}
-
 func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmname")
 	redirectURL := r.URL.Query().Get("urlname");
@@ -195,7 +191,7 @@ func TxCommit(w http.ResponseWriter, r *http.Request) {
 	    tx.Commit()
     }
 	if len(UPID)>0 {
-		redirectURL = fmt.Sprintf("/tenda/update/picklist?PID=%s", UPID)
+		redirectURL = fmt.Sprintf("/tenda/picklist/update?PID=%s", UPID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}else {
 	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
@@ -227,7 +223,7 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 	    tx.Rollback()
     }
 	if len(UPID)>0 {
-		redirectURL = fmt.Sprintf("/tenda/update/picklist?PID=%s", UPID)
+		redirectURL = fmt.Sprintf("/tenda/picklist?/updatePID=%s", UPID)
 	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}else {

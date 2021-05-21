@@ -5,11 +5,12 @@ const updateStockBtn = document.querySelector("#updateStockBtn");
 
 updateStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
+    let SID = document.querySelector("input[name=SID]").value
 	let data = formDataCollect("#table-form");
 	console.log("table-form,data:", data);
-	let fetch_url = "https://gzhang.dev/tenda/api/stock/update";
+	let fetch_url = `https://gzhang.dev/tenda/api/stock/SID/${SID}`;
 	fetch(fetch_url, {
-		method: "POST",
+		method: "PUT",
 		body: data,
 	})
 	.then( resp => {

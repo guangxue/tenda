@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"html/template"
+	"strings"
 	"github.com/guangxue/webapps/app/tenda"
 	"github.com/guangxue/webapps/app/blog"
 )
@@ -22,20 +23,20 @@ func main() {
 	mux.HandleFunc("/tenda", tenda.Index)
 	mux.HandleFunc("/tenda/packingslip", tenda.RenderHandler("packingslip.html"))
 	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
-	mux.HandleFunc("/tenda/find", tenda.RenderHandler("find.html"))
-	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
+	mux.HandleFunc("/tenda/search", tenda.RenderHandler("search.html"))
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
-	mux.HandleFunc("/tenda/update/stock", tenda.UpdateStock)
-	mux.HandleFunc("/tenda/update/picklist", tenda.UpdatePickList)
-	mux.HandleFunc("/tenda/stock/add", tenda.AddStock)
+	mux.HandleFunc("/tenda/stock/add", tenda.RenderHandler("stockadd.html"))
+	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
+	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdate)
+	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdate)
 
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
-	mux.HandleFunc("/tenda/api/picklist",tenda.PickList)
-	mux.HandleFunc("/tenda/api/stock/update",tenda.StockUpdate)
-	mux.HandleFunc("/tenda/api/picklist/delete",tenda.PickListDelete)
-	mux.HandleFunc("/tenda/api/complete/picklist",tenda.CompletePickList)
+	// mux.HandleFunc("/tenda/api/picklist/",tenda.PickList)
+	// mux.HandleFunc("/tenda/api/picklist/delete",tenda.PickListDelete)
+	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)
+	// mux.HandleFunc("/tenda/api/stock/update",tenda.StockUpdate)
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
@@ -57,7 +58,18 @@ func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
 	fmt.Printf("[%-18s] Request path: %s\n", "Main", rPath)
 
-	if r.URL.Path != "/" {
+	if strings.HasPrefix(rPath, "/tenda/api/picklist") {
+		fmt.Println("start withs ::/tenda/api/picklist")
+		tenda.PickList(w, r)
+		return
+	}
+
+    if strings.HasPrefix(rPath, "/tenda/api/stock") {
+        tenda.Stock(w, r)
+        return
+    }
+
+	if rPath != "/" {
 		// render 404 page
 		tmpl, err := template.ParseFiles("templates/404.html")
 		templVar := map[string]interface{}{
@@ -72,6 +84,7 @@ func routing(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
 
 	// render HOME 
 	tmpl, err := template.ParseFiles("templates/home.html")

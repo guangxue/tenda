@@ -34,7 +34,7 @@ selectButton.addEventListener("click", function() {
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	if(pickModel) {
-		fetch_url = `https://gzhang.dev/tenda/api/picklist?model=${pickModel}`
+		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}`
 	}
 
 	console.log("fetch_url:", fetch_url)
@@ -71,7 +71,7 @@ selectButton.addEventListener("click", function() {
 				let objNames =   ["PNO","customer", "model", "qty", "status","location", "created_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/update/picklist?PID=${d.PID}">update</a>`;
+					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}">update</a>`;
 				})
 				return {
 					"titles": titles,
@@ -84,7 +84,7 @@ selectButton.addEventListener("click", function() {
 				let objNames =   ["LID","location", "model", "cartons", "boxes", "completed_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/update/picklist?LID=${d.LID}">update</a>`;
+					d.update = `<a href="/tenda/picklist/update?LID=${d.LID}">update</a>`;
 				});
 				return {
 					"titles": titles,
@@ -166,7 +166,7 @@ selectButton.addEventListener("click", function() {
 				let trows = tableBody.querySelectorAll('tr');
 				// console.log("Complete Button Disabled");
 				if (tableBody && trows.length) {
-					fetch("https://gzhang.dev/tenda/api/complete/picklist", {
+					fetch("https://gzhang.dev/tenda/api/picklist/complete", {
 						method: "POST",
 						body: data,
 					})

@@ -15,7 +15,7 @@ ST_Btn.addEventListener("click", function() {
 		let theadTitles = ["位置", "产品", "每箱数量", "箱数", "散货数", "数量总计", "品种", "备注", "Update"];
 		let orders = ["location", "model", "unit", "cartons", "boxes", "total", "kind", "notes", "update"];
 		data.forEach( d => {
-			d.update = `<a href="/tenda/update/stock?tbname=${tbvalue}&SID=${d.SID}">update</a>`
+			d.update = `<a href="/tenda/stock/update?tbname=${tbvalue}&SID=${d.SID}">update</a>`
 		})
 		let newtable = createTable(theadTitles, data, orders);
 		let insDom = document.querySelector("#dbtable_container")
