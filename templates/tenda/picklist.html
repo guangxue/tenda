@@ -3,9 +3,6 @@
 <div class="content-wrapper">
 	<div class="space-between select-options">
 		<div>
-			<input style="width: 150px;" list="modelist" id="mod" type="text" name="model" placeholder="Model Name">
-		</div>
-		<div>
 			<select name="pickoptions" id="pick_status" class="select">
 				<option value="Pending">Pending</option>
 				<option value="Complete">Complete</option>
@@ -17,6 +14,12 @@
 		</div>
 		<div>
 			<input type="date" min="2021-04-04" step="7" required id="pick_date">
+		</div>
+		<div>
+			<input style="width: 150px;" list="modelist" id="mod" type="text" name="model" placeholder="Model Name">
+		</div>
+		<div>
+			<input style="width: 150px;" type="text" name="PNO" placeholder="PNO">
 		</div>
 		<div>
 			<button class="btn btn-primary picklist-select-btn">Select</button>

@@ -24,12 +24,17 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(PNO, "/") {
 			PNO = ""
 		}
+		searchPNO := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/search/PNO/")
+		if strings.Contains(searchPNO, "/") {
+			searchPNO = ""
+		}
 
 		fmt.Printf("[%-18s] path  :%s\n", "PickList", r.URL.Path);
 		fmt.Printf("[%-18s] date  :%s\n", "PickList", date);
 		fmt.Printf("[%-18s] status:%s\n", "PickList", status);
 		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
 		fmt.Printf("[%-18s] PNO   :%s\n", "PickList", PNO);
+		fmt.Printf("[%-18s] searchPNO   :%s\n", "PickList", searchPNO);
 
 
 		if status == "weeklycompleted" {
@@ -67,12 +72,20 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				Where("PNO",PNO).
 			Use(db)
 			returnJson(w, allPicked)
+		} else if searchPNO != "" {
+			allPicked := mysql.
+				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				From(tbname["picklist"]).
+				WhereLike("PNO","%"+searchPNO+"%").
+			Use(db)
+			returnJson(w, allPicked)
 		} else if model != "" {
 			if status == "from" && date != "" {
 				allPicked := mysql.
 					Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
 					From(tbname["picklist"]).
 					Where("model",model).
+					AndWhere("created_at", ">", date).
 				Use(db)
 				returnJson(w, allPicked)
 			} else {

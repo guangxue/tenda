@@ -4,6 +4,16 @@ import { createTable, rebuild_dbtable, getCurrentDateTime,fadeOut,lastSaturdayTS
 const selectButton= document.querySelector(".picklist-select-btn");
 const pickStatusOpt = document.querySelector("#pick_status");
 const pickDate = document.querySelector("#pick_date");
+const modelName = document.querySelector("input[name=model]");
+const PNOnumber = document.querySelector("input[name=PNO]");
+
+modelName.addEventListener("input", function() {
+	PNOnumber.value = ""
+})
+
+PNOnumber.addEventListener("input", function() {
+	modelName.value = ""
+})
 
 if(!pickStatusOpt.value.includes("weekly")) {
 	pickDate.removeAttribute("min")
@@ -28,15 +38,21 @@ selectButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
 	let pickStatus = document.querySelector("#pick_status").value;
 	let pickModel = document.querySelector("input[name=model]").value;
+	let searchPNO = document.querySelector("input[name=PNO]").value;
 
 	console.log("pick date is:", pickDate)
 	console.log("pick status is:", pickStatus)
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
-	if(pickModel) {
+	if(pickModel && pickStatus == "from") {
+		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}?date=${pickDate}&status=${pickStatus}`
+	}
+	if(pickModel && pickStatus != "from") {
 		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}`
 	}
-
+	if(searchPNO) {
+		fetch_url = `https://gzhang.dev/tenda/api/picklist/search/PNO/${searchPNO}`
+	}
 	console.log("fetch_url:", fetch_url)
 	let dbtable_container = document.querySelector("#dbtable_container");
 	if (dbtable_container.innerHTML !== "") {

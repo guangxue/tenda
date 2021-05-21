@@ -1,1 +1,0 @@
-console.log("add stock button clicked")

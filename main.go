@@ -26,24 +26,20 @@ func main() {
 	mux.HandleFunc("/tenda/search", tenda.RenderHandler("search.html"))
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
 	mux.HandleFunc("/tenda/stock/add", tenda.RenderHandler("stockadd.html"))
-	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
 	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdate)
+	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
 	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdate)
 
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
-	// mux.HandleFunc("/tenda/api/picklist/",tenda.PickList)
-	// mux.HandleFunc("/tenda/api/picklist/delete",tenda.PickListDelete)
 	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)
-	// mux.HandleFunc("/tenda/api/stock/update",tenda.StockUpdate)
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
 	/*------------------------------------------------------------*/
 	// Blog system
 	mux.HandleFunc("/blog", blog.Admin)
-
 
 	/*------------------------------------------------------------*/
 	fmt.Printf("[%-18s] Listening on port :8080\n", "Main")
