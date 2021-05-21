@@ -12,6 +12,40 @@ func Stock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "POST" {
+        err := r.ParseForm()
+        if err != nil {
+            fmt.Println("Form parse error:", err)
+        }
+        location   := r.FormValue("location")
+        model      := r.FormValue("model")
+        unit       := r.FormValue("unit")
+        cartons    := r.FormValue("cartons")
+        boxes      := r.FormValue("boxes")
+        total      := r.FormValue("total")
+
+		insertStmt := map[string]interface{}{
+			"location":location,
+			"model":model,
+			"unit":unit,
+			"cartons":cartons,
+			"boxes":boxes,
+			"total":total,
+		}
+        fmt.Println("InsertStatmentMap:", insertStmt)
+        tx, ctx := mysql.Begin(db)
+		insertFeedback := mysql.
+            InsertInto(tbname["stock_updated"], insertStmt).
+            With(tx, ctx)
+        dbCommits["StockAdd"] = tx
+        lastId, _ := insertFeedback[0]["lastId"]
+        if lastId != "" {
+            insertColumn := mysql.
+                Select("SID", "location", "model", "unit", "cartons", "boxes", "total").
+                From(tbname["stock_updated"]).
+                Where("SID", lastId).
+            With(tx,ctx)
+            returnJson(w, insertColumn)
+        }
 	}
 
 	if r.Method == "PUT" {

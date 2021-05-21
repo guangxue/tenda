@@ -71,7 +71,6 @@ func SelectDistinct(searchColumns ...string) *Statement{
 func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement{
 	sqlstmt := &Statement{}
 	sqlstmt.QueryType = "INSERT"
-	
 
 	placeholders := make([]string, len(insertQuery))
 	for i, _ := range placeholders {
@@ -270,7 +269,6 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		if sqlstmt.DeleteNoWhere {
 			fmt.Printf("[%-18s] %s\n", "DELETE","!!! Deleting with NO WHERE !!!")
 		} else if len(sqlstmt.WhereClause) > 0 {
-			
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
 			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
 			res, err := db.Exec(stmt)

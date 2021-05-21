@@ -37,11 +37,12 @@ func main() {
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
+
+
 	/*------------------------------------------------------------*/
 	// Blog system
 	mux.HandleFunc("/blog", blog.Admin)
 
-	/*------------------------------------------------------------*/
 	fmt.Printf("[%-18s] Listening on port :8080\n", "Main")
 	err := http.ListenAndServe(":8080", mux)
     if err != nil {

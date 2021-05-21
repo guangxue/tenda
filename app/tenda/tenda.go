@@ -162,7 +162,11 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	tbName := r.URL.Query().Get("tbname")
 
 	if SID != "" && r.Method == http.MethodGet {
-		currentStockToUpdate := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").From(tbName).Where("SID", SID).Use(db);
+		currentStockToUpdate := mysql.
+            Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").
+            From(tbName).
+            Where("SID", SID).
+        Use(db);
 		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
 		render(w, "updatestock.html", currentStockToUpdate[0])
 	}
@@ -171,11 +175,14 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmname")
 	redirectURL := r.URL.Query().Get("urlname");
+    if redirectURL == "" {
+        redirectURL = fmt.Sprintf("/tenda/txsuccess?cmname=%s", commitName)
+    }
 	UPID := r.URL.Query().Get("UPID")
 	fmt.Printf("[%-18s] Commit name : %s\n", "TxCommit",commitName)
 
 	fmt.Println("redirectURL:", redirectURL)
-	fmt.Println("[* END Transaction *]");
+	fmt.Println("[* END Transaction *]")
 
 	tx, ok := dbCommits[commitName]
 	if !ok {
@@ -203,6 +210,9 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 
 	rollbackName := r.URL.Query().Get("rbname")
 	redirectURL := r.URL.Query().Get("urlname")
+    if redirectURL == "" {
+        redirectURL = fmt.Sprintf("/tenda/txsuccess/rbname=%s", rollbackName)
+    }
 	UPID := r.URL.Query().Get("UPID")
 	fmt.Printf("[%-18s] Rollback name : %s\n", "TxRollback",rollbackName)
 

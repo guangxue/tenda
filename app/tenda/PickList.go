@@ -56,7 +56,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				AndWhere("status", "=",status).
 			Use(db)
 			returnJson(w, allPicked)
-		} else if date != "" && status == "weeklypicked" { 
+		} else if date != "" && status == "weeklypicked" {
 			// Weekly picked
 			stmt := fmt.Sprintf("WITH weeklypicked AS (select model, qty, customer, location, status, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)) SELECT model, SUM(qty) as total from weeklypicked group by model", date, date)
 			allPicked := mysql.

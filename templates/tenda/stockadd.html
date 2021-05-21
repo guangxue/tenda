@@ -3,7 +3,7 @@
 <div class="content-wrapper">
 	<div class="form-title"><h2>Add Stock: {{.SID}}</h2></div>
 	<div class="table-form-wrapper">
-		<form action="" id="table-form">
+		<form action="" id="stockadd-form">
 			<table style="width: 50%;">
 				<thead>
 					<tr>
@@ -18,12 +18,12 @@
 				</thead>
 				<tbody>
 					<tr>
-					<td><input style="width:80px;padding:7px 12px;" type="text" value="{{.location}}"></td>
-					<td><input style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
-					<td><input style="width:80px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
-					<td><input style="width:80px;padding:7px 12px;" type="text"></td>
-					<td><input style="width:80px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
-					<td><input style="width:80px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+					<td><input name="location" style="width:80px;padding:7px 12px;" type="text" value="{{.location}}"></td>
+					<td><input name="model" style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
+					<td><input name="unit" style="width:80px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
+					<td><input name="cartons" style="width:80px;padding:7px 12px;" type="text"></td>
+					<td><input name="boxes" style="width:80px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
+					<td><input name="total" style="width:80px;padding:7px 12px;" type="text" value="{{.total}}"></td>
 					<td><button class="btn btn-primary" id="stockAddBtn">Add</button></td>
 					</tr>
 				</tbody>
