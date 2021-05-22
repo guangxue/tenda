@@ -1,4 +1,4 @@
-import { getCurrentDateTime, createTable } from './helper.js';
+import { getCurrentDateTime, createTable, endTransact } from './helper.js';
 
 let updatePickedBtn = document.querySelector("#updatePickedButton");
 let updateFD = document.querySelector('.update-fd')
@@ -39,12 +39,15 @@ updatePickedBtn.addEventListener('click', function(e) {
 			let pid = document.querySelector("input[name=PID]").value
 			let titles = ['PNO', 'customer', 'model', 'qty', 'location', 'status', 'confirm'];
 			data.forEach( d=> {
-				d.confirm = `<a href="/tenda/api/txcm?cmname=PickList&UPID=${pid}">Confirm</a> <a href="/tenda/api/txrb?rbname=PickList&UPID=${pid}">Discard</a>`
+				d.confirm = `<a href="#" id="txcm" data-txname="PickList">Confirm</a> <a href="#" id="txrb" data-txname="PickList">Discard</a>`
 			})
 			let table = createTable(titles, data, titles);
 			let updated = document.querySelector("#updated-picked")
 			updated.appendChild(table);
 		}
+	})
+	.then(()=>{
+		endTransact("#txcm", "#txrb")
 	})
 });
 

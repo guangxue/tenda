@@ -9,6 +9,11 @@ import (
 
 func Stock(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
+        allstock := mysql.
+        Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").
+            From(tbname["stock_updated"]).
+        Use(db)
+        returnJson(w, allstock)
 	}
 
 	if r.Method == "POST" {

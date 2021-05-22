@@ -1,0 +1,10 @@
+{{define "PageTitle"}}Update stock{{end}}
+{{define "content"}}
+<div class="content-wrapper">
+	{{if .CMname }}
+	<h1> {{.CMname}} successfully committed</h1>
+	{{else}}
+	<h1>{{.RBname}} successfully rollback</h1>
+	{{end}}
+</div>
+{{end}}

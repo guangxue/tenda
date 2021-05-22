@@ -20,15 +20,15 @@ func main() {
 
 	/*------------------------------------------------------------*/
 	// Tenda pick and pack system
-	mux.HandleFunc("/tenda", tenda.Index)
+	// mux.HandleFunc("/tenda", tenda.Index)
 	mux.HandleFunc("/tenda/packingslip", tenda.RenderHandler("packingslip.html"))
 	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
 	mux.HandleFunc("/tenda/search", tenda.RenderHandler("search.html"))
 	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
 	mux.HandleFunc("/tenda/stock/add", tenda.RenderHandler("stockadd.html"))
-	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdate)
-	mux.HandleFunc("/tenda/stocktakes", tenda.Stocktakes)
-	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdate)
+	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdatePage)
+	mux.HandleFunc("/tenda/stock", tenda.RenderHandler("stock.html"))
+	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdatePage)
 
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/models", tenda.Models)
@@ -56,7 +56,6 @@ func routing(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("[%-18s] Request path: %s\n", "Main", rPath)
 
 	if strings.HasPrefix(rPath, "/tenda/api/picklist") {
-		fmt.Println("start withs ::/tenda/api/picklist")
 		tenda.PickList(w, r)
 		return
 	}

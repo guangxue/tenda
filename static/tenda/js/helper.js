@@ -178,6 +178,40 @@ function formDataCollect(formElement) {
 	return data
 }
 
+function endTransact(txCname, txRname) {
+	let txcm = document.querySelector(txCname);
+	let txrb = document.querySelector(txRname);
+	let txname = txcm.getAttribute("data-txname");
+	let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=${txname}`
+	let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=${txname}`
+	txcm.addEventListener("click",function(e) {
+		e.preventDefault();
+		fetch(cmurl)
+		.then(res=>{return res.json()})
+		.then(data=> {
+			if(data.err === "") {
+				console.log("end transact successfully.");
+			}
+			if(data.err !== "") {
+				console.log("couldn't end transact.")
+			}
+		});
+	});
+	txrb.addEventListener("click", function(e) {
+		e.preventDefault();
+		fetch(rburl)
+		.then(res=>{return res.json()})
+		.then(data=> {
+			if(data.err === "") {
+				console.log("end transact successfully.");
+			}
+			if(data.err !== "") {
+				console.log("couldn't end transact.")
+			}
+		});
+	});
+}
+
 export {
 	getCurrentDateTime,
 	fetchDataList,
@@ -188,4 +222,5 @@ export {
 	lastSaturdayTS,
 	lastSunTS,
 	formDataCollect,
+	endTransact
 };

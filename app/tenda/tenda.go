@@ -30,15 +30,15 @@ type updateModel struct {
 
 var db = mysql.Connect("tenda");
 func init() {
-	tbname["stock_updated"] = "stock_updated"
-	tbname["last_updated"] = "last_updated"
-	tbname["picklist"] = "picklist"
-	tbname["stocktakes"] = "stocktakes"
-
-	// tbname["stock_updated"] = "stock_updated_test"
-	// tbname["last_updated"] = "last_updated_test"
-	// tbname["picklist"] = "picklist_test"
+	// tbname["stock_updated"] = "stock_updated"
+	// tbname["last_updated"] = "last_updated"
+	// tbname["picklist"] = "picklist"
 	// tbname["stocktakes"] = "stocktakes"
+
+	tbname["stock_updated"] = "stock_updated_test"
+	tbname["last_updated"] = "last_updated_test"
+	tbname["picklist"] = "picklist_test"
+	tbname["stocktakes"] = "stocktakes"
 }
 
 func ErrorCheck(err error) {
@@ -146,98 +146,88 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Stocktakes (w http.ResponseWriter, r *http.Request) {
-	tbName := r.URL.Query().Get("tbname")
+func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 
-	if len(tbName) > 0 {
-		allstocks := mysql.Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").From(tbName).Use(db)
-		returnJson(w, allstocks)
-	} else {
-		render(w, "stocktakes.html", nil)
+	dbPickedInfo := map[string]string{}
+	
+	if r.Method == "GET" {
+		queryPID := r.URL.Query().Get("PID")
+		LID := r.URL.Query().Get("LID")
+
+		if queryPID != "" {
+			fmt.Printf("[%-18s] PID:%s\n", "PickListUpdate",queryPID)
+			currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From(tbname["picklist"]).Where("PID", queryPID).Use(db)
+			dbPickedInfo = currentPID[0]
+			dbPickedInfo["PID"] = queryPID
+			dbPickedInfo["status2"] = ""
+			if dbPickedInfo["status"] == "Pending" {
+				dbPickedInfo["status2"] = "Complete"
+			} else {
+				dbPickedInfo["status2"] = "Pending"
+			}
+			fmt.Printf("[%-18s] /picklist GET PID:%s\n", "UpdatePickList", queryPID)
+			fmt.Printf("[%-18s] return:%s\n", "UpdatePickList", dbPickedInfo)
+			render(w, "picklistupdate.html", dbPickedInfo)
+		}
+		if LID != "" {
+			currentLID := mysql.
+				Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").
+				From(tbname["last_updated"]).
+				Where("LID", LID).
+			Use(db)
+			returnJson(w, currentLID)
+		}
 	}
 }
 
-func UpdateStock(w http.ResponseWriter, r *http.Request) {
+func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
 	SID := r.URL.Query().Get("SID")
-	tbName := r.URL.Query().Get("tbname")
 
 	if SID != "" && r.Method == http.MethodGet {
 		currentStockToUpdate := mysql.
-            Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").
-            From(tbName).
-            Where("SID", SID).
-        Use(db);
+			Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").
+			From(tbname["stock_updated"]).
+			Where("SID", SID).
+			Use(db)
 		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
-		render(w, "updatestock.html", currentStockToUpdate[0])
+		render(w, "stockupdate.html", currentStockToUpdate[0])
 	}
 }
 
 func TxCommit(w http.ResponseWriter, r *http.Request) {
-	commitName := r.URL.Query().Get("cmname")
-	redirectURL := r.URL.Query().Get("urlname");
-    if redirectURL == "" {
-        redirectURL = fmt.Sprintf("/tenda/txsuccess?cmname=%s", commitName)
-    }
-	UPID := r.URL.Query().Get("UPID")
+	commitName := r.URL.Query().Get("cmn")
+	resText    := map[string]string{}
+	
 	fmt.Printf("[%-18s] Commit name : %s\n", "TxCommit",commitName)
-
-	fmt.Println("redirectURL:", redirectURL)
 	fmt.Println("[* END Transaction *]")
 
 	tx, ok := dbCommits[commitName]
 	if !ok {
 		fmt.Println("Commit Name not found!")
-	}
-	if commitName == "StockUpdate" {
-        SID := r.URL.Query().Get("SID")
-        newURL := fmt.Sprintf("%s&SID=%s",redirectURL,SID)
-	    tx.Commit()
-        fmt.Println("newURL", newURL)
-		http.Redirect(w, r, newURL, http.StatusSeeOther)
-    } else {
-	    tx.Commit()
-    }
-	if len(UPID)>0 {
-		redirectURL = fmt.Sprintf("/tenda/picklist/update?PID=%s", UPID)
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
-	}else {
-	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		resText["err"] = "Error: nothing to commit"
+		returnJs(w, resText)
+	} else {
+		tx.Commit()
+		resText["err"] = ""
+		returnJs(w, resText)
 	}
 }
 
 func TxRollback(w http.ResponseWriter, r *http.Request) {
-
-	rollbackName := r.URL.Query().Get("rbname")
-	redirectURL := r.URL.Query().Get("urlname")
-    if redirectURL == "" {
-        redirectURL = fmt.Sprintf("/tenda/txsuccess/rbname=%s", rollbackName)
-    }
-	UPID := r.URL.Query().Get("UPID")
+	rollbackName := r.URL.Query().Get("rbn")
+	resText      := map[string]string{}
+	
 	fmt.Printf("[%-18s] Rollback name : %s\n", "TxRollback",rollbackName)
-
-	fmt.Printf("[%-18s] UPID : %s\n", "TxRollback",UPID)
 	fmt.Println("[* END Transaction *]");
 
 	tx, ok := dbCommits[rollbackName]
 	if !ok {
 		fmt.Printf("[%-18s] Rollback name NOT FOUND: %s\n", "TxRollback",rollbackName)
-	}
-	if rollbackName == "StockUpdate" {
-        SID := r.URL.Query().Get("SID")
-        newURL := fmt.Sprintf("%s&SID=%s",redirectURL,SID)
-        fmt.Println("newURL", newURL)
-	    tx.Rollback()
-		http.Redirect(w, r, newURL, http.StatusSeeOther)
-    } else {
-	    tx.Rollback()
-    }
-	if len(UPID)>0 {
-		redirectURL = fmt.Sprintf("/tenda/picklist?/updatePID=%s", UPID)
-	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
-	}else {
-	    fmt.Printf("[%-18s] redirectURL : %s\n", "TxRollback",redirectURL)
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		resText["err"] = "Error: nothing to rollback"
+		returnJs(w, resText)
+	} else {
+		tx.Rollback()
+		resText["err"] = ""
+		returnJs(w, resText)
 	}
 }
