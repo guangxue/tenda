@@ -154,35 +154,40 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			/* 7.1            IF EXISTS, UPDATE it,
 			 * ....otherwise, INSERT: new data  */
 			
-			existModelId := 0
-			stmt = fmt.Sprintf("SELECT LID FROM %s WHERE model=? AND location=? AND completed_at > ?", tbname["last_updated"])
-			Checkerr := tx.QueryRowContext(ctx,stmt, p.Model, p.Location, lastSaturday).Scan(&existModelId)
+			lid := 0
+			total_picks := 0
+			stmt = fmt.Sprintf("SELECT LID,total_picks FROM %s WHERE model=? AND location=? AND completed_at > ?", tbname["last_updated"])
+			Checkerr := tx.QueryRowContext(ctx,stmt, p.Model, p.Location, lastSaturday).Scan(&lid, &total_picks)
 			switch {
 			case Checkerr == sql.ErrNoRows:
 				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "*db Rows*", p.Model)
 				completeInfo["sqlinfo"] = "INSERT into last_updated"
 				insertValues := map[string]interface{} {
-					"location": p.Location,
-					"model"   : p.Model,
-					"unit"    : unit,
-					"cartons" : newCartons,
-					"boxes"   : newBoxes,
-					"total"   : newTotal,
+					"location"   : p.Location,
+					"model"      : p.Model,
+					"old_total"  : oldTotals,
+					"total_picks": p.Qty,
+					"unit"       : unit,
+					"cartons"    : newCartons,
+					"boxes"      : newBoxes,
+					"total"      : newTotal,
 					"completed_at": TimeNow(),
 				}
 				mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
 			case Checkerr != nil:
 				fmt.Printf("[db *ERR*] query error: %v\n", err)
-			case  existModelId > 0:
-				fmt.Printf("[%-18s] Exits `model id`:%s , then UPDATE\n", "*db Rows*", existModelId)
+			case lid > 0:
+				fmt.Printf("[%-18s] Exits `model id`:%s , then UPDATE\n", "*db Rows*", lid)
 				completeInfo["sqlinfo"] = "UPDATE last_update"
-				updateValues := map[string]interface{} {
-					"location": p.Location,
-					"model"   : p.Model,
-					"unit"    : unit,
-					"cartons" : newCartons,
-					"boxes"   : newBoxes,
-					"total"   : newTotal,
+				allpicks := p.Qty + total_picks
+				updateValues := map[string]interface{} {					
+					"location"    : p.Location,
+					"model"       : p.Model,
+					"total_picks" : allpicks,
+					"unit"        : unit,
+					"cartons"     : newCartons,
+					"boxes"       : newBoxes,
+					"total"       : newTotal,
 					"completed_at": TimeNow(),
 				}
 				mysql.

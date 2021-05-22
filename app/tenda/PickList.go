@@ -42,7 +42,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			startDate := fmt.Sprintf("'%s'", date)
 			endDate := fmt.Sprintf("date_add('%s', INTERVAL 7 DAY)", date)
 			allPicked := mysql.
-				Select("LID", "location", "model", "unit", "cartons", "boxes", "total", "completed_at").
+				Select("LID", "location", "model", "unit","old_total","total_picks","cartons", "boxes", "total", "completed_at").
 				From(tbname["last_updated"]).
 				WhereBetween("completed_at", startDate, endDate).
 			Use(db)

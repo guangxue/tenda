@@ -1,0 +1,79 @@
+{{define "PageTitle"}}Update {{.LID}}{{end}}
+{{define "content"}}
+<div class="content-wrapper">
+	<div class="form-wrapper">
+		<div class="alert update-fd"></div>
+		<div class="form-title-update">
+			<h1>{{.model}}: completed</h1>
+			<h2>{{.completed_at}}</h2>
+		</div>
+		<form action="" method="post" id="updatePickedForm">
+			<input type="hidden" name="LID" value="{{.LID}}">
+			<div class="form-line">
+				<div><label for="loc">
+					<span class="title">Location</span>
+				</label></div>
+				<div>
+					<input id="loc" type="text" name="location" value="{{.location}}">
+				</div>
+			</div>
+			<!-- <div class="form-line">
+				<div><label for="mod"><span class="title">Model</span></label></div>
+				<div>
+				<input list="modelist" id="mod" type="text" name="model" value="{{.model}}">
+				</div>
+			</div> -->
+			<div class="form-line">
+				<div><label for="ot">
+					<span class="title">Last Total</span>
+				</label></div>
+				<div><input id="ot" type="tel" name="old_total" value="{{.old_total}}"></div>
+			</div>
+			
+			<div class="form-line">
+				<div>
+					<label for="tp">
+						<span class="title">Total Picks</span>
+					</label>
+				</div>
+				<div>
+					<input id="tp" type="text" name="total_picks" value="{{.total_picks}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div>
+					<label for="ct">
+						<span class="title">Cartons</span>
+					</label>
+				</div>
+				<div>
+					<input id="ct" type="text" name="cartons" value="{{.cartons}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div>
+					<label for="bx">
+						<span class="title">Boxes</span>
+					</label>
+				</div>
+				<div>
+					<input id="bx" type="text" name="boxes" value="{{.boxes}}">
+				</div>
+			</div>
+			<div class="form-line">
+				<div>
+					<button class="btn btn-secondary" id="delBtn">Delete</button>
+				</div>
+				<div style="margin-left: auto;">
+					<button style="padding: 9px 45px;" class="btn btn-primary" id="updatePickedButton">Update</button>
+				</div>
+			</div>
+		</form>
+		<div id="updated-picked"></div>
+	</div>
+</div>
+{{end}}
+
+{{define "jsfiles"}}
+<script type="module" src="/static/tenda/js/lastupdated.js"></script>
+{{end}}

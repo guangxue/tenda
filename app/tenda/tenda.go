@@ -33,12 +33,10 @@ func init() {
 	// tbname["stock_updated"] = "stock_updated"
 	// tbname["last_updated"] = "last_updated"
 	// tbname["picklist"] = "picklist"
-	// tbname["stocktakes"] = "stocktakes"
 
 	tbname["stock_updated"] = "stock_updated_test"
 	tbname["last_updated"] = "last_updated_test"
 	tbname["picklist"] = "picklist_test"
-	tbname["stocktakes"] = "stocktakes"
 }
 
 func ErrorCheck(err error) {
@@ -183,7 +181,7 @@ func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
 	SID := r.URL.Query().Get("SID")
 
-	if SID != "" && r.Method == http.MethodGet {
+	if SID != "" {
 		currentStockToUpdate := mysql.
 			Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").
 			From(tbname["stock_updated"]).
@@ -191,6 +189,19 @@ func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
 			Use(db)
 		fmt.Println("currentStockToUpdate:", currentStockToUpdate)
 		render(w, "stockupdate.html", currentStockToUpdate[0])
+	}
+}
+
+func LastUpdatedPage(w http.ResponseWriter, r *http.Request) {
+	LID := r.URL.Query().Get("LID");
+	if LID != "" {
+		LastUpdated := mysql.
+			Select("LID","location","model","old_total","total_picks","cartons","boxes","completed_at").
+			From(tbname["last_updated"]).
+			Where("LID", LID).
+			Use(db)
+		fmt.Println("last_updated:", LastUpdated[0])
+		render(w, "lastupdated.html", LastUpdated[0])
 	}
 }
 

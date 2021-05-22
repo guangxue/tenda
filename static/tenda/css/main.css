@@ -185,6 +185,7 @@ label.logo {
 }
 nav.main-navbar ul {
 	float: right;
+	margin-right: 30px;
 }
 nav.main-navbar ul li {
 	display: inline-block;

@@ -96,11 +96,11 @@ selectButton.addEventListener("click", function() {
 				}
 			}
 			if(data[0].LID) {
-				let titles = ["LID","location", "model", "cartons", "boxes", "completed_at", "Action"];
-				let objNames =   ["LID","location", "model", "cartons", "boxes", "completed_at", "update"];
+				let titles = ["LID","Location", "Model","Last Total","Total Picks", "Cartons", "Boxes", "completed_at", "Action"];
+				let objNames =   ["LID","location", "model","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/picklist/update?LID=${d.LID}">update</a>`;
+					d.update = `<a href="/tenda/lastupdated/update?LID=${d.LID}">update</a>`;
 				});
 				return {
 					"titles": titles,
@@ -180,7 +180,6 @@ selectButton.addEventListener("click", function() {
 
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
-				// console.log("Complete Button Disabled");
 				if (tableBody && trows.length) {
 					fetch("https://gzhang.dev/tenda/api/picklist/complete", {
 						method: "POST",
@@ -205,12 +204,6 @@ selectButton.addEventListener("click", function() {
 						let newBoxes = document.querySelector(".newBoxes");
 						let newTotal = document.querySelector(".newTotal");
 
-						// let newTotalTitle = ["oldTotal", "Pick Qty", "NEW Total", "CalcTotal"];
-						// let newCartonsTitle = ["NEW Total", "unit", "NEW Cartons", "CalcCartons"];
-						// let newBoxesTitle = ["NEW Total", "unit", "NEW Boxes", "CalcBoxes"];
-						// let newTotalData = []
-						// let newCartonsData = []
-						// let newBoxesData = []
 						data.forEach( (d,i) => {
 							let completeInfoTitle = ['Location',"Unit",'OLD total','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
 							let completeInfoOrders = ['location','unit','oldTotal','pickQty','newCartons', 'newBoxes', 'newTotal']
