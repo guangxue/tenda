@@ -44,10 +44,11 @@ updatePickedBtn.addEventListener('click', function(e) {
 			let table = createTable(titles, data, titles);
 			let updated = document.querySelector("#updated-picked")
 			updated.appendChild(table);
+			return table
 		}
 	})
-	.then(()=>{
-		endTransact("#txcm", "#txrb")
+	.then( tbl =>{
+		endTransact("#txcm", "#txrb",tbl)
 	})
 });
 

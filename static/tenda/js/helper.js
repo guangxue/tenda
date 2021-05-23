@@ -81,6 +81,7 @@ function createTable(tableTitles, data, objNames) {
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
 			cell.innerHTML = d[objNames[i]]
+			cell.setAttribute("data-label", tableTitles[i])
 		}
 	});
 	return table;
@@ -178,12 +179,13 @@ function formDataCollect(formElement) {
 	return data
 }
 
-function endTransact(txCname, txRname) {
+function endTransact(txCname, txRname, cfmTbl) {
 	let txcm = document.querySelector(txCname);
 	let txrb = document.querySelector(txRname);
 	let txname = txcm.getAttribute("data-txname");
 	let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=${txname}`
 	let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=${txname}`
+	console.log("txname:", txname);
 	txcm.addEventListener("click",function(e) {
 		e.preventDefault();
 		fetch(cmurl)
@@ -191,9 +193,11 @@ function endTransact(txCname, txRname) {
 		.then(data=> {
 			if(data.err === "") {
 				console.log("end transact successfully.");
+				cfmTbl.remove();
 			}
 			if(data.err !== "") {
 				console.log("couldn't end transact.")
+				cfmTbl.remove();
 			}
 		});
 	});

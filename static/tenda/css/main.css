@@ -99,7 +99,9 @@ div.content-wrapper {
 	background-color: #fff;
 	margin: 3em auto;
 }
-
+textarea {
+   font-size: 9pt;
+}
 .show-modal {
 	opacity: 1;
 	visibility: visible;
@@ -252,9 +254,9 @@ table tbody tr:hover {
 div.complete-fd table tbody tr td:first-child {
 	font-weight: bold;
 }
-div.table-wrapper,
 div#dbtable_container {
 	height: 100vh;
+	overflow-x: auto;
 }
 div#dbtable_container {
 	margin: 2.3em 0;
@@ -426,7 +428,6 @@ div.space-around {
 	nav.main-navbar {
 		width: 100%;
 	}
-	
 	nav.main-navbar ul li {
 		display: block;
 		margin: 50px 0;
@@ -438,15 +439,75 @@ div.space-around {
 		background: none;
 		color: #0082e6;
 	}
-	table td, table th {
-	    height: 21px;
-	    text-align: center;
-	    font-size: 12px;
-	    padding: 3px 12px;
-	    border: 1px solid #e1e1e1;
-	    white-space: nowrap;
+	table.single-row {
+		width: 100%;
 	}
-	table, thead, tbody, th, td, tr {
-		/*display: block;*/
+	/*table.single-row td, table th {
+	   font-size: 11pt;
+	   padding: 18px 10px;
+	   border: none;
+	   white-space: nowrap;
+	}*/
+	
+	table.single-row,
+	table.single-row thead,
+	table.single-row tbody,
+	table.single-row th,
+	table.single-row td,
+	table.single-row tr {
+		display: block;
+	}
+	table.single-row tr:hover {
+		background-color: #fff;
+	}
+	table.single-row thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	table.single-row td { 
+		border: none;
+		border-top: 1px solid #0f6ca4;
+		/*border-bottom: 1px solid #0f6ca4;*/
+		border-right: 1px solid #0f6ca4;
+		position: relative;
+		padding: 0.83em;
+	}
+	table.single-row td:before { 
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		padding: 1em 0.5em;
+		white-space: nowrap;
+		font-weight: bold;
+		border: 1px solid #0f6ca4;
+		width: 130px;
+		background-color: #0f6ca4;
+		color: #fff;
+
+		/*border-bottom: 1px solid #0f6ca4;*/
+		/*border-left: 1px solid #0f6ca4;
+		border-radius: 2px;*/
+	}
+	table.single-row td:before { content: attr(data-label); }
+	table.single-row input,
+	 {
+		float: left;
+		margin-left: 18.8em;
+		border: none;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	table.single-row input:focus {
+		outline: none;
+	}
+	table.single-row textarea {
+		float: left;
+		-webkit-appearance: none;
+		border-radius: 2px;
+		margin-left: 16.8em;
+		border: 1px solid #f0f0f0;
+	}
+	#updateStockBtn {
+		width: 30%;
 	}
 }

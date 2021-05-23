@@ -8,23 +8,28 @@
 		ul {
 			list-style: none;
 		}
-		div.container {
+		div.project-list {
 			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
+			flex-direction: row;
+			justify-content: space-between;
+		}
+		div.project-list > div {
+			border: 1px solid #eee;
+			padding: 3em 11em;
+			width: 100%;
 		}
 	</style>
 </head>
 <body>
 	<div class="container">
-		<div class="title">
-			<h1>GZHANG Projects</h1>
-		</div>
 		<div class="project-list">
-			<ul>
-				<li><a href="/tenda"><img src="/static/images/tenda.png" alt="Tenda logo"></a></li>
-			</ul>
+			<div>
+				<a href="/tenda/search">
+					<img src="/static/images/tenda.png" alt="Tenda logo">
+				</a>
+			</div>
+			<div>Pending</div>
+			<div>Pending</div>
 		</div>
 	</div>
 </body>

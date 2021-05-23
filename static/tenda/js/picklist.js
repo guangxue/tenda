@@ -96,8 +96,8 @@ selectButton.addEventListener("click", function() {
 				}
 			}
 			if(data[0].LID) {
-				let titles = ["LID","Location", "Model","Last Total","Total Picks", "Cartons", "Boxes", "completed_at", "Action"];
-				let objNames =   ["LID","location", "model","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
+				let titles = ["Location", "Model","Last Total","Total Picks", "Cartons", "Boxes", "completed_at", "Action"];
+				let objNames =   ["location", "model","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
 					d.update = `<a href="/tenda/lastupdated/update?LID=${d.LID}">update</a>`;
@@ -139,7 +139,6 @@ selectButton.addEventListener("click", function() {
 				buttons: ['print'],
 				// order: [5, "des"],
 			});
-
 			let table_width = rebuild_dbtable();
 			return table_width;
 		})

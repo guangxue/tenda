@@ -4,8 +4,8 @@
 	<div class="form-wrapper">
 		<div class="alert update-fd"></div>
 		<div class="form-title-update">
-			<h1>{{.model}}: completed</h1>
-			<h2>{{.completed_at}}</h2>
+			<h1>{{.model}} [{{.location}}]</h1>
+			<h3>[completed] {{.completed_at}} </h3>
 		</div>
 		<form action="" method="post" id="updatePickedForm">
 			<input type="hidden" name="LID" value="{{.LID}}">

@@ -18,9 +18,10 @@ stockAddBtn.addEventListener('click', function(e) {
             let table = createTable(titles,data,titles);
             let tblformwrp = document.querySelector(".table-form-wrapper");
             tblformwrp.appendChild(table);
+            return table
         }
 	})
-	.then(()=>{
-		endTransact("#txcm", "#txrb")
+	.then((tbl)=>{
+		endTransact("#txcm", "#txrb", tbl)
 	})
 });

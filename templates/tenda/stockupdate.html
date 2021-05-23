@@ -2,9 +2,9 @@
 {{define "content"}}
 <div class="content-wrapper">
 	<div class="form-title"><h2>Update Stock: {{.SID}}</h2></div>
-	<div class="table-form-wrapper">
+	<div class="table-form-wrapper table-wrapper">
 		<form action="" id="table-form">
-			<table style="width: 50%;">
+			<table class="single-row">
 				<thead>
 					<tr>
 						<th>SID</th>
@@ -20,16 +20,19 @@
 				</thead>
 				<tbody>
 					<tr>
-					<td>{{.SID}}</td>
+					<td data-label="SID">{{.SID}}</td>
+
 					<input type="hidden" name="SID" value="{{.SID}}">
-					<td><input name="location" style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
-					<td><input name="model" style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
-					<td><input name="unit" style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
-					<td><input name="cartons" style="width:66px;padding:7px 12px;" type="text" value="{{.cartons}}"></td>
-					<td><input name="boxes" style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
-					<td><input name="total" style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
-					<td><input name="update_comments" type="text" name="update_comments" value={{.update_comments}}></td>
-					<td><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
+					<td data-label="Location"><input name="location" style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
+					<td data-label="Model"><input name="model" style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
+					<td data-label="Unit"><input name="unit" style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
+					<td data-label="Cartons"><input name="cartons" style="width:66px;padding:7px 12px;" type="text" value="{{.cartons}}"></td>
+					<td data-label="Boxes"><input name="boxes" style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
+					<td data-label="Total"><input name="total" style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+					<td data-label="Update Comments">
+						<textarea name="update_comments" id="" >{{.update_comments}}</textarea>
+					</td>
+					<td data-label="Action"><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
 					</tr>
 				</tbody>
 			</table>

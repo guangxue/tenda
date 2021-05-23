@@ -25,9 +25,16 @@ fetch(fetch_url)
 	let table = $('#dbtable').DataTable({
 		dom: 'Bfrtip',
 		ordering: false,
-		buttons: ['excel']
+		buttons: ['excel'],
 	});
+	// table.column(columnNo).search('^\\s' + this.value +'\\s*$', true, false).draw();
 	rebuild_dbtable();
+	return table;
+})
+.then((tbl)=>{
+	$('input[type=search]').on( 'input', function () {
+	    tbl.search( '^'+this.value,true ).draw();
+	});
 });
 // let ST_Btn = document.querySelector(".select-stocktakes")
 // ST_Btn.addEventListener("click", function() {

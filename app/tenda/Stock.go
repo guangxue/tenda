@@ -88,13 +88,14 @@ func Stock(w http.ResponseWriter, r *http.Request) {
                 Where("SID", SID).
             With(tx, ctx)
 
-            updatedStock := mysql.
+            getUpdatedStock := mysql.
                 Select("SID", "location", "model", "unit", "cartons", "boxes", "total","update_comments").
-                From("stock_updated").
+                From(tbname["stock_updated"]).
                 Where("SID", SID).
             With(tx, ctx)
+            fmt.Println("Updatd stock in ctx:", getUpdatedStock)
             dbCommits["StockUpdate"] = tx
-            returnJson(w, updatedStock)
+            returnJson(w, getUpdatedStock)
         }
     }
 }
