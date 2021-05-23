@@ -10,13 +10,21 @@
 		}
 		div.project-list {
 			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
+			flex-direction: column;
 		}
 		div.project-list > div {
-			border: 1px solid #eee;
+			display: flex;
 			padding: 3em 11em;
-			width: 100%;
+			justify-content: center;
+			
+		}
+		div.project-list > div {
+			padding: 2em 5em;
+			transition: 0.3s;
+		}
+		div.project-list > div:hover {
+			background: #333;
+			transition: 0.3s;
 		}
 	</style>
 </head>
@@ -28,8 +36,6 @@
 					<img src="/static/images/tenda.png" alt="Tenda logo">
 				</a>
 			</div>
-			<div>Pending</div>
-			<div>Pending</div>
 		</div>
 	</div>
 </body>

@@ -76,7 +76,6 @@ function createTable(tableTitles, data, objNames) {
 	let cells = tableTitles.length
 	console.log(`[createTable] creating ${cells} cells`);
 	data.forEach( (d, i)=> {
-		console.log("each data:", d[objNames[i]]);
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
@@ -216,6 +215,14 @@ function endTransact(txCname, txRname, cfmTbl) {
 	});
 }
 
+const Tenda = {
+	"API": {
+		"models": "https://gzhang.dev/tenda/api/model",
+		"locations":"https://gzhang.dev/tenda/api/locations",
+		"WhereModelEq":"?model=",
+	}
+};
+
 export {
 	getCurrentDateTime,
 	fetchDataList,
@@ -226,5 +233,6 @@ export {
 	lastSaturdayTS,
 	lastSunTS,
 	formDataCollect,
-	endTransact
+	endTransact,
+	Tenda,
 };

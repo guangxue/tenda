@@ -1,4 +1,6 @@
+import { Tenda } from "./helper.js"
 
+console.log("TendaAPI.models", Tenda.API.locations.WhereModelEq);
 let modelinput = document.querySelector('input[name="model"]')
 let modelNameinput = document.querySelector('input[name="modelName"]')
 if(modelinput || modelNameinput) {
