@@ -23,7 +23,6 @@ if(!pickStatusOpt.value.includes("weekly")) {
 pickStatusOpt.addEventListener("change", function() {
 	// weekly picked
 	if(pickStatusOpt.value.includes("weekly")) {
-		console.log("option:", pickStatusOpt.value)
 		let lastSun = lastSunTS();
 		// pickDate.setAttribute("min", lastSun);
 		pickDate.setAttribute("min", "2021-04-04");
@@ -40,8 +39,6 @@ selectButton.addEventListener("click", function() {
 	let pickModel = document.querySelector("input[name=model]").value;
 	let searchPNO = document.querySelector("input[name=PNO]").value;
 
-	console.log("pick date is:", pickDate)
-	console.log("pick status is:", pickStatus)
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
 	if(pickModel && pickStatus == "from") {
@@ -53,7 +50,6 @@ selectButton.addEventListener("click", function() {
 	if(searchPNO) {
 		fetch_url = `https://gzhang.dev/tenda/api/picklist/search/PNO/${searchPNO}`
 	}
-	console.log("fetch_url:", fetch_url)
 	let dbtable_container = document.querySelector("#dbtable_container");
 	if (dbtable_container.innerHTML !== "") {
 		dbtable_container.innerHTML = ""
@@ -70,14 +66,12 @@ selectButton.addEventListener("click", function() {
 		cbtn.remove();
 	}
 	if(pickStatus) {
-		console.log("pick status is:", pickStatus)
 		fetch(fetch_url)
 		.then( resp => {
 			return resp.json();
 		})
 		.then( data  => {
 			if(!data[0]) {
-				console.log("!data")
 				const err = new Error("no rows return from database table: `picklist`")
 				err.name = "Empty set"
 				throw err;
@@ -132,7 +126,6 @@ selectButton.addEventListener("click", function() {
 				dbtable_container.innerHTML = ""
 			}
 			newtable.id = "dbtable"
-			console.log("newtable:", newtable)
 			dbtable_container.appendChild(newtable);
 			$("#dbtable").DataTable({
 				dom: 'Bfrtip',
@@ -143,7 +136,6 @@ selectButton.addEventListener("click", function() {
 			return table_width;
 		})
 		.then((tw)=>{
-			console.log("=> PENDING pickStatus:", pickStatus)
 			let cbtn1 = document.querySelector("#completeBtn")
 			if(!cbtn1 && pickStatus === "Pending") {
 				let completeButton = document.createElement("button")
@@ -169,9 +161,6 @@ selectButton.addEventListener("click", function() {
 				let data = new URLSearchParams(formData);
 				let pickStatus = document.querySelector('#pick_status').value
 				let pickDate   = document.querySelector("#pick_date").value
-				console.log("pick status to Complete:", pickStatus);
-				console.log("pick date to complete", pickDate);
-				console.log("lastSaturday", lastSaturdayTS());
 
 				data.append("pickDate", pickDate)
 				data.append("pickStatus", pickStatus)
@@ -188,7 +177,6 @@ selectButton.addEventListener("click", function() {
 						return resp.json();
 					})
 					.then(data => {
-						console.log("data:",data);
 						if(data) {
 							const modal = document.querySelector(".modal");
 							modal.classList.toggle("show-modal");
@@ -255,7 +243,6 @@ selectButton.addEventListener("click", function() {
 			})
 		})
 		.catch(err => {
-			console.log("err:", err)
 			dbtable_container.innerHTML = `<div class="alert alert-info">${err.name} : ${err.message}`;
 			let alertInfo = document.querySelector("#dbtable_container div.alert-info")
 			alertInfo.style.width  = "500px";

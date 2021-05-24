@@ -1,10 +1,9 @@
 import { Tenda } from "./helper.js"
 
-console.log("TendaAPI.models", Tenda.API.locations.WhereModelEq);
-let modelinput = document.querySelector('input[name="model"]')
-let modelNameinput = document.querySelector('input[name="modelName"]')
+let modelinput = document.querySelector('input[name=model]')
+let modelNameinput = document.querySelector('input[name=modelName]')
 if(modelinput || modelNameinput) {
-	fetch("https://gzhang.dev/tenda/api/models")
+	fetch("https://gzhang.dev/tenda/api/model")
 	.then(response => {
 		return response.json()
 	})
@@ -34,23 +33,20 @@ if(modelinput || modelNameinput) {
 
 
 const modelInput = document.querySelector("input[name=modelName]");
-
+// get locations for a model
 if(modelInput) {
 	modelInput.addEventListener('input', function(e) {
 		let model = document.querySelector("input[name=modelName]").value;
 		if(model) {
-			console.log("model no:", model)
 			fetch("https://gzhang.dev/tenda/api/locations?model="+model)
 			.then( resp => {
 				return resp.json();
 			})
 			.then( data => {
-				console.log("locations data:", data);
 				let optionFragement = new DocumentFragment();
 				let selectButton = document.querySelector('#pick-location');
 				selectButton.innerHTML = ""
 				data.forEach( loc => {
-					console.log("loc:", loc.location);
 					// let currentOpt = '<option value="'+loc.location+'">'+loc.location+"</option>";
 					let opt = document.createElement('option');
 					opt.value = loc.location;

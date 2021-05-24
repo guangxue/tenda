@@ -50,10 +50,6 @@ function fetchDataList(url, idName, afterElem) {
 	})
 }
 
-function fetchModelData(argument) {
-	// body...
-}
-
 
 function WhenClick(elem, listener) {
 	let theEl = document.querySelector(elem);
@@ -74,7 +70,6 @@ function createTable(tableTitles, data, objNames) {
 	});
 
 	let cells = tableTitles.length
-	console.log(`[createTable] creating ${cells} cells`);
 	data.forEach( (d, i)=> {
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
@@ -119,12 +114,7 @@ function rebuild_dbtable() {
 	return dbtable_width
 }
 
-function fadeOut(elem, time=1500) {
-	elem.style.opacity  = 1;
-	setTimeout(()=>{
-		elem.style.opacity  = 0;
-	}, time);
-}
+
 
 function lastSaturdayTS() {
 	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
@@ -139,7 +129,6 @@ function lastSaturdayTS() {
 		day = `0${day}`
 	}
 	let lastSaturday = `${lfri.getFullYear()}-${month}-${day}`;
-	console.log(lastSaturday);
 	return lastSaturday;
 }
 
@@ -156,7 +145,6 @@ function lastSunTS() {
 		day = `0${day}`
 	}
 	let lastSaturday = `${lfri.getFullYear()}-${month}-${day}`;
-	console.log(lastSaturday);
 	return lastSaturday;
 }
 
@@ -167,7 +155,6 @@ function formDataCollect(formElement) {
 	let timenow = getCurrentDateTime();
 	for(const pair of formData) {
 		if(!pair[1]) {
-			console.log(`${pair[0]} is ${pair[1]} <empty>, then return`);
 			let inputName = document.querySelector(`input[name=${pair[0]}]`)
 			inputName.style.border="1px solid red"
 			return
@@ -178,25 +165,36 @@ function formDataCollect(formElement) {
 	return data
 }
 
-function endTransact(txCname, txRname, cfmTbl) {
+function fadeOut(elem, time=1500) {
+	elem.style.opacity  = 1;
+	setTimeout(()=>{
+		elem.style.opacity  = 0;
+	}, time);
+}
+
+function endTransact(txCname, txRname, cfmTbl, feedbackElem) {
 	let txcm = document.querySelector(txCname);
 	let txrb = document.querySelector(txRname);
 	let txname = txcm.getAttribute("data-txname");
 	let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=${txname}`
 	let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=${txname}`
-	console.log("txname:", txname);
 	txcm.addEventListener("click",function(e) {
 		e.preventDefault();
 		fetch(cmurl)
 		.then(res=>{return res.json()})
 		.then(data=> {
 			if(data.err === "") {
-				console.log("end transact successfully.");
 				cfmTbl.remove();
+				feedbackElem.classList.add("alert-success");
+				feedbackElem.innerHTML = `update successfully`;
+				fadeOut(feedbackElem)
+				
 			}
 			if(data.err !== "") {
-				console.log("couldn't end transact.")
 				cfmTbl.remove();
+				feedbackElem.classList.add("alert-danger");
+				feedbackElem.innerHTML = `Error updating: ${err}`;
+				fadeOut(feedbackElem)
 			}
 		});
 	});
@@ -206,10 +204,16 @@ function endTransact(txCname, txRname, cfmTbl) {
 		.then(res=>{return res.json()})
 		.then(data=> {
 			if(data.err === "") {
-				console.log("end transact successfully.");
+				cfmTbl.remove();
+				feedbackElem.innerHTML = `update successfully`;
+				feedbackElem.classList.add("alert-success");
+				fadeOut(feedbackElem)
 			}
 			if(data.err !== "") {
-				console.log("couldn't end transact.")
+				cfmTbl.remove();
+				feedbackElem.innerHTML = `Error updating: ${err}`;
+				feedbackElem.classList.add("alert-danger");
+				fadeOut(feedbackElem)
 			}
 		});
 	});
@@ -219,7 +223,6 @@ const Tenda = {
 	"API": {
 		"models": "https://gzhang.dev/tenda/api/model",
 		"locations":"https://gzhang.dev/tenda/api/locations",
-		"WhereModelEq":"?model=",
 	}
 };
 

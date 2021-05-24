@@ -61,7 +61,6 @@ inputPNO.addEventListener("input", function() {
 			return resp.json();
 		})
 		.then(data => {
-			console.log("return from input changed (data):", data)
 			if(data[0]) {
 				let titles = ["PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
@@ -87,7 +86,6 @@ inputPNO.addEventListener("input", function() {
 
 pickButton.addEventListener('click', function(e) {
 	e.preventDefault();
-	console.log("Pick clicked")
 
 	let formEl = document.querySelector('#pickform')
 	let formData = new FormData(formEl);
@@ -95,7 +93,6 @@ pickButton.addEventListener('click', function(e) {
 
 	for(const pair of formData) {
 		if(!pair[1]) {
-			console.log(`${pair[0]} is ${pair[1]} <empty>, then return`);
 			let inputName = document.querySelector(`input[name=${pair[0]}]`)
 			inputName.style.outline="1px solid red"
 			inputName.style.border="1px solid red"
@@ -112,8 +109,6 @@ pickButton.addEventListener('click', function(e) {
 		return resp.json();
 	})
 	.then(data => {
-		console.log("data:",data);
-		console.log(data[0].lastId)
 		if(data[0].lastId) {
 			let ifb = document.querySelector("#insertFB")
 			ifb.style.display="block"

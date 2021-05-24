@@ -32,7 +32,6 @@ func main() {
 	mux.HandleFunc("/tenda/lastupdated/update", tenda.LastUpdatedPage)
 
 	// Tenda API system
-	mux.HandleFunc("/tenda/api/models", tenda.Models)
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
 	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
@@ -55,6 +54,11 @@ func main() {
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
 	fmt.Printf("[%-18s] Request path: %s\n", "Main", rPath)
+
+	if strings.HasPrefix(rPath, "/tenda/api/model") {
+		tenda.Model(w, r)
+		return
+	}
 
 	if strings.HasPrefix(rPath, "/tenda/api/picklist") {
 		tenda.PickList(w, r)
