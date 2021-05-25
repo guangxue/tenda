@@ -1,8 +1,7 @@
 import { Tenda } from "./helper.js"
 
-let modelinput = document.querySelector('input[name=model]')
-let modelNameinput = document.querySelector('input[name=modelName]')
-if(modelinput || modelNameinput) {
+let inputModel = document.querySelector('input[name=model]')
+if(inputModel) {
 	fetch("https://gzhang.dev/tenda/api/model")
 	.then(response => {
 		return response.json()
@@ -31,11 +30,8 @@ if(modelinput || modelNameinput) {
 	})
 }
 
-
-const modelInput = document.querySelector("input[name=modelName]");
-// get locations for a model
-if(modelInput) {
-	modelInput.addEventListener('input', function(e) {
+if(inputModel) {
+	inputModel.addEventListener('input', function(e) {
 		let model = document.querySelector("input[name=modelName]").value;
 		if(model) {
 			fetch("https://gzhang.dev/tenda/api/locations?model="+model)

@@ -490,8 +490,7 @@ div.space-around {
 		border-radius: 2px;*/
 	}
 	table.single-row td:before { content: attr(data-label); }
-	table.single-row input,
-	 {
+	table.single-row input {
 		float: left;
 		margin-left: 18.8em;
 		border: none;

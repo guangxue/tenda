@@ -1,7 +1,12 @@
+import {createTable} from "./helper.js"
+
 console.log("[search.js]")
+
 let searchBtn = document.querySelector('#search-btn');
 let inputModel = document.querySelector("#mod");
 let inputLocation = document.querySelector("#loc");
+let sfb = document.querySelector("#sfb")
+
 const getModel = "https://gzhang.dev/tenda/api/model/";
 const getTheModel = "https://gzhang.dev/tenda/api/model";
 const getModelsWhereLocation = "https://gzhang.dev/tenda/api/model?location=";
@@ -12,15 +17,21 @@ searchBtn.addEventListener('click', function(e) {
 	let location = inputLocation.value;
 
 	if(model && location) {
-		let url = `${getTheModel}/model?${model}&location=${location}`
+		let url = `${getTheModel}/${model}?location=${location}`
 		console.log("url->", url)
-		fetch(url).then(resp=>{resp.json()})
+		fetch(url).then(resp=>{ return resp.json()})
 		.then(data=> {
+            data[0].update =`<a href="/tenda/stock/update?SID=${data[0].sid}">Update</a>`;;
 			console.log("data the model", data)
+            let titles = ['sid','location', 'unit', 'cartons', 'boxes', 'total','update'];
+            sfb.innerHTML = "" 
+            let tbl = createTable(titles, data, titles);
+            sfb.appendChild(tbl);
+            
 		})
 	}
 
-	if(model) {
+	if(model && location === "") {
 		console.log("[search.js] searchModel url:", getModel+model)
 		fetch(getModel+model).then(response => { return response.json()})
 		.then(data => {
@@ -42,7 +53,7 @@ searchBtn.addEventListener('click', function(e) {
 			console.log("model query FAILED:", err);
 		});
 	}
-	if(location) {
+	if(location && model === "") {
 		let url = getModelsWhereLocation+location;
 		console.log("[search.js] searchLocation url:", url)
 		fetch(url)
@@ -62,6 +73,5 @@ searchBtn.addEventListener('click', function(e) {
 			let tableTitle = document.querySelector(".location-title")
 			tableTitle.innerHTML = `<div class="table-title">Model: ${location}</div>`
 		})
-		
 	}
 });
