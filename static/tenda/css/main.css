@@ -336,6 +336,11 @@ input[type=submit]:hover,
 	background-color: #f8d7da;
 	border-color: #f5c2c7;
 }
+.alert-secondary {
+	color: #41464b;
+	background-color: #e2e3e5;
+	border-color: #d3d6d8;
+}
 .alert-info {
     color: #055160;
     background-color: #cff4fc;

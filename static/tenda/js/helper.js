@@ -187,8 +187,7 @@ function endTransact(txCname, txRname, cfmTbl, feedbackElem) {
 				cfmTbl.remove();
 				feedbackElem.classList.add("alert-success");
 				feedbackElem.innerHTML = `update successfully`;
-				fadeOut(feedbackElem)
-				
+				fadeOut(feedbackElem)	
 			}
 			if(data.err !== "") {
 				cfmTbl.remove();
@@ -205,8 +204,8 @@ function endTransact(txCname, txRname, cfmTbl, feedbackElem) {
 		.then(data=> {
 			if(data.err === "") {
 				cfmTbl.remove();
-				feedbackElem.innerHTML = `update successfully`;
-				feedbackElem.classList.add("alert-success");
+				feedbackElem.innerHTML = `discard successfully`;
+				feedbackElem.classList.add("alert-secondary");
 				fadeOut(feedbackElem)
 			}
 			if(data.err !== "") {

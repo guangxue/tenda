@@ -109,6 +109,7 @@ pickButton.addEventListener('click', function(e) {
 		return resp.json();
 	})
 	.then(data => {
+		console.log("[packingslip.js] data from picklist table:", data)
 		if(data[0].lastId) {
 			let ifb = document.querySelector("#insertFB")
 			ifb.style.display="block"
@@ -132,6 +133,7 @@ pickButton.addEventListener('click', function(e) {
 				return resp.json();
 			})
 			.then(data =>{
+				console.log("[packingslip.js] data from picklist table:", data)
 				data.forEach( p=> {
 					cell1.innerHTML = p.PID;
 					cell2.innerHTML = p.PNO;

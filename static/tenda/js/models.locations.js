@@ -32,7 +32,7 @@ if(inputModel) {
 
 if(inputModel) {
 	inputModel.addEventListener('input', function(e) {
-		let model = document.querySelector("input[name=modelName]").value;
+		let model = document.querySelector("input[name=model]").value;
 		if(model) {
 			fetch("https://gzhang.dev/tenda/api/locations?model="+model)
 			.then( resp => {
@@ -41,7 +41,8 @@ if(inputModel) {
 			.then( data => {
 				let optionFragement = new DocumentFragment();
 				let selectButton = document.querySelector('#pick-location');
-				selectButton.innerHTML = ""
+				if(selectButton) { selectButton.innerHTML = ""; }
+				
 				data.forEach( loc => {
 					// let currentOpt = '<option value="'+loc.location+'">'+loc.location+"</option>";
 					let opt = document.createElement('option');
@@ -49,7 +50,7 @@ if(inputModel) {
 					opt.textContent = loc.location;
 					optionFragement.appendChild(opt);
 				});
-				selectButton.appendChild(optionFragement)
+				if(selectButton) { selectButton.appendChild(optionFragement) }
 			})
 		}
 	})

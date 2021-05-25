@@ -119,7 +119,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Form parse error:", err)
 		}
 		PNO := r.FormValue("PNO")
-		model := r.FormValue("modelName")
+		model := r.FormValue("model")
 		qty := r.FormValue("qty")
 		customer := r.FormValue("customer")
 		location := r.FormValue("pickLocation")
