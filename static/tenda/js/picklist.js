@@ -254,10 +254,11 @@ selectButton.addEventListener("click", function() {
 let closeBtn = document.querySelector(".btn-cancel");
 if(closeBtn) {
 	closeBtn.addEventListener('click', function() {
-		// let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=CompletePickList`
-		// let fetch_url = "https://gzhang.dev/tenda/api/txrb?rbname=CompletePickList&urlname=/tenda/picklist"
-		fetch(fetch_url)
-		.then(()=>{
+		let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=CompletePickList`
+		fetch(rburl)
+		.then(resp => {return resp.json()})
+		.then(data =>{
+			console.log("resText[err]:", data);
 			const modal = document.querySelector(".modal");
 			modal.classList.toggle("show-modal");
 		})
@@ -271,21 +272,18 @@ let commitBtn = document.querySelector(".btn-commit");
 if(commitBtn) {
 	commitBtn.addEventListener('click', function() {
 		//CompletePickList
-
-		// let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=CompletePickList`
-		// let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=CompletePickList`
-		// fetch(fetch_url)
-		// .then(()=>{
-		// 	const modal = document.querySelector(".modal");
-		// 	modal.classList.toggle("show-modal");
-		// })
-		// .then(()=>{
-		// 	let cmpinfo = document.querySelector('#complete-info');
-		// 	cmpinfo.innerHTML = ""
-		// })
-
-		let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=CompletePickList`;
-
+		let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=CompletePickList`
+		fetch(cmurl)
+		.then(resp => {return resp.json()})
+		.then(data =>{
+			console.log("resText[err]:", data);
+			const modal = document.querySelector(".modal");
+			modal.classList.toggle("show-modal");
+		})
+		.then(()=>{
+			let cmpinfo = document.querySelector('#complete-info');
+			cmpinfo.innerHTML = ""
+		})
 	})
 }
 
