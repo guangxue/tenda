@@ -2,8 +2,8 @@ truncate table last_updated_test;
 truncate table picklist_test;
 truncate table stock_updated_test;
 
-INSERT INTO last_updated_test(location,model,unit,cartons,boxes,total,completed_at)
-SELECT location,model,unit,cartons,boxes,total,completed_at
+INSERT INTO last_updated_test(location,model,old_total,total_picks,unit,cartons,boxes,total,completed_at)
+SELECT location,model,old_total,total_picks,unit,cartons,boxes,total,completed_at
 FROM last_updated;
 
 INSERT INTO picklist_test(PNO,model,qty,customer,location,status,created_at,updated_at)

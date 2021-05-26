@@ -132,6 +132,17 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			"location":location,
 			"status":status,
 		}
+
+		for kname, val := range insertQuery {
+			if val == "" {
+				resText := map[string]string {
+					"err": "Empty form data",
+				}
+				fmt.Println("Error: Empty form data:", kname)
+				returnJs(w, resText)
+			}
+		}
+
 		insertFeedback := mysql.InsertInto(tbname["picklist"], insertQuery).Use(db)
 		if err != nil {
 			fmt.Println("Commit error:", err)

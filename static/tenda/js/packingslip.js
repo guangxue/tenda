@@ -61,7 +61,7 @@ inputPNO.addEventListener("input", function() {
 			return resp.json();
 		})
 		.then(data => {
-			if(data[0]) {
+			if(data[0] && data) {
 				let titles = ["PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
 					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
