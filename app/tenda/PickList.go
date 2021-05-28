@@ -96,6 +96,12 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				Use(db)
 				returnJson(w, allPicked)
 			}
+		} else if status == "all" {
+			allPicked := mysql.
+				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				From(tbname["picklist"]).
+			Use(db)
+			returnJson(w, allPicked)
 		} else {
 			odate := ""
 			if date == "" {
