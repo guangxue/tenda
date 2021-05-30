@@ -29,11 +29,12 @@ func main() {
 	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdatePage)
 	mux.HandleFunc("/tenda/stock", tenda.RenderHandler("stock.html"))
 	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdatePage)
-	mux.HandleFunc("/tenda/lastupdated/update", tenda.LastUpdatedPage)
+	// mux.HandleFunc("/tenda/lastupdated/update", tenda.LastUpdatedPage)
 
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
 	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)
+	mux.HandleFunc("/tenda/api/lastupdated", tenda.LastUpdated)
 	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
