@@ -50,7 +50,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		} else if PID != "" && status != "" {
 			// Picked orders
 			allPicked := mysql.
-				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
 				Where("PID",PID).
 				AndWhere("status", "=",status).
@@ -67,14 +67,14 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		} else if PNO != "" {
 			// PNO
 			allPicked := mysql.
-				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
 				Where("PNO",PNO).
 			Use(db)
 			returnJson(w, allPicked)
 		} else if searchPNO != "" {
 			allPicked := mysql.
-				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
 				WhereLike("PNO","%"+searchPNO+"%").
 			Use(db)
@@ -82,7 +82,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		} else if model != "" {
 			if status == "from" && date != "" {
 				allPicked := mysql.
-					Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+					Select("PID", "PNO", "model", "qty","sales_mgr", "customer", "location", "status", "created_at", "updated_at").
 					From(tbname["picklist"]).
 					Where("model",model).
 					AndWhere("created_at", ">", date).
@@ -90,7 +90,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				returnJson(w, allPicked)
 			} else {
 				allPicked := mysql.
-					Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+					Select("PID", "PNO", "model", "qty","sales_mgr","customer", "location", "status", "created_at", "updated_at").
 					From(tbname["picklist"]).
 					Where("model",model).
 				Use(db)
@@ -98,7 +98,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if status == "all" {
 			allPicked := mysql.
-				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				Select("PID", "PNO", "model", "qty","sales_mgr","customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
 			Use(db)
 			returnJson(w, allPicked)
@@ -110,7 +110,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				odate = date + "%"
 			}
 			allPicked := mysql.
-				Select("PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
 				WhereLike("created_at",odate).
 				AndWhere("status", "=",status).
@@ -129,10 +129,12 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		qty := r.FormValue("qty")
 		customer := r.FormValue("customer")
 		location := r.FormValue("pickLocation")
+		salesMgr := r.FormValue("sales_mgr")
 		status := "Pending"
 		insertQuery := map[string]interface{}{
 			"PNO":PNO,
 			"model":model,
+			"sales_mgr": salesMgr,
 			"qty":qty,
 			"customer":customer,
 			"location":location,
@@ -186,17 +188,19 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(PID, "/") {
 			PID = ""
 		}
-		PNO := r.FormValue("PNO")
-		model := r.FormValue("model")
-		qty := r.FormValue("qty")
+		PNO      := r.FormValue("PNO")
+		model    := r.FormValue("model")
+		qty      := r.FormValue("qty")
 		customer := r.FormValue("customer")
 		location := r.FormValue("location")
-		status := r.FormValue("status")
+		status   := r.FormValue("status")
+		salesMgr := r.FormValue("sales_mgr")
 		
 		tx, ctx := mysql.Begin(db)
 		updateInfo := map[string]interface{} {
 			"PNO":PNO,
 			"model":model,
+			"sales_mgr": salesMgr,
 			"qty":qty,
 			"customer":customer,
 			"location":location,
@@ -205,7 +209,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		mysql.Update(tbname["picklist"], false).Set(updateInfo).Where("PID",PID).With(tx, ctx)
 		fmt.Printf("[%-18s] Getting PID=%s from UPDATEd\n", "PickListUpdate", PID);
 		updatedPicked := mysql.
-			Select("PNO", "model", "qty", "customer", "location", "status").
+			Select("PNO", "model","sales_mgr", "qty", "customer", "location", "status").
 			From(tbname["picklist"]).
 			Where("PID", PID).
 			With(tx, ctx)

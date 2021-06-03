@@ -30,9 +30,8 @@ updatePickedBtn.addEventListener('click', function(e) {
 	})
 	.then(data => {
 		if(data[0].PNO) {
-			
 			let pid = document.querySelector("input[name=PID]").value
-			let titles = ['PNO', 'customer', 'model', 'qty', 'location', 'status', 'confirm'];
+			let titles = ['PNO', 'sales_mgr','customer', 'model', 'qty', 'location', 'status', 'confirm'];
 			data.forEach( d=> {
 				d.confirm = `<a href="#" id="txcm" data-txname="PickList">Confirm</a> <a href="#" id="txrb" data-txname="PickList">Discard</a>`
 			})

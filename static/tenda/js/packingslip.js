@@ -39,16 +39,18 @@ let cell5 = fbThrow.insertCell(5);
 let cell6 = fbThrow.insertCell(6);
 let cell7 = fbThrow.insertCell(7);
 let cell8 = fbThrow.insertCell(8);
+let cell9 = fbThrow.insertCell(9);
 
 cell0.textContent = "PID";
 cell1.textContent = "PNO";
-cell2.textContent = "model";
-cell3.textContent = "qty";
-cell4.textContent = "customer";
-cell5.textContent = "location";
-cell6.textContent = "status";
-cell7.textContent = "created_at";
-cell8.textContent = "Action";
+cell2.textContent = "Sales Manager";
+cell3.textContent = "model";
+cell4.textContent = "qty";
+cell5.textContent = "customer";
+cell6.textContent = "location";
+cell7.textContent = "status";
+cell8.textContent = "created_at";
+cell9.textContent = "Action";
 
 
 inputPNO.addEventListener("input", function() {
@@ -62,7 +64,7 @@ inputPNO.addEventListener("input", function() {
 		})
 		.then(data => {
 			if(data[0] && data) {
-				let titles = ["PID", "PNO", "model", "qty", "customer", "location", "status", "created_at", "Action"];
+				let titles = ["PID", "PNO","sales_mgr","model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
 					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
 				});
@@ -126,6 +128,7 @@ pickButton.addEventListener('click', function(e) {
 			let cell7 = newRow.insertCell(6);
 			let cell8 = newRow.insertCell(7);
 			let cell9 = newRow.insertCell(8);
+			let cell10 = newRow.insertCell(9);
 
 			let fetch_url = `/tenda/api/picklist?PID=${data[0].lastId}&status=Pending`;
 			fetch(fetch_url)
@@ -137,13 +140,14 @@ pickButton.addEventListener('click', function(e) {
 				data.forEach( p=> {
 					cell1.innerHTML = p.PID;
 					cell2.innerHTML = p.PNO;
-					cell3.innerHTML = p.model;
-					cell4.innerHTML = p.qty;
-					cell5.innerHTML = p.customer;
-					cell6.innerHTML = p.location;
-					cell7.innerHTML = p.status;
-					cell8.innerHTML = p.created_at;
-					cell9.innerHTML = `<a href='/tenda/picklist/update?PID=${p.PID}'>Modify</a>`;
+					cell3.innerHTML = p.sales_mgr;
+					cell4.innerHTML = p.model;
+					cell5.innerHTML = p.qty;
+					cell6.innerHTML = p.customer;
+					cell7.innerHTML = p.location;
+					cell8.innerHTML = p.status;
+					cell9.innerHTML = p.created_at;
+					cell10.innerHTML = `<a href='/tenda/picklist/update?PID=${p.PID}'>Modify</a>`;
 				})
 			})
 		}

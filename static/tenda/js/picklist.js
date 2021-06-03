@@ -77,8 +77,8 @@ selectButton.addEventListener("click", function() {
 				throw err;
 			}
 			if(data[0].PID) {
-				let titles = ["PNO","customer", "model", "quantity", "status","location", "created_at", "Action"];
-				let objNames =   ["PNO","customer", "model", "qty", "status","location", "created_at", "update"];
+				let titles = ["PNO","Sales Manager","customer", "model", "quantity", "status","location", "created_at", "Action"];
+				let objNames =   ["PNO","sales_mgr", "customer","model", "qty", "status","location", "created_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
 					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}">update</a>`;

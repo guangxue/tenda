@@ -120,8 +120,8 @@ func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 		LID := r.URL.Query().Get("LID")
 
 		if queryPID != "" {
-			fmt.Printf("[%-18s] PID:%s\n", "PickListUpdate",queryPID)
-			currentPID := mysql.Select("PNO", "model", "qty", "customer", "location", "status").From(tbname["picklist"]).Where("PID", queryPID).Use(db)
+			fmt.Printf("[%-18s] PID:%s\n", "PickListUpdatePage",queryPID)
+			currentPID := mysql.Select("PNO", "model", "sales_mgr","qty", "customer", "location", "status").From(tbname["picklist"]).Where("PID", queryPID).Use(db)
 			dbPickedInfo = currentPID[0]
 			dbPickedInfo["PID"] = queryPID
 			dbPickedInfo["status2"] = ""

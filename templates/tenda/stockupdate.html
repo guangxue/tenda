@@ -3,6 +3,7 @@
 <div class="content-wrapper">
 	<div class="form-title"><h2>Update Stock: {{.SID}}</h2></div>
 	<div class="table-form-wrapper table-wrapper">
+		<div class="alert alert-primary update-fd"></div>
 		<form action="" id="table-form">
 			<table class="single-row">
 				<thead>
@@ -14,6 +15,7 @@
 						<th>箱数</th>
 						<th>散货数</th>
 						<th>数量总计</th>
+						<th>品种</th>
 						<th>更新理由</th>
 						<th></th>
 					</tr>
@@ -29,6 +31,9 @@
 					<td data-label="Cartons"><input name="cartons" style="width:66px;padding:7px 12px;" type="text" value="{{.cartons}}"></td>
 					<td data-label="Boxes"><input name="boxes" style="width:66px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
 					<td data-label="Total"><input name="total" style="width:66px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+					<td data-label="kind">
+						<input type="text" name="kind" style="width:100px;">
+					</td>
 					<td data-label="Update Comments">
 						<textarea name="update_comments" id="" >{{.update_comments}}</textarea>
 					</td>
@@ -38,7 +43,7 @@
 			</table>
 		</form>
 	</div>
-	<div class="alert alert-primary update-fd"></div>
+	
 </div>
 {{end}}
 

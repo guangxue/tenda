@@ -21,12 +21,13 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             fmt.Println("Form parse error:", err)
         }
-        location   := r.FormValue("location")
-        model      := r.FormValue("model")
-        unit       := r.FormValue("unit")
-        cartons    := r.FormValue("cartons")
-        boxes      := r.FormValue("boxes")
-        total      := r.FormValue("total")
+        location := r.FormValue("location")
+        model    := r.FormValue("model")
+        unit     := r.FormValue("unit")
+        cartons  := r.FormValue("cartons")
+        boxes    := r.FormValue("boxes")
+        total    := r.FormValue("total")
+        kind     := r.FormValue("kind")
 
 		insertStmt := map[string]interface{}{
 			"location":location,
@@ -35,6 +36,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
 			"cartons":cartons,
 			"boxes":boxes,
 			"total":total,
+            "kind":kind,
 		}
         fmt.Println("InsertStatmentMap:", insertStmt)
         tx, ctx := mysql.Begin(db)
@@ -45,7 +47,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         lastId, _ := insertFeedback[0]["lastId"]
         if lastId != "" {
             insertColumn := mysql.
-                Select("SID", "location", "model", "unit", "cartons", "boxes", "total").
+                Select("SID", "location", "model", "unit", "cartons", "boxes", "total", "kind").
                 From(tbname["stock_updated"]).
                 Where("SID", lastId).
             With(tx,ctx)
@@ -68,6 +70,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         cartons := r.FormValue("cartons")
         boxes := r.FormValue("boxes")
         total := r.FormValue("total")
+        kind     := r.FormValue("kind")
         update_comments := r.FormValue("update_comments")
 
         if update_comments != "" {
@@ -79,6 +82,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
                 "cartons":cartons,
                 "boxes":boxes,
                 "total":total,
+                "kind": kind,
                 "update_comments":update_comments,
             }
             fmt.Println("...UPDATE..ing stock_updated")
@@ -89,7 +93,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
             With(tx, ctx)
 
             getUpdatedStock := mysql.
-                Select("SID", "location", "model", "unit", "cartons", "boxes", "total","update_comments").
+                Select("SID", "location", "model", "unit", "cartons", "boxes", "total","kind","update_comments").
                 From(tbname["stock_updated"]).
                 Where("SID", SID).
             With(tx, ctx)

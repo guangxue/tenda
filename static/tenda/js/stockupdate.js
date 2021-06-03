@@ -17,7 +17,8 @@ updateStockBtn.addEventListener('click', function(e) {
 	})
 	.then( resdata => {
 		if(resdata) {
-			let titles = ["SID", "location", "model", "unit", "cartons", "boxes", "total", "update_comments", "Actions"];
+			let fbelm = document.querySelector(".update-fd");
+			let titles = ["SID", "location", "model", "unit", "cartons", "boxes", "total", "kind","update_comments", "Actions"];
 			let data = resdata;
 			let currURL = window.location.pathname + window.location.search;
             let pathname = window.location.pathname;
@@ -26,7 +27,7 @@ updateStockBtn.addEventListener('click', function(e) {
 			table.classList.add("single-row")
 			let contentwrapper = document.querySelector(".content-wrapper");
 			contentwrapper.appendChild(table);
-			endTransact("#txcm", "#txrb", table)
+			endTransact("#txcm", "#txrb", table, fbelm)
 		}
 	})
 });

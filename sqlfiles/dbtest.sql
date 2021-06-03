@@ -6,7 +6,7 @@ INSERT INTO last_updated_test(location,model,old_total,total_picks,unit,cartons,
 SELECT location,model,old_total,total_picks,unit,cartons,boxes,total,completed_at
 FROM last_updated;
 
-INSERT INTO picklist_test(PNO,model,qty,customer,location,status,created_at,updated_at)
+INSERT INTO picklist_test(PNO,sales_mgr,model,qty,customer,location,status,created_at,updated_at)
 SELECT PNO,model,qty,customer,location,status,created_at,updated_at
 FROM picklist;
 

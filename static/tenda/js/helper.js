@@ -74,6 +74,7 @@ function createTable(tableTitles, data, objNames) {
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
+			console.log("[helper.js] set cell value:",d[objNames[i]])
 			cell.innerHTML = d[objNames[i]]
 			cell.setAttribute("data-label", tableTitles[i])
 		}
@@ -187,7 +188,7 @@ function endTransact(txCname, txRname, cfmTbl, feedbackElem) {
 				cfmTbl.remove();
 				feedbackElem.classList.add("alert-success");
 				feedbackElem.innerHTML = `update successfully`;
-				fadeOut(feedbackElem)	
+				fadeOut(feedbackElem)
 			}
 			if(data.err !== "") {
 				cfmTbl.remove();

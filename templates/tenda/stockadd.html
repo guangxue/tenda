@@ -13,6 +13,7 @@
 						<th>箱数</th>
 						<th>散货数</th>
 						<th>数量总计</th>
+						<th>种类</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -24,6 +25,9 @@
 					<td data-label="cartons"><input name="cartons" style="width:80px;padding:7px 12px;" type="text"></td>
 					<td data-label="Boxes"><input name="boxes" style="width:80px;padding:7px 12px;" type="text" value="{{.boxes}}"></td>
 					<td data-label="Total"><input name="total" style="width:80px;padding:7px 12px;" type="text" value="{{.total}}"></td>
+					<td data-label="kind">
+						<input type="text" name="kind" style="width:80px;padding:7px 12px;">
+					</td>
 					<td><button class="btn btn-primary" id="stockAddBtn">Add</button></td>
 					</tr>
 				</tbody>
