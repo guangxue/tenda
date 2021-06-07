@@ -70,7 +70,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         cartons := r.FormValue("cartons")
         boxes := r.FormValue("boxes")
         total := r.FormValue("total")
-        kind     := r.FormValue("kind")
+        kind  := r.FormValue("kind")
         update_comments := r.FormValue("update_comments")
 
         if update_comments != "" {

@@ -150,7 +150,7 @@ func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
 
 	if SID != "" {
 		currentStockToUpdate := mysql.
-			Select("SID", "location", "model", "unit", "cartons", "boxes","total", "update_comments").
+			Select("SID", "location", "model", "unit","kind", "cartons", "boxes","total", "update_comments").
 			From(tbname["stock_updated"]).
 			Where("SID", SID).
 			Use(db)
@@ -207,5 +207,17 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 		tx.Rollback()
 		resText["err"] = ""
 		returnJs(w, resText)
+	}
+}
+
+func MessagePage(w http.ResponseWriter, r *http.Request) {
+	tmplpath := "templates/tenda/messages.html"
+	tmpl, err := template.ParseFiles(tmplpath)
+	if err != nil {
+		fmt.Println("template parsing errors: ", err)
+	}
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		fmt.Println("template executing errors: ", err)
 	}
 }
