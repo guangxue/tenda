@@ -36,13 +36,13 @@ searchBtn.addEventListener('click', function(e) {
 		fetch(getModel+model).then(response => { return response.json()})
 		.then(data => {
 			let sum_total = 0;
-			let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th></tr></thead><tbody>";
+			let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th><th>Modify</th></tr></thead><tbody>";
 			data.forEach(m => {
-				let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td></tr>`
+				let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td><td><a href="/tenda/stock/update?SID=${m.SID}">Update</a></td></tr>`
 				table += row
 				sum_total += parseFloat(m.total);
 			});
-			table += `<tr><td></td><td></td><td></td><td></td><td>${sum_total}</td></tr></tbody></table>`
+			table += `<tr><td></td><td></td><td></td><td></td><td>${sum_total}</td><td></td></tr></tbody></table>`
 			document.querySelector("#sfb").innerHTML = table;
 		})
 		.then(()=>{

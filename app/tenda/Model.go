@@ -37,7 +37,7 @@ func Model(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if searchModel != "" && searchLocation == "" {
-		allModels := mysql.Select("model", "location", "unit", "cartons", "boxes", "total").
+		allModels := mysql.Select("SID","model", "location", "unit", "cartons", "boxes", "total").
 			From(tbname["stock_updated"]).
 			Where("model", searchModel).
 			Use(db)
