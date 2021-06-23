@@ -4,19 +4,12 @@
 	<div class="form-wrapper">
 		<div class="alert update-fd"></div>
 		<div class="form-title-update">
-			<h1>{{.model}} [{{.location}}]</h1>
-			<h3>[completed] {{.completed_at}} </h3>
+			<h1>{{.model}} </h1>
+			<h2>@ {{.location}}</h2>
+			<h3>: {{.completed_at}} </h3>
 		</div>
 		<form action="" method="post" id="updateLIDForm">
 			<input type="hidden" name="LID" value="{{.LID}}">
-			<div class="form-line">
-				<div><label for="uni">
-					<span class="title">Unit</span>
-				</label></div>
-				<div>
-					<input id="uni" type="text" name="location" value="{{.unit}}">
-				</div>
-			</div>
 			<div class="form-line">
 				<div><label for="loc">
 					<span class="title">Location</span>
@@ -31,12 +24,6 @@
 				<input list="modelist" id="mod" type="text" name="model" value="{{.model}}">
 				</div>
 			</div> -->
-			<div class="form-line">
-				<div><label for="ot">
-					<span class="title">Last Total</span>
-				</label></div>
-				<div><input id="ot" type="tel" name="old_total" value="{{.old_total}}"></div>
-			</div>
 			
 			<div class="form-line">
 				<div>

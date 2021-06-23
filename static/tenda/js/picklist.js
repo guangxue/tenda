@@ -94,7 +94,7 @@ selectButton.addEventListener("click", function() {
 				let objNames =   ["location", "model","unit","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/lastupdated/update?LID=${d.LID}">update</a>`;
+					d.update = `<a href="/tenda/lastupdated?LID=${d.LID}">update</a>`;
 				});
 				return {
 					"titles": titles,

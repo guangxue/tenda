@@ -161,6 +161,7 @@ func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
 
 func LastUpdatedPage(w http.ResponseWriter, r *http.Request) {
 	LID := r.URL.Query().Get("LID");
+	fmt.Println("[LastUpdatedPage] LID:", LID)
 	if LID != "" {
 		LastUpdated := mysql.
 			Select("LID","location","model","unit","old_total","total_picks","cartons","boxes","completed_at").
