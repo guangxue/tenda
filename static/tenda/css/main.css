@@ -482,11 +482,11 @@ div.space-around {
 		position: absolute;
 		top: 0px;
 		left: 0px;
-		padding: 1em 0.5em;
+		padding: 1em 0em;
 		white-space: nowrap;
 		font-weight: bold;
 		border: 1px solid #0f6ca4;
-		width: 130px;
+		width: 120px;
 		background-color: #0f6ca4;
 		color: #fff;
 
@@ -497,7 +497,7 @@ div.space-around {
 	table.single-row td:before { content: attr(data-label); }
 	table.single-row input {
 		float: left;
-		margin-left: 18.8em;
+		margin-left: 10em;
 		border: none;
 		border-bottom: 1px solid #f0f0f0;
 	}
@@ -508,10 +508,13 @@ div.space-around {
 		float: left;
 		-webkit-appearance: none;
 		border-radius: 2px;
-		margin-left: 16.8em;
+		margin-left: 10em;
 		border: 1px solid #f0f0f0;
 	}
 	#updateStockBtn {
 		width: 30%;
+	}
+	td[data-label="Action"] {
+
 	}
 }

@@ -1,27 +1,25 @@
 package tenda
 
 import (
-	_ "fmt"
+	"fmt"
 	"net/http"
-	_ "strings"
+    "strings"
 	_ "github.com/guangxue/webapps/mysql"
 )
 
 func LastUpdated(w http.ResponseWriter, r *http.Request) {
-	// if r.Method == "PUT" {
-	// 	err := r.ParseForm()
-	// 	if err != nil {
-	// 		fmt.Println("Form parse error:", err)
-	// 	}
-	// 	// PID := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/PID/")
-	// 	// if strings.Contains(PID, "/") {
-	// 	// 	PID = ""
-	// 	// }
+	if r.Method == "PUT" {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println("Form parse error:", err)
+		}
+		LID := strings.TrimPrefix(r.URL.Path, "/tenda/api/lastupdated/LID/")
+		if strings.Contains(LID, "/") {
+			LID = ""
+		}
+		fmt.Println("[last updated API] LID:", LID)
 		
-	// 	location := r.FormValue("location")
-
-
-		
+		// location := r.FormValue("location")
 		
 	// 	tx, ctx := mysql.Begin(db)
 	// 	updateInfo := map[string]interface{} {
@@ -42,5 +40,5 @@ func LastUpdated(w http.ResponseWriter, r *http.Request) {
 	// 	dbCommits["PickList"] = tx
 	// 	fmt.Println("updatedPicked:", updatedPicked)
 	// 	returnJson(w, updatedPicked)
-	// }
+	}
 }
