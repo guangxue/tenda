@@ -185,7 +185,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			returnJson(w, insertFeedback)
 		} else if PNOdate == today {
 			fmt.Println("PNOdate == today")
-			/*
+			
 			insertQuery := map[string]interface{}{
 				"PNO":PNO,
 				"model":model,
@@ -211,7 +211,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Commit error:", err)
 			}
 			returnJson(w, insertFeedback)
-			*/
 		}
 		
 	}
