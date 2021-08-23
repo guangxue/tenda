@@ -2,6 +2,7 @@ import { formDataCollect, createTable,endTransact } from './helper.js';
 
 
 const updateStockBtn = document.querySelector("#updateStockBtn");
+const deleteStockBtn = document.querySelector("#delStockBtn")
 
 updateStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
@@ -29,5 +30,16 @@ updateStockBtn.addEventListener('click', function(e) {
 			contentwrapper.appendChild(table);
 			endTransact("#txcm", "#txrb", table, fbelm)
 		}
+	})
+});
+
+deleteStockBtn.addEventListener('click', function(e) {
+	e.preventDefault();
+	let SID = document.querySelector("input[name=SID]").value;
+	let fetch_url = `https://gzhang.dev/tenda/api/stock/SID/${SID}`;
+	console.log("Deleting SID:", SID)
+	fetch(fetch_url, {
+		method: "DELETE",
+		body:null,
 	})
 });

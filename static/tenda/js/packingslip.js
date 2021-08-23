@@ -111,7 +111,7 @@ pickButton.addEventListener('click', function(e) {
 		return resp.json();
 	})
 	.then(data => {
-		console.log("[packingslip.js] data from picklist table:", data)
+		console.log("1.[packingslip.js] data from picklist table:", data)
 		if(data[0].lastId) {
 			let ifb = document.querySelector("#insertFB")
 			ifb.style.display="block"
@@ -136,7 +136,7 @@ pickButton.addEventListener('click', function(e) {
 				return resp.json();
 			})
 			.then(data =>{
-				console.log("[packingslip.js] data from picklist table:", data)
+				console.log("2.[packingslip.js] data from picklist table:", data)
 				data.forEach( p=> {
 					cell1.innerHTML = p.PID;
 					cell2.innerHTML = p.PNO;
@@ -147,7 +147,7 @@ pickButton.addEventListener('click', function(e) {
 					cell7.innerHTML = p.location;
 					cell8.innerHTML = p.status;
 					cell9.innerHTML = p.created_at;
-					cell10.innerHTML = `<a href='/tenda/picklist/update?PID=${p.PID}'>Modify</a>`;
+					cell10.innerHTML = `<a href='/tenda/picklist/update?PID=${p.PID}' target="_blank">Modify</a>`;
 				})
 			})
 		}

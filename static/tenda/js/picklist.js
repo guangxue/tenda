@@ -81,7 +81,7 @@ selectButton.addEventListener("click", function() {
 				let objNames =   ["PNO","sales_mgr", "customer","model", "qty", "status","location", "created_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}">update</a>`;
+					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}" target="_blank">update</a>`;
 				})
 				return {
 					"titles": titles,
@@ -94,7 +94,7 @@ selectButton.addEventListener("click", function() {
 				let objNames =   ["location", "model","unit","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/lastupdated?LID=${d.LID}">update</a>`;
+					d.update = `<a href="/tenda/lastupdated?LID=${d.LID}" target="_blank">update</a>`;
 				});
 				return {
 					"titles": titles,
@@ -129,7 +129,7 @@ selectButton.addEventListener("click", function() {
 			dbtable_container.appendChild(newtable);
 			$("#dbtable").DataTable({
 				dom: 'Bfrtip',
-				buttons: ['print'],
+				buttons: ["excel"],
 				// order: [5, "des"],
 			});
 			let table_width = rebuild_dbtable();
@@ -192,8 +192,11 @@ selectButton.addEventListener("click", function() {
 						let newTotal = document.querySelector(".newTotal");
 
 						data.forEach( (d,i) => {
-							let completeInfoTitle = ['Location',"Unit",'OLD total','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
-							let completeInfoOrders = ['location','unit','oldTotal','pickQty','newCartons', 'newBoxes', 'newTotal']
+							// let completeInfoTitle = ['Location',"Unit",'OLD total','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
+							// let completeInfoOrders = ['location','unit','oldTotal','pickQty','newCartons', 'newBoxes', 'newTotal']
+
+							let completeInfoTitle = ['Location','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
+							let completeInfoOrders = ['location','pickQty','newCartons', 'newBoxes', 'newTotal']
 							let completeData = []
 							d.rowTitle = `${d.sqlinfo.split(' ')[0]} last_updated`
 							completeData.push(d);

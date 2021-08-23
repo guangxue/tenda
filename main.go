@@ -28,6 +28,7 @@ func main() {
 	mux.HandleFunc("/tenda/stock/add", tenda.RenderHandler("stockadd.html"))
 	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdatePage)
 	mux.HandleFunc("/tenda/stock", tenda.RenderHandler("stock.html"))
+	mux.HandleFunc("/tenda/soh", tenda.RenderHandler("soh.html"))
 	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdatePage)
 	mux.HandleFunc("/tenda/yam", tenda.MessagePage)
 	mux.HandleFunc("/tenda/lastupdated", tenda.LastUpdatedPage)
@@ -69,6 +70,11 @@ func routing(w http.ResponseWriter, r *http.Request) {
 
     if strings.HasPrefix(rPath, "/tenda/api/stock") {
         tenda.Stock(w, r)
+        return
+    }
+
+    if strings.HasPrefix(rPath, "/tenda/api/soh") {
+        tenda.SOH(w, r)
         return
     }
 

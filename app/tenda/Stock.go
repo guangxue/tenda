@@ -8,7 +8,7 @@ import (
 )
 
 func Stock(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
         allstock := mysql.
         Select("SID", "location", "model", "unit", "cartons", "boxes","total", "kind", "notes").
             From(tbname["stock_updated"]).
@@ -16,7 +16,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         returnJson(w, allstock)
 	}
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
         err := r.ParseForm()
         if err != nil {
             fmt.Println("Form parse error:", err)
@@ -55,7 +55,7 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         }
 	}
 
-	if r.Method == "PUT" {
+	if r.Method == http.MethodPut {
         SID := strings.TrimPrefix(r.URL.Path, "/tenda/api/stock/SID/")
         if strings.Contains(SID, "/") {
             SID = ""
@@ -101,5 +101,19 @@ func Stock(w http.ResponseWriter, r *http.Request) {
             dbCommits["StockUpdate"] = tx
             returnJson(w, getUpdatedStock)
         }
+    }
+
+    if r.Method == http.MethodDelete {
+        SID := strings.TrimPrefix(r.URL.Path, "/tenda/api/stock/SID/")
+        if strings.Contains(SID, "/") {
+            SID = ""
+        }
+        fmt.Printf("[%-18s]  Deleting SID: %v\n", "stockUpdate",SID)
+        // tx, ctx := mysql.Begin(db)
+        rowsAffected := mysql.DeleteFrom(tbname["stock_updated"], false).Where("SID", SID).Use(db)
+        writeJson := map[string]string{
+            "rowsAffected": rowsAffected[0]["rowsAffected"],
+        }
+        returnJs(w, writeJson)
     }
 }

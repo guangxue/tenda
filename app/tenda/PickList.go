@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 	"github.com/guangxue/webapps/mysql"
 )
 
@@ -131,31 +132,88 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		location := r.FormValue("pickLocation")
 		salesMgr := r.FormValue("sales_mgr")
 		status := "Pending"
-		insertQuery := map[string]interface{}{
-			"PNO":PNO,
-			"model":model,
-			"sales_mgr": salesMgr,
-			"qty":qty,
-			"customer":customer,
-			"location":location,
-			"status":status,
-		}
+		td := time.Now()
+		todayDate  := td.Format("20060102 15:04:05")
+		today,tdTime  := strings.Split(todayDate, " ")[0], strings.Split(todayDate, " ")[1]
+		fmt.Println("todayDate:", today)
+		fmt.Println("tdTime:", tdTime)
+		// AE20210816-1
+		PNOdt := strings.Split(PNO, "-")[0]
+		fmt.Println("PNOdt:", PNOdt)
+		PNOdate := PNOdt[2:]
+		fmt.Println("PNODate:", PNOdate)
+		fmt.Println("PNOdate len:", len(PNOdate))
 
-		for kname, val := range insertQuery {
-			if val == "" {
-				resText := map[string]string {
-					"err": "Empty form data",
-				}
-				fmt.Println("Error: Empty form data:", kname)
-				returnJs(w, resText)
+		if len(PNOdate) != 8 {
+			resText := map[string]string {
+				"err": "Wrong Date Format",
 			}
+			fmt.Println("Error: Wrong date format")
+			returnJs(w, resText)
 		}
 
-		insertFeedback := mysql.InsertInto(tbname["picklist"], insertQuery).Use(db)
-		if err != nil {
-			fmt.Println("Commit error:", err)
+		if PNOdate != today {
+			PNOyear  := PNO[2:6]
+			PNOmonth := PNO[6:8]
+			PNOday   := PNO[8:10]
+			fmt.Println("PNOdate != today")
+			insertDate := PNOyear + "-" + PNOmonth + "-" + PNOday + " " + tdTime
+			fmt.Println("InsertDate:", insertDate)
+			insertQuery := map[string]interface{}{
+				"PNO":PNO,
+				"model":model,
+				"sales_mgr": salesMgr,
+				"qty":qty,
+				"customer":customer,
+				"location":location,
+				"status":status,
+				"created_at": insertDate,
+			}
+			for kname, val := range insertQuery {
+				if val == "" {
+					resText := map[string]string {
+						"err": "Empty form data",
+					}
+					fmt.Println("Error: Empty form data:", kname)
+					returnJs(w, resText)
+				}
+			}
+			insertFeedback := mysql.InsertInto(tbname["picklist"], insertQuery).Use(db)
+			if err != nil {
+				fmt.Println("Commit error:", err)
+			}
+			returnJson(w, insertFeedback)
+		} else if PNOdate == today {
+			fmt.Println("PNOdate == today")
+			/*
+			insertQuery := map[string]interface{}{
+				"PNO":PNO,
+				"model":model,
+				"sales_mgr": salesMgr,
+				"qty":qty,
+				"customer":customer,
+				"location":location,
+				"status":status,
+			}
+
+			for kname, val := range insertQuery {
+				if val == "" {
+					resText := map[string]string {
+						"err": "Empty form data",
+					}
+					fmt.Println("Error: Empty form data:", kname)
+					returnJs(w, resText)
+				}
+			}
+
+			insertFeedback := mysql.InsertInto(tbname["picklist"], insertQuery).Use(db)
+			if err != nil {
+				fmt.Println("Commit error:", err)
+			}
+			returnJson(w, insertFeedback)
+			*/
 		}
-		returnJson(w, insertFeedback)
+		
 	}
 
 	if r.Method == "DELETE" {

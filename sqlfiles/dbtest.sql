@@ -13,3 +13,9 @@ FROM picklist;
 INSERT INTO stock_updated_test(location,model,unit,cartons,boxes,total,kind,notes,update_comments,updated_at)
 SELECT location,model,unit,cartons,boxes,total,kind,notes,update_comments,updated_at
 FROM stock_updated;
+
+
+SELECT model, sum(total) as totals
+FROM stock_updated
+GROUP BY model
+ORDER BY totals DESC;

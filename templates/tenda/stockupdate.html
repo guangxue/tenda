@@ -25,7 +25,7 @@
 					<td data-label="SID">{{.SID}}</td>
 
 					<input type="hidden" name="SID" value="{{.SID}}">
-					<td data-label="Location"><input name="location" style="width:60px;padding:7px 12px;" type="text" value="{{.location}}"></td>
+					<td data-label="Location"><input name="location" style="width:80px;padding:7px 12px;" type="text" value="{{.location}}"></td>
 					<td data-label="Model"><input name="model" style="width:135px;padding:7px 12px;" type="text" value="{{.model}}"></td>
 					<td data-label="Unit"><input name="unit" style="width:66px;padding:7px 12px;" type="text" value="{{.unit}}"></td>
 					<td data-label="Cartons"><input name="cartons" style="width:66px;padding:7px 12px;" type="text" value="{{.cartons}}"></td>
@@ -37,13 +37,15 @@
 					<td data-label="Update Comments">
 						<textarea name="update_comments" id="" >{{.update_comments}}</textarea>
 					</td>
-					<td data-label="Action"><button class="btn btn-primary" id="updateStockBtn">Update</button></td>
+					<td data-label="Action" id="actionCell">
+						<button class="btn btn-primary" id="updateStockBtn">Update</button>
+						<button class="btn btn-info" id="delStockBtn">Delete</button>
+					</td>
 					</tr>
 				</tbody>
 			</table>
 		</form>
 	</div>
-	
 </div>
 {{end}}
 

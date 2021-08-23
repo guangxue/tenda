@@ -50,7 +50,6 @@ function fetchDataList(url, idName, afterElem) {
 	})
 }
 
-
 function WhenClick(elem, listener) {
 	let theEl = document.querySelector(elem);
 	if(theEl) {
@@ -90,7 +89,8 @@ function rebuild_dbtable() {
 
 	// set pagination width = dbtable width
 	let paginate = document.querySelector("div#dbtable_paginate");
-	paginate.style.width = `${dbtable_width}px`;
+	// paginate.style.width = `${dbtable_width}px`;
+	paginate.style.width = `520px`;
 
 	// wrap dt-buttons and dt-filter with `div.dbtable_header`
 	let dbtable_header = document.createElement("div");
@@ -114,8 +114,6 @@ function rebuild_dbtable() {
 	searchBar.style.marginLeft = "2em"
 	return dbtable_width
 }
-
-
 
 function lastSaturdayTS() {
 	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
@@ -158,7 +156,7 @@ function formDataCollect(formElement) {
 		if(!pair[1]) {
 			let inputName = document.querySelector(`input[name=${pair[0]}]`)
 			inputName.style.border="1px solid red"
-			return
+			return 
 		}
 		console.log(`${pair[0]} is ${pair[1]}`)
 		data.append(pair[0], pair[1])

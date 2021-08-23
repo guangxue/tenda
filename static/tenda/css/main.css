@@ -386,6 +386,11 @@ div.space-around {
 	justify-content: space-around;
 }
 
+#actionCell button {
+	display: block;
+	margin: 3px;
+}
+
 /* Media queries */
 
 @media (max-width: 800px) {
