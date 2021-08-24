@@ -3,6 +3,35 @@ import { formDataCollect, createTable,endTransact } from './helper.js';
 
 const updateStockBtn = document.querySelector("#updateStockBtn");
 const deleteStockBtn = document.querySelector("#delStockBtn")
+const inputCartons = document.querySelector("input[name=cartons]")
+const inputBoxes = document.querySelector("input[name=boxes]")
+const inputTotal = document.querySelector("input[name=total]")
+inputTotal.disabled = true;
+
+
+inputCartons.addEventListener("change", (e)=> {
+	const unit = document.querySelector("input[name=unit]").value;
+	let cartons = inputCartons.value;
+	let boxes = inputBoxes.value;
+	console.log("unit:", unit)
+	console.log("cartons:", cartons)
+	console.log("boxes:", boxes)
+	let total = parseInt(unit) * parseInt(cartons) + parseInt(boxes);
+	console.log("total:", total)
+	inputTotal.value = total;
+});
+
+inputBoxes.addEventListener("change", (e)=> {
+	const unit = document.querySelector("input[name=unit]").value; 
+	let cartons = inputCartons.value;
+	let boxes = inputBoxes.value;
+	console.log("unit:", unit)
+	console.log("cartons:", cartons)
+	console.log("boxes:", boxes)
+	let total = parseInt(unit) * parseInt(cartons) + parseInt(boxes);
+	console.log("total:", total)
+	inputTotal.value = total;	
+});
 
 updateStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
@@ -43,3 +72,4 @@ deleteStockBtn.addEventListener('click', function(e) {
 		body:null,
 	})
 });
+

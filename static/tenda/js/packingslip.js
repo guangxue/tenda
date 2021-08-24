@@ -26,35 +26,39 @@ const pickButton = document.querySelector("#pickbtn")
 let currentLN = 1;
 
 const inputPNO = document.querySelector("#panum")
-const tbody = document.querySelector("#insertFB table tbody")
-let fbTable = document.createElement("table");
-let fbThead = fbTable.createTHead();
-let fbThrow = fbThead.insertRow(0);
-let cell0 = fbThrow.insertCell(0);
-let cell1 = fbThrow.insertCell(1);
-let cell2 = fbThrow.insertCell(2);
-let cell3 = fbThrow.insertCell(3);
-let cell4 = fbThrow.insertCell(4);
-let cell5 = fbThrow.insertCell(5);
-let cell6 = fbThrow.insertCell(6);
-let cell7 = fbThrow.insertCell(7);
-let cell8 = fbThrow.insertCell(8);
-let cell9 = fbThrow.insertCell(9);
+// const tbody = document.querySelector("#insertFB table tbody")
+// let fbTable = document.createElement("table");
+// let fbThead = fbTable.createTHead();
+// let fbThrow = fbThead.insertRow(0);
+// let cell0 = fbThrow.insertCell(0);
+// let cell1 = fbThrow.insertCell(1);
+// let cell2 = fbThrow.insertCell(2);
+// let cell3 = fbThrow.insertCell(3);
+// let cell4 = fbThrow.insertCell(4);
+// let cell5 = fbThrow.insertCell(5);
+// let cell6 = fbThrow.insertCell(6);
+// let cell7 = fbThrow.insertCell(7);
+// let cell8 = fbThrow.insertCell(8);
+// let cell9 = fbThrow.insertCell(9);
 
-cell0.textContent = "PID";
-cell1.textContent = "PNO";
-cell2.textContent = "Sales Manager";
-cell3.textContent = "model";
-cell4.textContent = "qty";
-cell5.textContent = "customer";
-cell6.textContent = "location";
-cell7.textContent = "status";
-cell8.textContent = "created_at";
-cell9.textContent = "Action";
+// cell0.textContent = "PID";
+// cell1.textContent = "PNO";
+// cell2.textContent = "Sales Manager";
+// cell3.textContent = "model";
+// cell4.textContent = "qty";
+// cell5.textContent = "customer";
+// cell6.textContent = "location";
+// cell7.textContent = "status";
+// cell8.textContent = "created_at";
+// cell9.textContent = "Action";
 
-
+/**
+ * input[PO Number]
+ * WHEN input changes, get data from picklist
+ * WHEN PNO number == input[PO Number] 
+ **/
 inputPNO.addEventListener("input", function() {
-	if(inputPNO.value && !tbody) {
+	if(inputPNO.value) {
 		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputPNO.value}`;
 		fetch(fetch_url, {
 			method: "GET"
@@ -64,6 +68,7 @@ inputPNO.addEventListener("input", function() {
 		})
 		.then(data => {
 			if(data[0] && data) {
+				console.log(data)
 				let titles = ["PID", "PNO","sales_mgr","model", "qty", "customer", "location", "status", "created_at", "Action"];
 				data.forEach( d=> {
 					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
@@ -73,9 +78,13 @@ inputPNO.addEventListener("input", function() {
 				insertFB.innerHTML = table.outerHTML;
 				insertFB.style.display = "block"
 			} else {
-				insertFB.innerHTML = ""
-				insertFB.appendChild(fbTable)
-				insertFB.style.display = "none"
+				// insertFB.innerHTML = ""
+				// insertFB.appendChild(fbTable)
+				// insertFB.style.display = "none"
+				let lastTbody = document.querySelector("#insertFB table tbody")
+				if(lastTbody) {
+					lastTbody.innerHTML = ""
+				}
 			}
 		})
 	}
@@ -86,6 +95,10 @@ inputPNO.addEventListener("input", function() {
 	}
 });
 
+
+/**
+ * WHEN pick button pressed
+ **/
 pickButton.addEventListener('click', function(e) {
 	e.preventDefault();
 
@@ -111,13 +124,15 @@ pickButton.addEventListener('click', function(e) {
 		return resp.json();
 	})
 	.then(data => {
-		console.log("1.[packingslip.js] data from picklist table:", data)
+		console.log("[last insert ID]:", data[0].lastId)
 		if(data[0].lastId) {
 			let ifb = document.querySelector("#insertFB")
 			ifb.style.display="block"
 			let table = document.querySelector("#insertFB table");
-
-			let tbody = table.createTBody();
+			table.style.display = "block"
+			let tbody =  document.querySelector("#insertFB tbody");
+			console.log("tbody:",tbody)
+			// let tbody = table.createTBody();
 			let newRow = tbody.insertRow(0);
 			let cell1 = newRow.insertCell(0);
 			let cell2 = newRow.insertCell(1);
@@ -136,7 +151,7 @@ pickButton.addEventListener('click', function(e) {
 				return resp.json();
 			})
 			.then(data =>{
-				console.log("2.[packingslip.js] data from picklist table:", data)
+				// console.log("2.[packingslip.js] data from picklist table:", data)
 				data.forEach( p=> {
 					cell1.innerHTML = p.PID;
 					cell2.innerHTML = p.PNO;
