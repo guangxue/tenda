@@ -6,7 +6,7 @@ const deleteStockBtn = document.querySelector("#delStockBtn")
 const inputCartons = document.querySelector("input[name=cartons]")
 const inputBoxes = document.querySelector("input[name=boxes]")
 const inputTotal = document.querySelector("input[name=total]")
-inputTotal.disabled = true;
+// inputTotal.disabled = true;
 
 
 inputCartons.addEventListener("change", (e)=> {

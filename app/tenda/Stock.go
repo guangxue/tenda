@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+    "strconv"
 	"github.com/guangxue/webapps/mysql"
 )
 
@@ -69,7 +70,8 @@ func Stock(w http.ResponseWriter, r *http.Request) {
         unit := r.FormValue("unit")
         cartons := r.FormValue("cartons")
         boxes := r.FormValue("boxes")
-        total := r.FormValue("total")
+        tot, _ := strconv.Atoi(r.FormValue("total"))
+        total := strconv.Itoa(tot)
         kind  := r.FormValue("kind")
         update_comments := r.FormValue("update_comments")
 

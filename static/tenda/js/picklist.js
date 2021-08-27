@@ -33,6 +33,7 @@ pickStatusOpt.addEventListener("change", function() {
 	}
 });
 
+
 selectButton.addEventListener("click", function() {
 	let pickDate = document.querySelector("#pick_date").value
 	let pickStatus = document.querySelector("#pick_status").value;
@@ -41,12 +42,15 @@ selectButton.addEventListener("click", function() {
 
 
 	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
+	// SELECT * FROM picklist where model='pickmodel' AND created_at > 'pickDate'
 	if(pickModel && pickStatus == "from") {
 		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}?date=${pickDate}&status=${pickStatus}`
 	}
+	// SELECT * FROM picklist where model='pickmodel'
 	if(pickModel && pickStatus != "from") {
 		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}`
 	}
+	// SELECT * FROM picklist where PNO = 'searchPNO'
 	if(searchPNO) {
 		fetch_url = `https://gzhang.dev/tenda/api/picklist/search/PNO/${searchPNO}`
 	}
@@ -271,6 +275,7 @@ if(closeBtn) {
 		})
 	});
 }
+
 let commitBtn = document.querySelector(".btn-commit");
 if(commitBtn) {
 	commitBtn.addEventListener('click', function() {

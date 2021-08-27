@@ -69,11 +69,12 @@ inputPNO.addEventListener("input", function() {
 		.then(data => {
 			if(data[0] && data) {
 				console.log(data)
-				let titles = ["PID", "PNO","sales_mgr","model", "qty", "customer", "location", "status", "created_at", "Action"];
+				let names = ["PID", "PNO","sales_mgr","customer", "model", "qty", "location", "status", "created_at", "Action"];
+				let titles = ["PID", "PNO", "Sales", "Customer", "Model", "Quantity", "Location", "Status", "Created_at", "Action"]
 				data.forEach( d=> {
 					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
 				});
-				let table = createTable(titles, data, titles);
+				let table = createTable(titles, data, names);
 				let insertFB = document.querySelector("#insertFB")
 				insertFB.innerHTML = table.outerHTML;
 				insertFB.style.display = "block"
