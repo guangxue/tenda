@@ -91,8 +91,8 @@ inputPNO.addEventListener("input", function() {
 	}
 	else {
 		insertFB.innerHTML = ""
-		insertFB.appendChild(fbTable);
-		fbTable.style.display="none";
+		// insertFB.appendChild(fbTable);
+		// fbTable.style.display="none";
 	}
 });
 
