@@ -52,11 +52,27 @@ const inputPNO = document.querySelector("#panum")
 // cell8.textContent = "created_at";
 // cell9.textContent = "Action";
 
+
 /**
  * input[PO Number]
  * WHEN input changes, get data from picklist
  * WHEN PNO number == input[PO Number] 
  **/
+ /******
+ * 
+ *  <th>PID</th>
+	<th>Sales</th>
+	<th>PNO</th>
+	<th>model</th>
+	<th>qty</th>
+	<th>customer</th>
+	<th>location</th>
+	<th>status</th>
+	<th>created_at</th>
+	<th>Action</th>
+ * 
+ *  let names = ["PID", ];
+ * */
 inputPNO.addEventListener("input", function() {
 	if(inputPNO.value) {
 		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputPNO.value}`;
@@ -152,14 +168,14 @@ pickButton.addEventListener('click', function(e) {
 				return resp.json();
 			})
 			.then(data =>{
-				// console.log("2.[packingslip.js] data from picklist table:", data)
+				console.log("2.[packingslip.js] data from picklist table:", data)
 				data.forEach( p=> {
 					cell1.innerHTML = p.PID;
 					cell2.innerHTML = p.PNO;
 					cell3.innerHTML = p.sales_mgr;
-					cell4.innerHTML = p.model;
-					cell5.innerHTML = p.qty;
-					cell6.innerHTML = p.customer;
+					cell4.innerHTML = p.customer;
+					cell5.innerHTML = p.model;
+					cell6.innerHTML = p.qty;
 					cell7.innerHTML = p.location;
 					cell8.innerHTML = p.status;
 					cell9.innerHTML = p.created_at;
