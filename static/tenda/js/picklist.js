@@ -75,6 +75,7 @@ selectButton.addEventListener("click", function() {
 			return resp.json();
 		})
 		.then( data  => {
+			console.log(data)
 			if(!data[0]) {
 				const err = new Error("no rows return from database table: `picklist`")
 				err.name = "Empty set"
@@ -106,22 +107,21 @@ selectButton.addEventListener("click", function() {
 					"names": objNames,
 				}
 			}
-			if(data[0].model) {
-				let titles = ["item", "model", "total"];
+			if(data[0].weeklypicked) {
+				let titles = ["item","PNO", "Customer", "Model", "Quantity", "created_at"];
 				let tbData = data;
 				let i = 0;
 				tbData.forEach( d=> {
 					d.item = i + 1;
 					i++;
 				})
-				let objNames = ["item", "model", "total"];
+				let objNames = ["item", "pno", "customer", "model", "qty", "created_at"];
 				return {
 					"titles":titles,
 					"data": tbData,
 					"names": objNames,
 				}
 			}
-			
 		})
 		.then( tableObj => {
 			let newtable = createTable(tableObj.titles, tableObj.data, tableObj.names)

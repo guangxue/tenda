@@ -4,3 +4,7 @@ where created_at BETWEEN '2021-04-26' AND date_add('2021-04-26', INTERVAL 7 DAY)
 select model, sum(qty) as total
 from weeklypicks_0426
 group by  model order by total desc;
+
+SELECT pno, customer,model, qty, updated_at
+FROM picklist
+WHERE updated_at BETWEEN '2021-08-29%' AND date_add('2021-08-29%', INTERVAL 7 DAY);

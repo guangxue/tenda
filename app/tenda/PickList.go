@@ -59,10 +59,11 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			returnJson(w, allPicked)
 		} else if date != "" && status == "weeklypicked" {
 			// Weekly picked
-			stmt := fmt.Sprintf("WITH weeklypicked AS (select model, qty, customer, location, status, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)) SELECT model, SUM(qty) as total from weeklypicked group by model", date, date)
+			stmt := fmt.Sprintf("select pno, customer, model, qty, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)", date, date)
 			allPicked := mysql.
-				SelectRaw(stmt, "model", "total").
+				SelectRaw(stmt, "pno", "customer", "model", "qty", "created_at").
 			Use(db)
+			allPicked[0]["weeklypicked"] = "1"
 			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
 			returnJson(w, allPicked)
 		} else if PNO != "" {
