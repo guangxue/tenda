@@ -1,4 +1,4 @@
-create table stock_0521 (
+create table stock_updated (
 	SID int auto_increment primary key,
 	location varchar(20) not null default "",
 	model varchar(30) not null default "",
@@ -12,4 +12,4 @@ create table stock_0521 (
 	updated_at timestamp default current_timestamp on update current_timestamp
 );
 
-insert into stock_0521(location, model, unit,cartons,boxes,total,kind,notes,update_comments) select location,model,unit,cartons,boxes,total,kind,notes,update_comments from stock_updated;
+-- insert into stock_0521(location, model, unit,cartons,boxes,total,kind,notes,update_comments) select location,model,unit,cartons,boxes,total,kind,notes,update_comments from stock_updated;
