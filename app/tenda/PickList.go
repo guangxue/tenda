@@ -63,7 +63,9 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			allPicked := mysql.
 				SelectRaw(stmt, "pno", "customer", "model", "qty", "created_at").
 			Use(db)
-			allPicked[0]["weeklypicked"] = "1"
+			if len(allPicked) > 0 {
+				allPicked[0]["weeklypicked"] = "1"
+			}
 			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
 			returnJson(w, allPicked)
 		} else if PNO != "" {
