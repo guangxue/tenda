@@ -391,9 +391,19 @@ div.space-around {
 	margin: 3px;
 }
 
+#updateStockBtn {
+	width: 30%;
+}
+#delStockBtn {
+	width: 10%;
+}
+
 /* Media queries */
 
 @media (max-width: 800px) {
+	div.form-title {
+		margin: 0;
+	}
 	div.select-wrapper {
 	    width: 77%;
 	}
@@ -477,23 +487,21 @@ div.space-around {
 	}
 	table.single-row td { 
 		border: none;
-		border-top: 1px solid #0f6ca4;
+		/*border-top: 1px solid #0f6ca4;*/
 		/*border-bottom: 1px solid #0f6ca4;*/
-		border-right: 1px solid #0f6ca4;
+		/*border-right: 1px solid #0f6ca4;*/
 		position: relative;
-		padding: 0.83em;
+		padding: 0.5em;
 	}
 	table.single-row td:before { 
 		position: absolute;
-		top: 0px;
+		top: 6px;
 		left: 0px;
 		padding: 1em 0em;
 		white-space: nowrap;
 		font-weight: bold;
-		border: 1px solid #0f6ca4;
-		width: 120px;
-		background-color: #0f6ca4;
-		color: #fff;
+		/*border: 1px solid #0f6ca4;*/
+		width: 120px
 
 		/*border-bottom: 1px solid #0f6ca4;*/
 		/*border-left: 1px solid #0f6ca4;
@@ -503,8 +511,8 @@ div.space-around {
 	table.single-row input {
 		float: left;
 		margin-left: 10em;
-		border: none;
-		border-bottom: 1px solid #f0f0f0;
+		border: 1px solid;
+		/*border-bottom: 1px solid #f0f0f0;*/
 	}
 	table.single-row input:focus {
 		outline: none;
@@ -513,13 +521,7 @@ div.space-around {
 		float: left;
 		-webkit-appearance: none;
 		border-radius: 2px;
-		margin-left: 10em;
-		border: 1px solid #f0f0f0;
-	}
-	#updateStockBtn {
-		width: 30%;
-	}
-	td[data-label="Action"] {
-
+		margin: 1em 0 1em 9em;
+		border: 1px solid;
 	}
 }
