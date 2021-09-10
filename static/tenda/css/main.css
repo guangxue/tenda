@@ -153,7 +153,7 @@ div.form-element,
 }
 .select-options > div {
 	align-self: baseline;
-	margin-right: 1.5em;
+	margin-right: .5em;
 	align-self: center;
 }
 .select-btn {

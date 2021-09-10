@@ -5,20 +5,22 @@
 		<div>
 			<select name="pickoptions" id="pick_status" class="select">
 				<option value="Pending">Pending</option>
+				<option value="weeklypicked">Weekly Picked</option>
+				<option value="weeklycompleted">Weekly Completed</option>
 				<option value="Complete">Complete</option>
-				<option value="unfinished">- unfinished</option>
-				<option value="weeklypicked">Weekly picked</option>
-				<option value="weeklycompleted">Weekly completed</option>
 				<option value="from">From</option>
-				<option value="all">All</option>
+				<!-- <option value="unfinished">- unfinished</option> -->
+				<!-- <option value="all">All</option> -->
 			</select>
 		</div>
 		<div>
 			<input type="date" min="2021-04-04" step="7" required id="pick_date">
 		</div>
+		<div>┊</div>
 		<div>
 			<input style="width: 150px;" list="modelist" id="mod" type="text" name="model" placeholder="Model Name">
 		</div>
+		<div style="color:gray;">Or</div>
 		<div>
 			<input style="width: 150px;" type="text" name="PNO" placeholder="PNO">
 		</div>

@@ -59,9 +59,9 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			returnJson(w, allPicked)
 		} else if date != "" && status == "weeklypicked" {
 			// Weekly picked
-			stmt := fmt.Sprintf("select pno, customer, model, qty, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)", date, date)
+			stmt := fmt.Sprintf("select pno, customer, sales_mgr,model, qty, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)", date, date)
 			allPicked := mysql.
-				SelectRaw(stmt, "pno", "customer", "model", "qty", "created_at").
+				SelectRaw(stmt, "pno", "customer", "sales_mgr","model", "qty", "created_at").
 			Use(db)
 			if len(allPicked) > 0 {
 				allPicked[0]["weeklypicked"] = "1"

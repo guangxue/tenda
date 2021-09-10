@@ -83,7 +83,7 @@ selectButton.addEventListener("click", function() {
 			}
 			if(data[0].PID) {
 				let titles = ["PNO","Sales Manager","customer", "model", "quantity", "status","location", "created_at", "Action"];
-				let objNames =   ["PNO","sales_mgr", "customer","model", "qty", "status","location", "created_at", "update"];
+				let objNames = ["PNO","sales_mgr", "customer","model", "qty", "status","location", "created_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
 					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}" target="_blank">update</a>`;
@@ -95,8 +95,8 @@ selectButton.addEventListener("click", function() {
 				}
 			}
 			if(data[0].LID) {
-				let titles = ["Location", "Model","Unit","Last Total","Total Picks", "Cartons", "Boxes", "completed_at", "Action"];
-				let objNames =   ["location", "model","unit","old_total","total_picks","cartons", "boxes", "completed_at", "update"];
+				let titles = ["Location", "Model","Total Picks", "Cartons", "Boxes", "Action"];
+				let objNames =   ["location", "model","total_picks","cartons", "boxes", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
 					d.update = `<a href="/tenda/lastupdated?LID=${d.LID}" target="_blank">update</a>`;
@@ -108,14 +108,14 @@ selectButton.addEventListener("click", function() {
 				}
 			}
 			if(data[0].weeklypicked) {
-				let titles = ["item","PNO", "Customer", "Model", "Quantity", "created_at"];
+				let titles = ["item","PNO", "Customer", "Sales","Model", "Quantity", "created_at"];
 				let tbData = data;
 				let i = 0;
 				tbData.forEach( d=> {
 					d.item = i + 1;
 					i++;
 				})
-				let objNames = ["item", "pno", "customer", "model", "qty", "created_at"];
+				let objNames = ["item", "pno", "customer", "sales_mgr","model", "qty", "created_at"];
 				return {
 					"titles":titles,
 					"data": tbData,
