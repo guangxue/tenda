@@ -68,14 +68,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
 			returnJson(w, allPicked)
-		} else if PNO != "" {
-			// PNO
-			allPicked := mysql.
-				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
-				From(tbname["picklist"]).
-				Where("PNO",PNO).
-			Use(db)
-			returnJson(w, allPicked)
 		} else if searchPNO != "" {
 			allPicked := mysql.
 				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
@@ -100,6 +92,14 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				Use(db)
 				returnJson(w, allPicked)
 			}
+		} else if PNO != "" {
+			// Get picked orders for PackingSlip
+			allPicked := mysql.
+				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				From(tbname["picklist"]).
+				Where("PNO", PNO).
+			Use(db)
+			returnJson(w, allPicked)
 		} else if status == "all" {
 			allPicked := mysql.
 				Select("PID", "PNO", "model", "qty","sales_mgr","customer", "location", "status", "created_at", "updated_at").
@@ -215,7 +215,6 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			}
 			returnJson(w, insertFeedback)
 		}
-		
 	}
 
 	if r.Method == "DELETE" {

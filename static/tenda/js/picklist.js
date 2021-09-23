@@ -258,6 +258,7 @@ selectButton.addEventListener("click", function() {
 	}
 });
 
+
 let closeBtn = document.querySelector(".btn-cancel");
 if(closeBtn) {
 	closeBtn.addEventListener('click', function() {
