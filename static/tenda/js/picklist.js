@@ -160,6 +160,7 @@ selectButton.addEventListener("click", function() {
 			if(!completePickBtn) {
 				return
 			}
+			// Complete Button pressed
 			completePickBtn.addEventListener('click', function() {
 				let formData = new FormData();
 				let data = new URLSearchParams(formData);

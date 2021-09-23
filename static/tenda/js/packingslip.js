@@ -26,6 +26,7 @@ const pickButton = document.querySelector("#pickbtn")
 let currentLN = 1;
 
 const inputPNO = document.querySelector("#panum")
+const confirmButton = document.querySelector("#cfmbtn")
 // const tbody = document.querySelector("#insertFB table tbody")
 // let fbTable = document.createElement("table");
 // let fbThead = fbTable.createTHead();
@@ -187,3 +188,8 @@ pickButton.addEventListener('click', function(e) {
 });
 
 
+/**
+ * WHEN confirm button pressed
+ **/
+
+// confirmButton.addEventListener("click", function(e) {});

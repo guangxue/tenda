@@ -185,6 +185,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println("Commit error:", err)
 			}
+
 			returnJson(w, insertFeedback)
 		} else if PNOdate == today {
 			fmt.Println("PNOdate == today")
@@ -208,12 +209,32 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 					returnJs(w, resText)
 				}
 			}
-
 			insertFeedback := mysql.InsertInto(tbname["picklist"], insertQuery).Use(db)
 			if err != nil {
 				fmt.Println("Commit error:", err)
 			}
+
+			if strings.HasPrefix(PNO, "WB") {
+				SID := 0
+				updateTotal := 0
+
+				if model == "MW3-3PK" {
+					theTotal := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)
+					
+					SID := 181
+					updateTotal := qty*3
+				} else if model == "MW6-2PK" {
+					SID := 182
+					updateTotal := qty*2
+				}
+				updateInfo := map[string]interface{} {
+				 	"SID":SID,
+				 	"qty":updateTotal,
+				}
+			}
 			returnJson(w, insertFeedback)
+		} else {
+			fmt.Println("else end;")
 		}
 	}
 
@@ -265,15 +286,19 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			"location":location,
 			"status":status,
 		}
-		mysql.Update(tbname["picklist"], false).Set(updateInfo).Where("PID",PID).With(tx, ctx)
-		fmt.Printf("[%-18s] Getting PID=%s from UPDATEd\n", "PickListUpdate", PID);
-		updatedPicked := mysql.
-			Select("PNO", "model","sales_mgr", "qty", "customer", "location", "status").
-			From(tbname["picklist"]).
-			Where("PID", PID).
-			With(tx, ctx)
-		dbCommits["PickList"] = tx
-		fmt.Println("updatedPicked:", updatedPicked)
-		returnJson(w, updatedPicked)
+		if status == "Complete" {
+			fmt.Println("Updating picklist for order with 'Complete' status")
+		} else {
+			mysql.Update(tbname["picklist"], false).Set(updateInfo).Where("PID",PID).With(tx, ctx)
+			fmt.Printf("[%-18s] Getting PID=%s from UPDATEd\n", "PickListUpdate", PID);
+			updatedPicked := mysql.
+				Select("PNO", "model","sales_mgr", "qty", "customer", "location", "status").
+				From(tbname["picklist"]).
+				Where("PID", PID).
+				With(tx, ctx)
+			dbCommits["PickList"] = tx
+			fmt.Println("updatedPicked:", updatedPicked)
+			returnJson(w, updatedPicked)
+		}
 	}
 }
