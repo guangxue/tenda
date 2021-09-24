@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"strconv"
 	"time"
 	"github.com/guangxue/webapps/mysql"
 )
@@ -30,11 +31,11 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			searchPNO = ""
 		}
 
-		fmt.Printf("[%-18s] Form:date      :%s\n", " -- PickList.go ", date);
-		fmt.Printf("[%-18s] Form:status    :%s\n", " . ", status);
-		fmt.Printf("[%-18s] Form:PID       :%s\n", " . ", PID);
-		fmt.Printf("[%-18s] Form:PNO       :%s\n", " . ", PNO);
-		fmt.Printf("[%-18s] Form:searchPNO :%s\n", " -- PickList.go", searchPNO);
+		fmt.Printf("[%-18s] (FormData).date      : %s\n", " -- PickList.go ", date);
+		fmt.Printf("[%-18s] (FormData).status    : %s\n", " . ", status);
+		fmt.Printf("[%-18s] (FormData).PID       : %s\n", " . ", PID);
+		fmt.Printf("[%-18s] (FormData).PNO       : %s\n", " . ", PNO);
+		fmt.Printf("[%-18s] (FormData).searchPNO : %s\n", " -- PickList.go", searchPNO);
 
 
 		if status == "weeklycompleted" {
@@ -137,14 +138,14 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		td := time.Now()
 		todayDate  := td.Format("20060102 15:04:05")
 		today,tdTime  := strings.Split(todayDate, " ")[0], strings.Split(todayDate, " ")[1]
-		fmt.Println("todayDate:", today)
-		fmt.Println("tdTime:", tdTime)
+		fmt.Printf("[%-18s] Today date:%s\n", " -- PickList.go", today)
+		fmt.Printf("[%-18s] Today time:%s\n", " |", tdTime)
 		// AE20210816-1
 		PNOdt := strings.Split(PNO, "-")[0]
-		fmt.Println("PNOdt:", PNOdt)
+		// fmt.Println("PNOdt:", PNOdt)
 		PNOdate := PNOdt[2:]
-		fmt.Println("PNODate:", PNOdate)
-		fmt.Println("PNOdate len:", len(PNOdate))
+		// fmt.Println("PNODate:", PNOdate)
+		// fmt.Println("PNOdate len:", len(PNOdate))
 
 		if len(PNOdate) != 8 {
 			resText := map[string]string {
@@ -159,6 +160,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			PNOmonth := PNO[6:8]
 			PNOday   := PNO[8:10]
 			fmt.Println("PNOdate != today")
+			fmt.Printf("[%-18s] PNOdate != today\n")
 			insertDate := PNOyear + "-" + PNOmonth + "-" + PNOday + " " + tdTime
 			fmt.Println("InsertDate:", insertDate)
 			insertQuery := map[string]interface{}{
@@ -187,7 +189,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 
 			returnJson(w, insertFeedback)
 		} else if PNOdate == today {
-			fmt.Println("PNOdate == today")
+			fmt.Printf("[%-18s] PNOdate == today\n", " |")
 			
 			insertQuery := map[string]interface{}{
 				"PNO":PNO,
@@ -216,21 +218,41 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			// Processing WB orders
 			if strings.HasPrefix(PNO, "WB") {
 				// updateTotal := 0
-
+				iqty, err := strconv.Atoi(qty)
+				if err != nil {
+					fmt.Println("strconv err:", err)
+				}
 				if model == "MW3-3PK" {
 					SID := "181"
-					theTotal := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
-					fmt.Println("old_total: ", theTotal)
-					
-					// updateTotal := qty*3
+					mw31pk_wb := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
+					fmt.Printf("[%-18s] MW3-1PK-WB::total: %s\n", " -- Pick:POST", mw31pk_wb["total"])
+					oldTotal, err := strconv.Atoi(mw31pk_wb["total"])
+					if err != nil {
+						fmt.Println("strconv err:", err)
+					}
+					updateTotal := iqty*3 + oldTotal
+					fmt.Printf("[%-18s] (MW3-1PK-WB)updateTotal: %d\n", "| ", updateTotal)
+					updateInfo := map[string]interface{} {
+						"boxes":updateTotal,
+						"total":updateTotal,
+					}
+					mysql.Update(tbname["stock_updated"], false).Set(updateInfo).Where("SID",SID).Use(db)
 				} else if model == "MW6-2PK" {
-					// SID := "182"
-					// updateTotal := qty*2
+					SID := "182"
+					mw61pk_wb := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
+					fmt.Printf("[%-18s] MW6-1PK-WB::total: %s\n", " -- Pick:POST", mw61pk_wb["total"])
+					oldTotal, err := strconv.Atoi(mw61pk_wb["total"])
+					if err != nil {
+						fmt.Println("strconv err:", err)
+					}
+					updateTotal := iqty*2 + oldTotal
+					fmt.Printf("[%-18s] (MW6-1PK-WB)updateTotal: %d\n", "| ", updateTotal)
+					updateInfo := map[string]interface{} {
+						"boxes":updateTotal,
+						"total":updateTotal,
+					}
+					mysql.Update(tbname["stock_updated"], false).Set(updateInfo).Where("SID",SID).Use(db)
 				}
-				// updateInfo := map[string]interface{} {
-				//  	"SID":SID,
-				//  	"qty":updateTotal,
-				// }
 			}
 			returnJson(w, insertFeedback)
 		} else {

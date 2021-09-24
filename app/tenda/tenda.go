@@ -100,7 +100,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func Locations(w http.ResponseWriter, r *http.Request) {
+
 	searchModel := r.URL.Query().Get("model");
+	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL", "/tenda/api/locations")
+	fmt.Printf("[%-18s] (search).model    :%s\n", " -- tenda.go", searchModel)
 	if len(searchModel) > 0 {
 		allLocations := mysql.
 			Select("location").

@@ -56,7 +56,7 @@ func main() {
 
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
-	fmt.Printf("[ **%-15s: %s\n", " API Path ", rPath)
+	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL", rPath)
 
 	if strings.HasPrefix(rPath, "/tenda/api/model") {
 		tenda.Model(w, r)

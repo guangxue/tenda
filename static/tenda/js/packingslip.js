@@ -27,32 +27,6 @@ let currentLN = 1;
 
 const inputPNO = document.querySelector("#panum")
 const confirmButton = document.querySelector("#cfmbtn")
-// const tbody = document.querySelector("#insertFB table tbody")
-// let fbTable = document.createElement("table");
-// let fbThead = fbTable.createTHead();
-// let fbThrow = fbThead.insertRow(0);
-// let cell0 = fbThrow.insertCell(0);
-// let cell1 = fbThrow.insertCell(1);
-// let cell2 = fbThrow.insertCell(2);
-// let cell3 = fbThrow.insertCell(3);
-// let cell4 = fbThrow.insertCell(4);
-// let cell5 = fbThrow.insertCell(5);
-// let cell6 = fbThrow.insertCell(6);
-// let cell7 = fbThrow.insertCell(7);
-// let cell8 = fbThrow.insertCell(8);
-// let cell9 = fbThrow.insertCell(9);
-
-// cell0.textContent = "PID";
-// cell1.textContent = "PNO";
-// cell2.textContent = "Sales Manager";
-// cell3.textContent = "model";
-// cell4.textContent = "qty";
-// cell5.textContent = "customer";
-// cell6.textContent = "location";
-// cell7.textContent = "status";
-// cell8.textContent = "created_at";
-// cell9.textContent = "Action";
-
 
 /**
  * input[PO Number]
@@ -193,3 +167,39 @@ pickButton.addEventListener('click', function(e) {
  **/
 
 // confirmButton.addEventListener("click", function(e) {});
+
+
+
+
+
+
+
+
+
+
+// const tbody = document.querySelector("#insertFB table tbody")
+// let fbTable = document.createElement("table");
+// let fbThead = fbTable.createTHead();
+// let fbThrow = fbThead.insertRow(0);
+// let cell0 = fbThrow.insertCell(0);
+// let cell1 = fbThrow.insertCell(1);
+// let cell2 = fbThrow.insertCell(2);
+// let cell3 = fbThrow.insertCell(3);
+// let cell4 = fbThrow.insertCell(4);
+// let cell5 = fbThrow.insertCell(5);
+// let cell6 = fbThrow.insertCell(6);
+// let cell7 = fbThrow.insertCell(7);
+// let cell8 = fbThrow.insertCell(8);
+// let cell9 = fbThrow.insertCell(9);
+
+// cell0.textContent = "PID";
+// cell1.textContent = "PNO";
+// cell2.textContent = "Sales Manager";
+// cell3.textContent = "model";
+// cell4.textContent = "qty";
+// cell5.textContent = "customer";
+// cell6.textContent = "location";
+// cell7.textContent = "status";
+// cell8.textContent = "created_at";
+// cell9.textContent = "Action";
+
