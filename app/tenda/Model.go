@@ -9,11 +9,11 @@ import (
 
 func Model(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Printf("[%-18s] search model path:%s\n", "Model", r.URL.Path)
+	// fmt.Printf("[%-18s] request path:%s\n", " -- Model.go", r.URL.Path)
 	searchLocation := r.URL.Query().Get("location");
-	fmt.Printf("[%-18s] searchLocation:%s\n", "Model", searchLocation)
+	fmt.Printf("[%-18s] Location:%s\n", " -- Model.go", searchLocation)
 	searchModel := strings.TrimPrefix(r.URL.Path, "/tenda/api/model/")
-	fmt.Printf("[%-18s] search model:%s\n", "Model", searchModel)
+	fmt.Printf("[%-18s] model:%s\n", " -- Model.go", searchModel)
     if strings.Contains(searchModel, "/") {
         searchModel = ""
     }

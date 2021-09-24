@@ -30,12 +30,11 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			searchPNO = ""
 		}
 
-		fmt.Printf("[%-18s] path  :%s\n", "PickList", r.URL.Path);
-		fmt.Printf("[%-18s] date  :%s\n", "PickList", date);
-		fmt.Printf("[%-18s] status:%s\n", "PickList", status);
-		fmt.Printf("[%-18s] PID   :%s\n", "PickList", PID);
-		fmt.Printf("[%-18s] PNO   :%s\n", "PickList", PNO);
-		fmt.Printf("[%-18s] searchPNO   :%s\n", "PickList", searchPNO);
+		fmt.Printf("[%-18s] Form:date      :%s\n", " -- PickList.go ", date);
+		fmt.Printf("[%-18s] Form:status    :%s\n", " . ", status);
+		fmt.Printf("[%-18s] Form:PID       :%s\n", " . ", PID);
+		fmt.Printf("[%-18s] Form:PNO       :%s\n", " . ", PNO);
+		fmt.Printf("[%-18s] Form:searchPNO :%s\n", " -- PickList.go", searchPNO);
 
 
 		if status == "weeklycompleted" {
@@ -214,23 +213,24 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Commit error:", err)
 			}
 
+			// Processing WB orders
 			if strings.HasPrefix(PNO, "WB") {
-				SID := 0
-				updateTotal := 0
+				// updateTotal := 0
 
 				if model == "MW3-3PK" {
-					theTotal := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)
+					SID := "181"
+					theTotal := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
+					fmt.Println("old_total: ", theTotal)
 					
-					SID := 181
-					updateTotal := qty*3
+					// updateTotal := qty*3
 				} else if model == "MW6-2PK" {
-					SID := 182
-					updateTotal := qty*2
+					// SID := "182"
+					// updateTotal := qty*2
 				}
-				updateInfo := map[string]interface{} {
-				 	"SID":SID,
-				 	"qty":updateTotal,
-				}
+				// updateInfo := map[string]interface{} {
+				//  	"SID":SID,
+				//  	"qty":updateTotal,
+				// }
 			}
 			returnJson(w, insertFeedback)
 		} else {

@@ -37,7 +37,7 @@ func Connect(dbname string) *sql.DB {
 	}
 
     // fmt.Printf("[%-18s] Running on `dev` branch\n", "...")
-	fmt.Printf("[%-18s] Connected\n", "DB")
+	fmt.Printf("[%-18s] Connected\n", " -- mysql.go")
 	return db
 }
 
@@ -164,10 +164,10 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 		stmt := ""
 		if sqlstmt.QueryType == "SELECT" {
 			stmt = sqlstmt.SelectColumns + sqlstmt.TableName + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] %s\n", "SELECT", sqlstmt.SelectColumns)
-			fmt.Printf("[%-18s]  %s\n", "SELECT FROM", sqlstmt.TableName)
-			fmt.Printf("[%-18s]  %s\n", "SELECT WHERE", sqlstmt.WhereClause)
-			fmt.Printf("[%-18s]  %s\n", "SELECT AND", sqlstmt.AndWhereClause)
+			fmt.Printf("[%-18s] %s\n", " -- SELECT --", sqlstmt.SelectColumns)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", " -- END ----", sqlstmt.AndWhereClause)
 
 		} else {
 			stmt = sqlstmt.RawStatment

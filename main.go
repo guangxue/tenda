@@ -46,7 +46,7 @@ func main() {
 	// Blog system
 	mux.HandleFunc("/blog", blog.Admin)
 
-	fmt.Printf("[%-18s] Listening on port :8080\n", "Main")
+	fmt.Printf("[%-18s] Listening on port :8080\n", " -- main.go")
 	err := http.ListenAndServe(":8080", mux)
     if err != nil {
         fmt.Println("Port listening error: ", err)
@@ -56,7 +56,7 @@ func main() {
 
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
-	fmt.Printf("[%-18s] Request path: %s\n", "Main", rPath)
+	fmt.Printf("[ **%-15s: %s\n", " API Path ", rPath)
 
 	if strings.HasPrefix(rPath, "/tenda/api/model") {
 		tenda.Model(w, r)
