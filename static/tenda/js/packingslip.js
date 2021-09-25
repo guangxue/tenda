@@ -28,57 +28,51 @@ let currentLN = 1;
 const inputPNO = document.querySelector("#panum")
 const confirmButton = document.querySelector("#cfmbtn")
 
+
+
 /**
  * input[PO Number]
  * WHEN input changes, get data from picklist
  * WHEN PNO number == input[PO Number] 
  **/
- /******
- * 
- *  <th>PID</th>
-	<th>Sales</th>
-	<th>PNO</th>
-	<th>model</th>
-	<th>qty</th>
-	<th>customer</th>
-	<th>location</th>
-	<th>status</th>
-	<th>created_at</th>
-	<th>Action</th>
- * 
- *  let names = ["PID", ];
- * */
+
 inputPNO.addEventListener("input", function() {
 	if(inputPNO.value) {
-		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputPNO.value}`;
-		fetch(fetch_url, {
-			method: "GET"
-		})
-		.then(resp => {
-			return resp.json();
-		})
-		.then(data => {
-			if(data[0] && data) {
-				console.log(data)
-				let names = ["PID", "PNO","sales_mgr","customer", "model", "qty", "location", "status", "created_at", "Action"];
-				let titles = ["PID", "PNO", "Sales", "Customer", "Model", "Quantity", "Location", "Status", "Created_at", "Action"]
-				data.forEach( d=> {
-					d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
-				});
-				let table = createTable(titles, data, names);
-				let insertFB = document.querySelector("#insertFB")
-				insertFB.innerHTML = table.outerHTML;
-				insertFB.style.display = "block"
-			} else {
-				// insertFB.innerHTML = ""
-				// insertFB.appendChild(fbTable)
-				// insertFB.style.display = "none"
-				let lastTbody = document.querySelector("#insertFB table tbody")
-				if(lastTbody) {
-					lastTbody.innerHTML = ""
+		let inputValue = inputPNO.value;
+		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputValue}`;
+
+		if(inputValue.length === 12 && inputValue.indexOf("-") === 10) {
+			console.log("legal PNO:",inputValue)
+			fetch(fetch_url, {
+				method: "GET"
+			})
+			.then(resp => {
+				return resp.json();
+			})
+			.then(data => {
+				if(data[0] && data) {
+					console.log(data)
+					let names = ["PID", "PNO","sales_mgr","customer", "model", "qty", "location", "status", "created_at", "Action"];
+					let titles = ["PID", "PNO", "Sales", "Customer", "Model", "Quantity", "Location", "Status", "Created_at", "Action"]
+					data.forEach( d=> {
+						d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
+					});
+					let table = createTable(titles, data, names);
+					let insertFB = document.querySelector("#insertFB")
+					insertFB.innerHTML = table.outerHTML;
+					insertFB.style.display = "block"
+				} else {
+					// insertFB.innerHTML = ""
+					// insertFB.appendChild(fbTable)
+					// insertFB.style.display = "none"
+					let lastTbody = document.querySelector("#insertFB table tbody")
+					if(lastTbody) {
+						lastTbody.innerHTML = ""
+					}
 				}
-			}
-		})
+			})
+		} 
+		
 	}
 	else {
 		insertFB.innerHTML = ""

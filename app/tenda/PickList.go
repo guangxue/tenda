@@ -31,11 +31,11 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			searchPNO = ""
 		}
 
-		fmt.Printf("[%-18s] (FormData).date      : %s\n", " -- PickList.go ", date);
-		fmt.Printf("[%-18s] (FormData).status    : %s\n", " . ", status);
-		fmt.Printf("[%-18s] (FormData).PID       : %s\n", " . ", PID);
-		fmt.Printf("[%-18s] (FormData).PNO       : %s\n", " . ", PNO);
-		fmt.Printf("[%-18s] (FormData).searchPNO : %s\n", " -- PickList.go", searchPNO);
+		fmt.Printf("[%-18s] ?date = %s\n", " -- PickList.go ", date);
+		fmt.Printf("[%-18s] ?status = %s\n", " . ", status);
+		fmt.Printf("[%-18s] ?PID = %s\n", " . ", PID);
+		fmt.Printf("[%-18s] ?PNO = %s\n", " . ", PNO);
+		fmt.Printf("[%-18s] ?searchPNO = %s\n", " -- PickList.go", searchPNO);
 
 
 		if status == "weeklycompleted" {
