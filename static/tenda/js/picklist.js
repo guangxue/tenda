@@ -6,6 +6,8 @@ const pickStatusOpt = document.querySelector("#pick_status");
 const pickDate = document.querySelector("#pick_date");
 const modelName = document.querySelector("input[name=model]");
 const PNOnumber = document.querySelector("input[name=PNO]");
+let inputModel = document.querySelector("#modelListInput");
+inputModel.style.display = "none";
 
 modelName.addEventListener("input", function() {
 	PNOnumber.value = ""
@@ -22,6 +24,9 @@ if(!pickStatusOpt.value.includes("weekly")) {
 
 pickStatusOpt.addEventListener("change", function() {
 	// weekly picked
+	if(pickStatusOpt.value != "from") {
+		inputModel.style.display = "none";
+	}
 	if(pickStatusOpt.value.includes("weekly")) {
 		let lastSun = lastSunTS();
 		// pickDate.setAttribute("min", lastSun);
@@ -30,6 +35,10 @@ pickStatusOpt.addEventListener("change", function() {
 	} else {
 		pickDate.removeAttribute("min")
 		pickDate.removeAttribute("step")
+	}
+
+	if(pickStatusOpt.value == "from") {
+		inputModel.style.display = "block";
 	}
 });
 

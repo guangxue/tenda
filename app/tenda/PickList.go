@@ -31,12 +31,12 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			searchPNO = ""
 		}
 
-		fmt.Printf("[%-18s] ?date = %s\n", " -- PickList.go ", date);
-		fmt.Printf("[%-18s] ?status = %s\n", " . ", status);
+		fmt.Printf("[%-18s] ?status = %s\n", " -- PickList.go ", status);
+		fmt.Printf("[%-18s] ?date = %s\n", " . ", date);
+		fmt.Printf("[%-18s] ?searchPNO = %s\n", " .", searchPNO);
 		fmt.Printf("[%-18s] ?PID = %s\n", " . ", PID);
 		fmt.Printf("[%-18s] ?PNO = %s\n", " . ", PNO);
-		fmt.Printf("[%-18s] ?searchPNO = %s\n", " -- PickList.go", searchPNO);
-
+		
 
 		if status == "weeklycompleted" {
 			// Weekly completed orders
@@ -48,16 +48,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				WhereBetween("completed_at", startDate, endDate).
 			Use(db)
 			returnJson(w, allPicked)
-		} else if PID != "" && status != "" {
-			// Picked orders
-			allPicked := mysql.
-				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
-				From(tbname["picklist"]).
-				Where("PID",PID).
-				AndWhere("status", "=",status).
-			Use(db)
-			returnJson(w, allPicked)
-		} else if date != "" && status == "weeklypicked" {
+		} else if status == "weeklypicked" && date != "" {
 			// Weekly picked
 			stmt := fmt.Sprintf("select pno, customer, sales_mgr,model, qty, created_at FROM picklist Where created_at BETWEEN '%s' AND date_add('%s', INTERVAL 7 DAY)", date, date)
 			allPicked := mysql.
@@ -66,9 +57,10 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			if len(allPicked) > 0 {
 				allPicked[0]["weeklypicked"] = "1"
 			}
-			fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
+			// fmt.Printf("[%-18s] PID   :%s %v\n", "weeklypicked:allpicked:", allPicked)
 			returnJson(w, allPicked)
 		} else if searchPNO != "" {
+			// searchPNO = input[name=PNO]
 			allPicked := mysql.
 				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
@@ -76,6 +68,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			Use(db)
 			returnJson(w, allPicked)
 		} else if model != "" {
+			// model = input[name=model]
 			if status == "from" && date != "" {
 				allPicked := mysql.
 					Select("PID", "PNO", "model", "qty","sales_mgr", "customer", "location", "status", "created_at", "updated_at").
@@ -85,6 +78,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				Use(db)
 				returnJson(w, allPicked)
 			} else {
+				//  SELECT all models from picklist table
 				allPicked := mysql.
 					Select("PID", "PNO", "model", "qty","sales_mgr","customer", "location", "status", "created_at", "updated_at").
 					From(tbname["picklist"]).
@@ -100,6 +94,17 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				Where("PNO", PNO).
 			Use(db)
 			returnJson(w, allPicked)
+		} else if PID != "" && status != "" {
+			// SELECT picked_orders
+			// WHERE PID = PID & Status = "Pending/Complete"
+			fmt.Printf("[%-18s]  PID %s\n", " . ", PNO);
+			allPicked := mysql.
+				Select("PID", "PNO","sales_mgr", "model", "qty", "customer", "location", "status", "created_at", "updated_at").
+				From(tbname["picklist"]).
+				Where("PID",PID).
+				AndWhere("status", "=",status).
+			Use(db)
+			returnJson(w, allPicked)
 		} else if status == "all" {
 			allPicked := mysql.
 				Select("PID", "PNO", "model", "qty","sales_mgr","customer", "location", "status", "created_at", "updated_at").
@@ -107,16 +112,17 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			Use(db)
 			returnJson(w, allPicked)
 		} else {
-			odate := ""
+			dateLike := ""
 			if date == "" {
-				odate = "%"
+				dateLike = "%"
 			} else {
-				odate = date + "%"
+				dateLike = date + "%"
 			}
+			fmt.Printf("[%-18s] ?dateLike = %s\n", " -- PickList.go", dateLike);
 			allPicked := mysql.
 				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
 				From(tbname["picklist"]).
-				WhereLike("created_at",odate).
+				WhereLike("created_at",dateLike).
 				AndWhere("status", "=",status).
 			Use(db)
 			returnJson(w, allPicked)
