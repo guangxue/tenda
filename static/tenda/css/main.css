@@ -354,10 +354,10 @@ input[type=submit]:hover,
 div.form-line {
 	display: flex;
 	flex-direction: row;
-	padding: 0.8em 0em;
+	padding: 0.46em 0em;
 }
 div.form-line > div:first-child {
-	width: 33%;
+	width: 26%;
 }
 div.form-wrapper {
 	width: 478px;
