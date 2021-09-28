@@ -23,9 +23,10 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		pickStatus := r.FormValue("pickStatus")
 		lastSaturday := r.FormValue("lastSaturday")
 
-		fmt.Printf("[%-18s] Pick date   :%v\n", "CompletePickList",pickDate)
-		fmt.Printf("[%-18s] pick status :%v\n", "CompletePickList",pickStatus)
-		fmt.Printf("[%-18s] pick lastSaturday :%v\n", "CompletePickList",lastSaturday)
+		fmt.Printf("[%-18s] =========== PickListComplete.go  ===========\n", "==================")
+		fmt.Printf("[%-18s] Pick date   :%v\n", "",pickDate)
+		fmt.Printf("[%-18s] pick status :%v\n", "",pickStatus)
+		fmt.Printf("[%-18s] pick lastSaturday :%v\n", "",lastSaturday)
 
 
 		p := pickcolumns{}
@@ -50,7 +51,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		/* {pcols} - array of {p}  */
 
 		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE created_at LIKE %q AND status =%q", tbname["picklist"], pickDate+"%", pickStatus)
-		fmt.Printf("[%-18s] Select Stmt :%s\n", "CompletePickList", stmt)
+		fmt.Printf("[%-18s] %s\n", " SELECT Stmt :", stmt)
 		// sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 		/************************/
 		//						//
@@ -74,9 +75,9 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		completeInfos := []map[string]string{}
 		upModels := []updateModel{}
 		for i, p := range pcols {
-			fmt.Printf("[%-18s] index    :%v\n", "CompletePickList *",i)
-			fmt.Printf("[%-18s] Model    :%s\n", "CompletePickList *",p.Model)
-			fmt.Printf("[%-18s] Location :%s\n", "CompletePickList",p.Location)
+			fmt.Printf("[%-18s] index    :%v\n", " CompletePickList*",i)
+			fmt.Printf("[%-18s] Model    :%s\n", " CompletePickList*",p.Model)
+			fmt.Printf("[%-18s] Location :%s\n", " CompletePickList",p.Location)
 			completeInfo := map[string]string{}
 			completeInfo["model"] = p.Model
 			completeInfo["location"] = p.Location
@@ -93,15 +94,15 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf("[%-18s] oldTotals are %d\n", "CompletePickList",oldTotals)
+					fmt.Printf("[%-18s] oldTotals are %d\n", " CompletePickList",oldTotals)
 			}
 			// {p.Qty}: quantity picked
-			fmt.Printf("[%-18s] pick qty:%d\n", "CompletePickList",p.Qty)
+			fmt.Printf("[%-18s] pick qty:%d\n", " CompletePickList",p.Qty)
 			completeInfo["pickQty"]= strconv.Itoa(p.Qty)
 
 			newTotal := oldTotals - p.Qty
-			fmt.Printf("[%-18s] *NEW Total:%d\n", "CompletePickList",newTotal)
-			fmt.Printf("[%-18s] *unit are %d\n", "CompletePickList",unit)
+			fmt.Printf("[%-18s] *NEW Total:%d\n", " CompletePickList",newTotal)
+			fmt.Printf("[%-18s] *unit are %d\n", " CompletePickList",unit)
 			completeInfo["oldTotal"]= strconv.Itoa(oldTotals)
 			completeInfo["unit"] = strconv.Itoa(unit)
 
@@ -114,12 +115,12 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			/* 4.4 {newBoxes}  : ({newCartons}/{unit} - {newCartons} )*{unit} */
 			if unit > 1 {
 				newCartons = newTotal/unit
-				fmt.Printf("[%-18s] *NEW Cartons:%d\n", "CompletePickList",newCartons)
+				fmt.Printf("[%-18s] *NEW Cartons:%d\n", " CompletePickList",newCartons)
 				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-				fmt.Printf("[%-18s] *NEW BoxeFrac:%f\n", "CompletePickList",newBoxesFrac)
+				fmt.Printf("[%-18s] *NEW BoxeFrac:%f\n", " CompletePickList",newBoxesFrac)
 				newBoxesFrac = newBoxesFrac * float64(unit)
 				newBoxes = int(math.Round(newBoxesFrac))
-				fmt.Printf("[%-18s] *NEW Boxes:%d\n", "CompletePickList",newBoxes)
+				fmt.Printf("[%-18s] *NEW Boxes:%d\n", " CompletePickList",newBoxes)
 			} 
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
