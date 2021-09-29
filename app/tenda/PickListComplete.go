@@ -51,7 +51,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		/* {pcols} - array of {p}  */
 
 		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE created_at LIKE %q AND status =%q", tbname["picklist"], pickDate+"%", pickStatus)
-		fmt.Printf("[%-18s] %s\n", " SELECT All Pending :", stmt)
+		fmt.Printf("[%-18s] %s\n", " --- SELECT ---", stmt)
 		// sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 		/************************/
 		//						//
@@ -75,9 +75,10 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		completeInfos := []map[string]string{}
 		upModels := []updateModel{}
 		for i, p := range pcols {
-			fmt.Printf("[%-18s] : %v\n", "index",i)
-			fmt.Printf("[%-18s] : %s\n", "Model",p.Model)
-			fmt.Printf("[%-18s] : %s\n", "Location",p.Location)
+			fmt.Printf("[---------------------------------- \n")
+			fmt.Printf("[%-18s] %v\n", " ",i)
+			fmt.Printf("[%-18s] %s\n", "   Model:",p.Model)
+			fmt.Printf("[%-18s] %s\n", "   Location:",p.Location)
 			completeInfo := map[string]string{}
 			completeInfo["model"] = p.Model
 			completeInfo["location"] = p.Location
@@ -94,15 +95,15 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf("[%-18s] oldTotals are %d\n", "",oldTotals)
+					fmt.Printf("[%-18s] %d\n", "   oldTotals:",oldTotals)
 			}
 			// {p.Qty}: quantity picked
-			fmt.Printf("[%-18s] : %d\n", "pick qty",p.Qty)
+			fmt.Printf("[%-18s] : %d\n", "   pick qty",p.Qty)
 			completeInfo["pickQty"]= strconv.Itoa(p.Qty)
 
 			newTotal := oldTotals - p.Qty
-			fmt.Printf("[%-18s] : %d\n", "*NEW Total*",newTotal)
-			fmt.Printf("[%-18s] : %d\n", "*unit are*",unit)
+			fmt.Printf("[%18s] : %d\n", "   *NEW Total*",newTotal)
+			fmt.Printf("[%18s] : %d\n", "   *unit are*",unit)
 			completeInfo["oldTotal"]= strconv.Itoa(oldTotals)
 			completeInfo["unit"] = strconv.Itoa(unit)
 
@@ -115,12 +116,12 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			/* 4.4 {newBoxes}  : ({newCartons}/{unit} - {newCartons} )*{unit} */
 			if unit > 1 {
 				newCartons = newTotal/unit
-				fmt.Printf("[%-18s] : %d\n", "*NEW Cartons*",newCartons)
+				fmt.Printf("[%18s] : %d\n", "   *NEW Cartons*",newCartons)
 				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-				fmt.Printf("[%-18s] : %f\n", "*NEW BoxeFrac*",newBoxesFrac)
+				fmt.Printf("[%18s] : %f\n", "   *NEW BoxeFrac*",newBoxesFrac)
 				newBoxesFrac = newBoxesFrac * float64(unit)
 				newBoxes = int(math.Round(newBoxesFrac))
-				fmt.Printf("[%-18s] : %d\n", "*NEW Boxes*",newBoxes)
+				fmt.Printf("[%18s] : %d\n", "   *NEW Boxes*",newBoxes)
 			} 
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}

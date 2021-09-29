@@ -345,8 +345,8 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 	case "UPDATE":
 		if sqlstmt.UpdateNoWhere {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr
-			fmt.Printf("[%-18s] %s\n", "UPDATE", sqlstmt.TableName)
-			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
+			fmt.Printf("[%-18s] %s\n", "  -- UPDATE -- ", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.SetExpr)
 			res, err := tx.ExecContext(ctx, stmt)
 			if err != nil {
 				tx.Rollback()
@@ -363,10 +363,10 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
 			fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
-			fmt.Printf("[%-18s] %s\n",  "UPDATE", sqlstmt.TableName)
-			fmt.Printf("[%-18s]  %s\n", "UPDATE SET", sqlstmt.SetExpr)
-			fmt.Printf("[%-18s]  %s\n", "UPDATE WHERE", sqlstmt.WhereClause)
-			fmt.Printf("[%-18s]  %s\n", "UPDATE AND", sqlstmt.AndWhereClause)
+			fmt.Printf("[%-18s] %s\n",  "  -- UPDATE -- ", sqlstmt.TableName)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.SetExpr)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.WhereClause)
+			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.AndWhereClause)
 			
 			res, err := tx.ExecContext(ctx, stmt)
 			if err != nil {
@@ -387,8 +387,8 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 		}
 	case "INSERT":
 		fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
-		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
-		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)
+		fmt.Printf("[%-18s] %s\n", " -- INSERT",sqlstmt.InsertStmt)
+		fmt.Printf("[%-18s] %v\n", "", sqlstmt.InsertValues)
 		stmt, err := tx.PrepareContext(ctx, sqlstmt.InsertStmt)
 		// stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
