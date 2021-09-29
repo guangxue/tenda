@@ -216,7 +216,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			if err != nil {
 				fmt.Println("[db *Err] RowsAffected:", err)
 			}
-			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
 			rowsFeedback := map[string]string{"rowsAffected":rid}
 			finalColumns = append(finalColumns, rowsFeedback)
@@ -235,7 +235,7 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			if err != nil {
 				fmt.Println("[db *Err] RowsAffected:", err)
 			}
-			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
 			rowsFeedback := map[string]string{"rowsAffected":rid}
 			finalColumns = append(finalColumns, rowsFeedback)
@@ -356,13 +356,13 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			if err != nil {
 				fmt.Println("[db *Err] RowsAffected:", err)
 			}
-			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
 			rowsFeedback := map[string]string{"rowsAffected":rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
+			fmt.Printf("\n[%-18s] \n",  "* BEGIN Transaction *")
 			fmt.Printf("[%-18s] %s\n",  "  -- UPDATE -- ", sqlstmt.TableName)
 			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.SetExpr)
 			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.WhereClause)
@@ -377,7 +377,7 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			if err != nil {
 				fmt.Println("[db *Err] RowsAffected:", err)
 			}
-			fmt.Printf("[%-18s] %d\n", "UPDATE rows", rnums)
+			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
 			rowsFeedback := map[string]string{"rowsAffected":rid}
 			finalColumns = append(finalColumns, rowsFeedback)
@@ -386,7 +386,7 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			fmt.Println("[db *Err] WhereClause needed!")
 		}
 	case "INSERT":
-		fmt.Printf("[%-18s] \n",  "* BEGIN Transaction *")
+		fmt.Printf("\n[%-18s] \n",  "* BEGIN Transaction *")
 		fmt.Printf("[%-18s] %s\n", " -- INSERT",sqlstmt.InsertStmt)
 		fmt.Printf("[%-18s] %v\n", "", sqlstmt.InsertValues)
 		stmt, err := tx.PrepareContext(ctx, sqlstmt.InsertStmt)

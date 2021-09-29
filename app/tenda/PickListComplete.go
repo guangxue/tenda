@@ -75,10 +75,9 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		completeInfos := []map[string]string{}
 		upModels := []updateModel{}
 		for i, p := range pcols {
-			fmt.Printf("[---------------------------------- \n")
-			fmt.Printf("[%-18s] %v\n", " ",i)
-			fmt.Printf("[%-18s] %s\n", "   Model:",p.Model)
-			fmt.Printf("[%-18s] %s\n", "   Location:",p.Location)
+			fmt.Printf("[------------------------------  Pending Order[%d] --------------\n", i)
+			fmt.Printf("[%-18s] %s\n", "    Model:",p.Model)
+			fmt.Printf("[%-18s] %s\n", "    Location:",p.Location)
 			completeInfo := map[string]string{}
 			completeInfo["model"] = p.Model
 			completeInfo["location"] = p.Location
@@ -95,15 +94,15 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
-					fmt.Printf("[%-18s] %d\n", "   oldTotals:",oldTotals)
+					fmt.Printf("[%-18s] %d\n", "    oldTotals:",oldTotals)
 			}
 			// {p.Qty}: quantity picked
-			fmt.Printf("[%-18s] : %d\n", "   pick qty",p.Qty)
+			fmt.Printf("[%-18s] %d\n", "    pick qty:",p.Qty)
 			completeInfo["pickQty"]= strconv.Itoa(p.Qty)
 
 			newTotal := oldTotals - p.Qty
-			fmt.Printf("[%18s] : %d\n", "   *NEW Total*",newTotal)
-			fmt.Printf("[%18s] : %d\n", "   *unit are*",unit)
+			fmt.Printf("[%-18s] %d\n", " *NEW*   Total:",newTotal)
+			fmt.Printf("[%-18s] %d\n", " *unit*  are:",unit)
 			completeInfo["oldTotal"]= strconv.Itoa(oldTotals)
 			completeInfo["unit"] = strconv.Itoa(unit)
 
@@ -116,12 +115,12 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			/* 4.4 {newBoxes}  : ({newCartons}/{unit} - {newCartons} )*{unit} */
 			if unit > 1 {
 				newCartons = newTotal/unit
-				fmt.Printf("[%18s] : %d\n", "   *NEW Cartons*",newCartons)
+				fmt.Printf("[%-18s] %d\n", " *NEW*   Cartons:",newCartons)
 				newBoxesFrac := float64(newTotal)/float64(unit) - float64(newCartons)
-				fmt.Printf("[%18s] : %f\n", "   *NEW BoxeFrac*",newBoxesFrac)
+				fmt.Printf("[%-18s] %f\n", " *NEW*   BoxeFrac:",newBoxesFrac)
 				newBoxesFrac = newBoxesFrac * float64(unit)
 				newBoxes = int(math.Round(newBoxesFrac))
-				fmt.Printf("[%18s] : %d\n", "   *NEW Boxes*",newBoxes)
+				fmt.Printf("[%-18s] %d\n", " *NEW*   Boxes:",newBoxes)
 			} 
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
@@ -162,7 +161,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			Checkerr := tx.QueryRowContext(ctx,stmt, p.Model, p.Location, lastSaturday).Scan(&lid, &total_picks)
 			switch {
 			case Checkerr == sql.ErrNoRows:
-				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "*db Rows*", p.Model)
+				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "  *db Rows*", p.Model)
 				completeInfo["sqlinfo"] = "INSERT into last_updated"
 				insertValues := map[string]interface{} {
 					"location"   : p.Location,
@@ -179,7 +178,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			case Checkerr != nil:
 				fmt.Printf("[db *ERR*] query error: %v\n", err)
 			case lid > 0:
-				fmt.Printf("[%-18s] Exits `model id`:%s , then UPDATE\n", "*db Rows*", lid)
+				fmt.Printf("[%-18s] FOUND `model id`:%d , then UPDATE\n", "  *db Rows*", lid)
 				completeInfo["sqlinfo"] = "UPDATE last_update"
 				allpicks := p.Qty + total_picks
 				updateValues := map[string]interface{} {					
