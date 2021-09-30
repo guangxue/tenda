@@ -77,9 +77,9 @@ div.content-wrapper {
 .btn-table {
 	background-color: #2a739f;
 }
-#insertFB {
+/*#insertFB {
 	display: none;
-}
+}*/
 .modal {
 	border: 1px solid black;
     overflow:auto;

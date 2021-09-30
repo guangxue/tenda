@@ -192,7 +192,45 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println("Commit error:", err)
 			}
-
+			// Processing WB orders
+			if strings.HasPrefix(PNO, "WB") {
+				// updateTotal := 0
+				iqty, err := strconv.Atoi(qty)
+				if err != nil {
+					fmt.Println("strconv err:", err)
+				}
+				if model == "MW3-3PK" {
+					SID := "181"
+					mw31pk_wb := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
+					fmt.Printf("[%-18s] MW3-1PK-WB::total: %s\n", " -- Pick:POST", mw31pk_wb["total"])
+					oldTotal, err := strconv.Atoi(mw31pk_wb["total"])
+					if err != nil {
+						fmt.Println("strconv err:", err)
+					}
+					updateTotal := iqty*3 + oldTotal
+					fmt.Printf("[%-18s] (MW3-1PK-WB)updateTotal: %d\n", "| ", updateTotal)
+					updateInfo := map[string]interface{} {
+						"boxes":updateTotal,
+						"total":updateTotal,
+					}
+					mysql.Update(tbname["stock_updated"], false).Set(updateInfo).Where("SID",SID).Use(db)
+				} else if model == "MW6-2PK" {
+					SID := "182"
+					mw61pk_wb := mysql.Select("total").From(tbname["stock_updated"]).Where("SID", SID).Use(db)[0]
+					fmt.Printf("[%-18s] MW6-1PK-WB::total: %s\n", " -- Pick:POST", mw61pk_wb["total"])
+					oldTotal, err := strconv.Atoi(mw61pk_wb["total"])
+					if err != nil {
+						fmt.Println("strconv err:", err)
+					}
+					updateTotal := iqty*2 + oldTotal
+					fmt.Printf("[%-18s] (MW6-1PK-WB)updateTotal: %d\n", "| ", updateTotal)
+					updateInfo := map[string]interface{} {
+						"boxes":updateTotal,
+						"total":updateTotal,
+					}
+					mysql.Update(tbname["stock_updated"], false).Set(updateInfo).Where("SID",SID).Use(db)
+				}
+			}
 			returnJson(w, insertFeedback)
 		} else if PNOdate == today {
 			fmt.Printf("[%-18s] PNOdate == today\n", " |")
