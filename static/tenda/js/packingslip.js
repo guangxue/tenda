@@ -75,7 +75,7 @@ inputPNO.addEventListener("input", function() {
 		
 	}
 	else {
-		insertFB.innerHTML = ""
+		// insertFB.innerHTML = ""
 		// insertFB.appendChild(fbTable);
 		// fbTable.style.display="none";
 	}

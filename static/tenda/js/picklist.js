@@ -177,6 +177,7 @@ selectButton.addEventListener("click", function() {
 			}
 			// Complete Button pressed
 			completePickBtn.addEventListener('click', function() {
+				console.log("Complete Button pressed")
 				let formData = new FormData();
 				let data = new URLSearchParams(formData);
 				let pickStatus = document.querySelector('#pick_status').value
@@ -223,34 +224,34 @@ selectButton.addEventListener("click", function() {
 
 							let completeInfoTable = createTable(completeInfoTitle,completeData,completeInfoOrders)
 							
-							let calcTotal = d.oldTotal - d.pickQty
-							let calcCartons = Math.trunc(calcTotal/d.unit)
-							let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
-							calcBoxes = parseInt(calcBoxes)
-							let ciTbody = completeInfoTable.tBodies[0]
-							let ciRow = ciTbody.insertRow(1);
+							// let calcTotal = d.oldTotal - d.pickQty
+							// let calcCartons = Math.trunc(calcTotal/d.unit)
+							// let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
+							// calcBoxes = parseInt(calcBoxes)
+							// let ciTbody = completeInfoTable.tBodies[0]
+							// let ciRow = ciTbody.insertRow(1);
 
-							let ciCell0 = ciRow.insertCell(0);
-							ciCell0.textContent = d.location;
+							// let ciCell0 = ciRow.insertCell(0);
+							// ciCell0.textContent = d.location;
 
-							let ciCell1 = ciRow.insertCell(1);
-							ciCell1.textContent = "";
+							// let ciCell1 = ciRow.insertCell(1);
+							// ciCell1.textContent = "";
 
-							let ciCell2 = ciRow.insertCell(2);
-							ciCell2.textContent = "";
+							// let ciCell2 = ciRow.insertCell(2);
+							// ciCell2.textContent = "";
 
 
-							let ciCell3 = ciRow.insertCell(3);
-							ciCell3.textContent = "";
+							// let ciCell3 = ciRow.insertCell(3);
+							// ciCell3.textContent = "";
 
-							let ciCell4 = ciRow.insertCell(4);
-							ciCell4.textContent = calcCartons;
+							// let ciCell4 = ciRow.insertCell(4);
+							// ciCell4.textContent = "";
 
-							let ciCell5 = ciRow.insertCell(5);
-							ciCell5.textContent = calcBoxes;
+							// let ciCell5 = ciRow.insertCell(5);
+							// ciCell5.textContent = "";
 
-							let ciCell6 = ciRow.insertCell(6);
-							ciCell6.textContent = calcTotal;
+							// let ciCell6 = ciRow.insertCell(6);
+							// ciCell6.textContent = "";
 
 							let completefb = document.createElement("div");
 							let completefb_title = document.createElement("h3");

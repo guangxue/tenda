@@ -8,3 +8,7 @@ group by  model order by total desc;
 SELECT pno, customer,model, qty, updated_at
 FROM picklist
 WHERE updated_at BETWEEN '2021-08-29%' AND date_add('2021-08-29%', INTERVAL 7 DAY);
+
+SELECT * FROM picklist
+WHERE created_at between '2021-10-03' AND date_add('2021-10-03', interval 7 day)
+AND model='MW3-3PK' and location='0-G-4';

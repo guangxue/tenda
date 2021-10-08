@@ -270,7 +270,7 @@ div#dbtable_paginate {
 div#dbtable_paginate > span {
 	display: flex;
 	flex-direction: row;
-	width: 150px;
+	width: 265px;
 	justify-content: space-between;
 }
 div#dbtable_paginate a {
