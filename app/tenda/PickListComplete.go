@@ -30,7 +30,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 
 
 		p := pickcolumns{}
-		pcols := []pickcolumns{}
+		allPicks := []pickcolumns{}
 
 		/* if {pickDate} is empty, no db action needed. */
 		// if pickStatus == "Updated"  || pickDate == "" {
@@ -48,16 +48,17 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 
 		/* 2. SELECT FROM `picklist` according {pickDate} and {pickStatus} which from POST data. */
 		/*   {p}   - Scaned single row */
-		/* {pcols} - array of {p}  */
+		/* {allPicks} - array of {p}  */
 
 		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE created_at LIKE %q AND status =%q", tbname["picklist"], pickDate+"%", pickStatus)
 		fmt.Printf("[%-18s] %s\n", " --- SELECT ---", stmt)
-		// sqlstmt := "SELECT PID, model, qty, location FROM picklist WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
-		/************************/
-		//						//
+		// sqlstmt
+		//    "SELECT PID, model, qty, location
+		//     FROM picklist
+		//     WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
+
 		tx, ctx := mysql.Begin(db)
-		//						//
-		/************************/
+		
 		rows, err := tx.QueryContext(ctx, stmt)
 		if err != nil {
 			fmt.Printf("[%-18s] *SELECT Err*:%v\n", "CompletePickList", err)
@@ -68,16 +69,17 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Printf("[%-18s]: dbColumns Scan error:%v\n", "CompletePickList",err)
 			}
-			pcols = append(pcols, p)
+			allPicks = append(allPicks, p)
 		}
 		
 		/* 3. Start calculate {cartons}, {boxes}, {total} to UPDATE  */
 		completeInfos := []map[string]string{}
 		upModels := []updateModel{}
-		for i, p := range pcols {
+		for i, p := range allPicks {
 			fmt.Printf("[------------------------------  Pending Order[%d] --------------\n", i)
 			fmt.Printf("[%-18s] %s\n", "    Model:",p.Model)
 			fmt.Printf("[%-18s] %s\n", "    Location:",p.Location)
+			
 			completeInfo := map[string]string{}
 			completeInfo["model"] = p.Model
 			completeInfo["location"] = p.Location
@@ -96,6 +98,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				default:
 					fmt.Printf("[%-18s] %d\n", "    oldTotals:",oldTotals)
 			}
+
 			// {p.Qty}: quantity picked
 			fmt.Printf("[%-18s] %d\n", "    pick qty:",p.Qty)
 			completeInfo["pickQty"]= strconv.Itoa(p.Qty)
@@ -108,7 +111,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 
 			/* 4.1 if unit = 0, then {newCartons} = {newBox} */
 			newCartons := 0
-			newBoxes   := newTotal;
+			newBoxes   := newTotal
 
 			/* 4.2 {newTotal}  : {total} - {p.Qty} */
 			/* 4.3 {newCartons}: {newCartons}/{unit} */
@@ -160,47 +163,66 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			stmt = fmt.Sprintf("SELECT LID,total_picks FROM %s WHERE model=? AND location=? AND completed_at > ?", tbname["last_updated"])
 			Checkerr := tx.QueryRowContext(ctx,stmt, p.Model, p.Location, lastSaturday).Scan(&lid, &total_picks)
 			switch {
-			case Checkerr == sql.ErrNoRows:
-				fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "  *db Rows*", p.Model)
-				completeInfo["sqlinfo"] = "INSERT into last_updated"
-				insertValues := map[string]interface{} {
-					"location"   : p.Location,
-					"model"      : p.Model,
-					"old_total"  : oldTotals,
-					"total_picks": p.Qty,
-					"unit"       : unit,
-					"cartons"    : newCartons,
-					"boxes"      : newBoxes,
-					"total"      : newTotal,
-					"completed_at": TimeNow(),
-				}
-				mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
-			case Checkerr != nil:
-				fmt.Printf("[db *ERR*] query error: %v\n", err)
-			case lid > 0:
-				fmt.Printf("[%-18s] FOUND `model id`:%d , then UPDATE\n", "  *db Rows*", lid)
-				completeInfo["sqlinfo"] = "UPDATE last_update"
-				allpicks := p.Qty + total_picks
-				updateValues := map[string]interface{} {					
-					"location"    : p.Location,
-					"model"       : p.Model,
-					"total_picks" : allpicks,
-					"unit"        : unit,
-					"cartons"     : newCartons,
-					"boxes"       : newBoxes,
-					"total"       : newTotal,
-					"completed_at": TimeNow(),
-				}
-				mysql.
-					Update(tbname["last_updated"], false).
-					Set(updateValues).
-					Where("model", p.Model).
-					AndWhere("location", "=",p.Location).
-					AndWhere("completed_at", ">", lastSaturday).
-				With(tx, ctx)
+				case Checkerr == sql.ErrNoRows:
+					fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "  *db Rows*", p.Model)
+					completeInfo["sqlinfo"] = "INSERT into last_updated"
+					insertValues := map[string]interface{} {
+						"location"   : p.Location,
+						"model"      : p.Model,
+						"old_total"  : oldTotals,
+						"total_picks": p.Qty,
+						"unit"       : unit,
+						"cartons"    : newCartons,
+						"boxes"      : newBoxes,
+						"total"      : newTotal,
+						"completed_at": TimeNow(),
+					}
+					insertId := mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
+					fmt.Printf("[%-18s] %s\n", " last Insert ID", insertId[0]["lastId"])
+					completeInfo["modelId"] = insertId[0]["lastId"]
+				case Checkerr != nil:
+					fmt.Printf("[db *ERR*] query error: %v\n", err)
+				case lid > 0:
+					fmt.Printf("[%-18s] FOUND `model id`:%d , then UPDATE\n", "  *db Rows*", lid)
+					completeInfo["sqlinfo"] = "UPDATE last_update"
+					mid := strconv.Itoa(lid)
+					for i, completeInfo := range completeInfos {
+						fmt.Printf("CompleteInfo[%d]:\n", i)
+						for key, val := range completeInfo {
+							if key == "modelId" && val == mid {
+								fmt.Printf("------------ key=%s ; val=%s\n",key, val)
+							}
+						}
+					}
+					allpicks := p.Qty + total_picks
+					updateValues := map[string]interface{} {
+						"location"    : p.Location,
+						"model"       : p.Model,
+						"total_picks" : allpicks,
+						"unit"        : unit,
+						"cartons"     : newCartons,
+						"boxes"       : newBoxes,
+						"total"       : newTotal,
+						"completed_at": TimeNow(),
+					}
+					mysql.
+						Update(tbname["last_updated"], false).
+						Set(updateValues).
+						Where("model", p.Model).
+						AndWhere("location", "=",p.Location).
+						AndWhere("completed_at", ">", lastSaturday).
+					With(tx, ctx)
 			}
+			
+			// for i, completeInfo := range completeInfos {
+			// 	fmt.Printf("CompleteInfo[%d]:\n", i)
+			// 	for key, val := range completeInfo {
+			// 		fmt.Printf("\t%s=%s\n",key, val)
+			// 	}
+			// }
 			completeInfos = append(completeInfos, completeInfo)
 		}
+		// END for-loop
 		dbCommits["CompletePickList"] = tx
 		json.NewEncoder(w).Encode(completeInfos)
 	}

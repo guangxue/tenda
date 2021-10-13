@@ -117,7 +117,7 @@ func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 
 	dbPickedInfo := map[string]string{}
 	
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 		queryPID := r.URL.Query().Get("PID")
 		LID := r.URL.Query().Get("LID")
 
@@ -145,6 +145,21 @@ func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 			returnJson(w, currentLID)
 		}
 	}
+}
+
+func PickListInspectPage(w http.ResponseWriter, r *http.Request) {
+	modelName := r.URL.Query().Get("model")
+	location  := r.URL.Query().Get("location")
+	pickDate  := r.URL.Query().Get("pickDate")
+	if modelName == "" || location == "" || pickDate == "" {
+		infoJs := map[string]string {
+			"error": "empty modelName,location,pickDate",
+		}
+		returnJs(w, infoJs)
+	}
+	fmt.Println("model name", modelName)
+	fmt.Println("location", location)
+	fmt.Println("pickDate", pickDate)
 }
 
 func StockUpdatePage(w http.ResponseWriter, r *http.Request) {

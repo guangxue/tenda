@@ -91,6 +91,7 @@ selectButton.addEventListener("click", function() {
 		})
 		.then( data  => {
 			console.log(data)
+			// no data from database `picklist`
 			if(!data[0]) {
 				const err = new Error("no rows return from database table: `picklist`")
 				err.name = "Empty set"
@@ -109,12 +110,14 @@ selectButton.addEventListener("click", function() {
 					"names": objNames,
 				}
 			}
+			// Weekly Completed
 			if(data[0].LID) {
-				let titles = ["Location", "Model","Total Picks", "Cartons", "Boxes", "Action"];
-				let objNames =   ["location", "model","total_picks","cartons", "boxes", "update"];
+				let titles = ["Location", "Model","Cartons", "Boxes", "Total Picks","Action"];
+				let objNames =   ["location", "model","cartons", "boxes","total_picks", "inspect"];
 				let tbData = data;
+				// console.log(tbData)
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/lastupdated?LID=${d.LID}" target="_blank">update</a>`;
+					d.inspect = `<a href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">inspect</a>`;
 				});
 				return {
 					"titles": titles,
@@ -199,6 +202,7 @@ selectButton.addEventListener("click", function() {
 					})
 					.then(data => {
 						if(data) {
+							console.log("Completed infos:", data)
 							const modal = document.querySelector(".modal");
 							modal.classList.toggle("show-modal");
 						}
