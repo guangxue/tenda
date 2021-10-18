@@ -18,7 +18,9 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		}
 		/* {pickDate}   - POST request from Ajax
 		/* {pickStatus} - POST request from Ajax
-		/* 1. Parse POST form data {pickDate}, {pickStatus} */
+		/* +--------------------------------------------------+ */
+		/* | 1. Parse POST form data {pickDate}, {pickStatus} | */
+		/* +--------------------------------------------------+ */
 		pickDate := r.FormValue("pickDate")
 		pickStatus := r.FormValue("pickStatus")
 		lastSaturday := r.FormValue("lastSaturday")
@@ -45,9 +47,12 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		// 	returnJson(w, stmtErrors)
 		// 	return
 		// }
-
-		/* 2. SELECT FROM `picklist` according {pickDate} and {pickStatus} which from POST data. */
-		/*   {p}   - Scaned single row */
+		/* +---------------------------------------------------------------------------------------+ */
+		/* | 2. SELECT All Pending Orders
+		/* |    FROM `picklist` 
+		/* |    According {pickDate} and {pickStatus} which from POST data.
+		/* +---------------------------------------------------------------------------------------+ */
+		/* {p}   - Scaned single row */
 		/* {allPicks} - array of {p}  */
 
 		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE created_at LIKE %q AND status =%q", tbname["picklist"], pickDate+"%", pickStatus)
@@ -58,7 +63,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		//     WHERE created_at LIKE '"+pickDate+"%' AND status ='"+pickStatus+"'"
 
 		tx, ctx := mysql.Begin(db)
-		
+
 		rows, err := tx.QueryContext(ctx, stmt)
 		if err != nil {
 			fmt.Printf("[%-18s] *SELECT Err*:%v\n", "CompletePickList", err)
@@ -72,7 +77,9 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			allPicks = append(allPicks, p)
 		}
 		
-		/* 3. Start calculate {cartons}, {boxes}, {total} to UPDATE  */
+		/* +----------------------------------------------------------+ */
+		/* | 3. Start calculate {cartons}, {boxes}, {total} to UPDATE   */
+		/* +----------------------------------------------------------+ */
 		completeInfos := []map[string]string{}
 		upModels := []updateModel{}
 		for i, p := range allPicks {
@@ -87,7 +94,9 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			oldCartons := 0
 			oldBoxes := 0
 			oldTotals := 0
-			/* 4.0 Get original {total}, {unit} from `stock_updated` */
+			/* +-------------------------------------------------------+ */
+			/* | 4.0 Get {total}, {unit} from `stock_updated`            */
+			/* +-------------------------------------------------------+ */
 			stmt := fmt.Sprintf("SELECT unit, cartons, boxes, total FROM %s WHERE model=? AND location=?", tbname["stock_updated"])
 			err := tx.QueryRowContext(ctx,stmt, p.Model, p.Location).Scan(&unit, &oldCartons, &oldBoxes, &oldTotals)
 			switch {
@@ -128,8 +137,10 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			
 			upModel := updateModel{p.Location, p.Model, unit, newCartons, newBoxes, newTotal}
 			upModels = append(upModels, upModel)
-			// ----------------------------------------------------
-			/* 5. Update `stock_update` table first */
+
+			/* +----------------------------------------+
+			/* | 5. Update `stock_update` table first
+			/* +----------------------------------------+ */
 			completeInfo["newCartons"] = strconv.Itoa(newCartons)
 			completeInfo["newBoxes"] = strconv.Itoa(newBoxes)
 			completeInfo["newTotal"] = strconv.Itoa(newTotal)
@@ -144,9 +155,10 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				Where("model", p.Model).
 				AndWhere("location", "=",p.Location).
 			With(tx,ctx)
-			// -----------------------------------------------------
 
-			/* 6. Update `picklist` table status to 'Complete' */
+			/* +--------------------------------------------------+ */
+			/* | 6. Update `picklist` table status to 'Complete'  | */
+			/* +--------------------------------------------------+ */
 			pickListSet := map[string]interface{} {"status":"Complete"}
 			mysql.
 				Update(tbname["picklist"], false).
@@ -154,10 +166,11 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				Where("PID", strconv.Itoa(p.PID)).
 			With(tx,ctx)
 
-			/* 7. Check if model (that is completed) already exists in the table `last_updated` */
-			/* 7.1            IF EXISTS, UPDATE it,
-			 * ....otherwise, INSERT: new data  */
-			
+			/* +--------------------------------------------------------------------------------+ */
+			/* 7. Check if model (that is completed) already exists in the table `last_updated`
+			/* 7.1 IF EXISTS, UPDATE it,
+			/* 7.2 Otherwise, INSERT: new data
+			/* +--------------------------------------------------------------------------------+ */
 			lid := 0
 			total_picks := 0
 			stmt = fmt.Sprintf("SELECT LID,total_picks FROM %s WHERE model=? AND location=? AND completed_at > ?", tbname["last_updated"])
@@ -179,20 +192,15 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 					}
 					insertId := mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
 					fmt.Printf("[%-18s] %s\n", " last Insert ID", insertId[0]["lastId"])
-					completeInfo["modelId"] = insertId[0]["lastId"]
+					completeInfo["ID"] = insertId[0]["lastId"]
 				case Checkerr != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				case lid > 0:
 					fmt.Printf("[%-18s] FOUND `model id`:%d , then UPDATE\n", "  *db Rows*", lid)
 					completeInfo["sqlinfo"] = "UPDATE last_update"
-					mid := strconv.Itoa(lid)
-					for i, completeInfo := range completeInfos {
-						fmt.Printf("CompleteInfo[%d]:\n", i)
-						for key, val := range completeInfo {
-							if key == "modelId" && val == mid {
-								fmt.Printf("------------ key=%s ; val=%s\n",key, val)
-							}
-						}
+					//mid := strconv.Itoa(lid)
+					for i, v := range completeInfos {
+						fmt.Printf("\t[%d] : %v\n", i, v)
 					}
 					allpicks := p.Qty + total_picks
 					updateValues := map[string]interface{} {
