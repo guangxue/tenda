@@ -192,15 +192,20 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 					}
 					insertId := mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
 					fmt.Printf("[%-18s] %s\n", " last Insert ID", insertId[0]["lastId"])
-					completeInfo["ID"] = insertId[0]["lastId"]
+					// completeInfo["ID"] = insertId[0]["lastId"]
+					// completeInfo["model"] = p.Model
+					// completeInfo["location"] = p.Location
+					// completeInfo["newCartons"] = strconv.Itoa(newCartons)
+					// completeInfo["boxes"] = strconv.Itoa(newBoxes)
+					// completeInfos = append(completeInfos, completeInfo)
 				case Checkerr != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				case lid > 0:
 					fmt.Printf("[%-18s] FOUND `model id`:%d , then UPDATE\n", "  *db Rows*", lid)
 					completeInfo["sqlinfo"] = "UPDATE last_update"
-					//mid := strconv.Itoa(lid)
-					for i, v := range completeInfos {
-						fmt.Printf("\t[%d] : %v\n", i, v)
+					mid := strconv.Itoa(lid)
+					for i, order := range completeInfos {
+						fmt.Printf("[%d] - %v :: mid=%s\n", i, order, mid)
 					}
 					allpicks := p.Qty + total_picks
 					updateValues := map[string]interface{} {
@@ -221,13 +226,6 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 						AndWhere("completed_at", ">", lastSaturday).
 					With(tx, ctx)
 			}
-			
-			// for i, completeInfo := range completeInfos {
-			// 	fmt.Printf("CompleteInfo[%d]:\n", i)
-			// 	for key, val := range completeInfo {
-			// 		fmt.Printf("\t%s=%s\n",key, val)
-			// 	}
-			// }
 			completeInfos = append(completeInfos, completeInfo)
 		}
 		// END for-loop
