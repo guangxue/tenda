@@ -55,7 +55,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 		/* {p}   - Scaned single row */
 		/* {allPicks} - array of {p}  */
 
-		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE created_at LIKE %q AND status =%q", tbname["picklist"], pickDate+"%", pickStatus)
+		stmt := fmt.Sprintf("SELECT PID, model, qty, location FROM %s WHERE status =%q", tbname["picklist"], pickStatus)
 		fmt.Printf("[%-18s] %s\n", " --- SELECT ---", stmt)
 		// sqlstmt
 		//    "SELECT PID, model, qty, location
