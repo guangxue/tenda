@@ -223,6 +223,22 @@ func TxRollback(w http.ResponseWriter, r *http.Request) {
 		returnJs(w, resText)
 	} else {
 		tx.Rollback()
+		if rollbackName == "CompletePickList" {
+			maxId := 0
+			err := db.QueryRow("SELECT MAX(LID) from last_updated").Scan(&maxId)
+			if err != nil {
+				fmt.Println("ERR : ", err)
+			}
+			fmt.Printf("[%-18s] Last LID : %d in last_updated\n", "  Max LID", maxId)
+			stmt := fmt.Sprintf("ALTER TABLE last_updated AUTO_INCREMENT = %d", maxId)
+			res, err := db.Exec(stmt)
+			if err != nil {
+				fmt.Println("[ *--- AUTO_INCREMENT FAILED! ---*]\n", err)
+			} else {
+				afw, _ := res.RowsAffected()
+				fmt.Println(" --- row affected:", afw)
+			}
+		}
 		resText["err"] = ""
 		returnJs(w, resText)
 	}

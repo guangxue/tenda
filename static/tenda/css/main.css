@@ -82,7 +82,7 @@ div.content-wrapper {
 }*/
 .modal {
 	border: 1px solid black;
-    overflow:auto;
+   overflow:auto;
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -94,10 +94,10 @@ div.content-wrapper {
 }
 .modal-content {
 	position: absolute;
-	left: 12%;
+	left: 20%;
 	padding: 1rem 1.5rem;
 	background-color: #fff;
-	margin: 3em auto;
+	margin: 8em auto;
 }
 textarea {
    font-size: 9pt;

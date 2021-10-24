@@ -216,56 +216,16 @@ selectButton.addEventListener("click", function() {
 						let newBoxes = document.querySelector(".newBoxes");
 						let newTotal = document.querySelector(".newTotal");
 
-						data.forEach( (d,i) => {
-							// let completeInfoTitle = ['Location',"Unit",'OLD total','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
-							// let completeInfoOrders = ['location','unit','oldTotal','pickQty','newCartons', 'newBoxes', 'newTotal']
+						let completeInfoTitle = ['LID','Location','Model','Total Picks','New Cartons', 'New Boxes'];
+						let completeInfoOrders = ['ID','location','model','totalPicks','newCartons', 'newBoxes']
+						let completeData = data
 
-							let completeInfoTitle = ['Location','Picked','NEW cartons', 'NEW boxes', 'NEW total'];
-							let completeInfoOrders = ['location','pickQty','newCartons', 'newBoxes', 'newTotal']
-							let completeData = []
-							d.rowTitle = `${d.sqlinfo.split(' ')[0]} last_updated`
-							completeData.push(d);
-
-							let completeInfoTable = createTable(completeInfoTitle,completeData,completeInfoOrders)
-							
-							// let calcTotal = d.oldTotal - d.pickQty
-							// let calcCartons = Math.trunc(calcTotal/d.unit)
-							// let calcBoxes = ((calcTotal/d.unit) % 1).toFixed(2) * d.unit
-							// calcBoxes = parseInt(calcBoxes)
-							// let ciTbody = completeInfoTable.tBodies[0]
-							// let ciRow = ciTbody.insertRow(1);
-
-							// let ciCell0 = ciRow.insertCell(0);
-							// ciCell0.textContent = d.location;
-
-							// let ciCell1 = ciRow.insertCell(1);
-							// ciCell1.textContent = "";
-
-							// let ciCell2 = ciRow.insertCell(2);
-							// ciCell2.textContent = "";
-
-
-							// let ciCell3 = ciRow.insertCell(3);
-							// ciCell3.textContent = "";
-
-							// let ciCell4 = ciRow.insertCell(4);
-							// ciCell4.textContent = "";
-
-							// let ciCell5 = ciRow.insertCell(5);
-							// ciCell5.textContent = "";
-
-							// let ciCell6 = ciRow.insertCell(6);
-							// ciCell6.textContent = "";
-
-							let completefb = document.createElement("div");
-							let completefb_title = document.createElement("h3");
-							completefb_title.textContent = `Model: ${d.model}`;
-							completefb.appendChild(completefb_title);
-							completefb.classList.add("complete-fd");
-							completefb.appendChild(completeInfoTable);
-							let cmpinfo = document.querySelector('#complete-info');
-							cmpinfo.appendChild(completefb);
-						})
+						let completeInfoTable = createTable(completeInfoTitle,completeData,completeInfoOrders)
+						let completefb = document.createElement("div");
+						completefb.classList.add("complete-fd");
+						completefb.appendChild(completeInfoTable);
+						let cmpinfo = document.querySelector('#complete-info');
+						cmpinfo.appendChild(completefb);
 					})
 				}
 			})
