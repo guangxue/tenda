@@ -119,6 +119,8 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				case err != nil:
 					fmt.Printf("[db *ERR*] query error: %v\n", err)
 				default:
+					fmt.Printf("[%-18s] %d\n", "    oldCartons:",oldCartons)
+					fmt.Printf("[%-18s] %d\n", "    oldBoxes:",oldBoxes)
 					fmt.Printf("[%-18s] %d\n", "    oldTotals:",oldTotals)
 			}
 
@@ -129,6 +131,8 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 			newTotal := oldTotals - p.Qty
 			fmt.Printf("[%-18s] %d\n", " *NEW*   Total:",newTotal)
 			fmt.Printf("[%-18s] %d\n", " *unit*  are:",unit)
+			completeInfo["oldCartons"]= strconv.Itoa(oldCartons)
+			completeInfo["oldBoxes"]= strconv.Itoa(oldBoxes)
 			completeInfo["oldTotal"]= strconv.Itoa(oldTotals)
 			completeInfo["unit"] = strconv.Itoa(unit)
 
@@ -193,7 +197,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 				case Checkerr == sql.ErrNoRows:
 					fmt.Printf("[%-18s] NO ROWS return from last_updated for `%s`, then INSERT\n", "  *db Rows*", p.Model)
 					fmt.Printf("[%-18s] NO NOWS then APPEND to `completeInfos`\n", "  *completeInfos*")
-					completeInfo["sqlinfo"] = "INSERT into last_updated"
+					completeInfo["sqldml"] = "INSERT"
 					insertValues := map[string]interface{} {
 						"location"   : p.Location,
 						"model"      : p.Model,
@@ -224,7 +228,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 						"completed_at": completeDate,
 					}
 					fmt.Printf("[%-18s]  FOUND `model id`:%d, then UPDATE\n", "  *db Rows*", lid)
-					completeInfo["sqlinfo"] = "UPDATE last_update"
+					completeInfo["sqldml"] = "UPDATE"
 					mid := strconv.Itoa(lid)
 
 					if len(completeInfos) > 0 {
