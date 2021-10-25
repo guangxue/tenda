@@ -160,6 +160,24 @@ func PickListInspectPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("model name", modelName)
 	fmt.Println("location", location)
 	fmt.Println("pickDate", pickDate)
+	startDate := fmt.Sprintf("'%s'", pickDate)
+	betweenDate := fmt.Sprintf("date_add('%s', interval 7 day)", pickDate)
+	inspectModel := mysql.
+		Select("PNO", "sales_mgr", "model", "qty", "customer", "location", "created_at").
+		From(tbname["picklist"]).
+		WhereBetween("created_at", startDate, betweenDate).
+		AndWhere("model", "=", modelName).
+		AndWhere("location", "=", location).
+		Use(db)
+
+	fmt.Println("INspecting MOdel")
+	for i, model := range inspectModel {
+		fmt.Printf("------------[%d]---------\n", i)
+		for key, val := range model {
+			fmt.Printf("\t%s : %s\n", key, val)
+		}
+	}
+	render(w, "inspectpicklist.html", inspectModel)
 }
 
 func StockUpdatePage(w http.ResponseWriter, r *http.Request) {
@@ -189,6 +207,7 @@ func LastUpdatedPage(w http.ResponseWriter, r *http.Request) {
 		render(w, "lastupdated.html", LastUpdated[0])
 	}
 }
+
 
 func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmn")

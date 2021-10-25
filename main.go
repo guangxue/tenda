@@ -33,7 +33,7 @@ func main() {
 	mux.HandleFunc("/tenda/picklist/inspect", tenda.PickListInspectPage)
 	mux.HandleFunc("/tenda/yam", tenda.MessagePage)
 	mux.HandleFunc("/tenda/lastupdated", tenda.LastUpdatedPage)
-
+	
 	// Tenda API system
 	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
 	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)

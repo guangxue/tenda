@@ -117,7 +117,7 @@ selectButton.addEventListener("click", function() {
 				let tbData = data;
 				// console.log(tbData)
 				tbData.forEach( d => {
-					d.inspect = `<a href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">inspect</a>`;
+					d.inspect = `<a target="_blank" href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">inspect</a>`;
 				});
 				return {
 					"titles": titles,
