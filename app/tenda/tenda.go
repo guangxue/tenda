@@ -163,7 +163,7 @@ func PickListInspectPage(w http.ResponseWriter, r *http.Request) {
 	startDate := fmt.Sprintf("'%s'", pickDate)
 	betweenDate := fmt.Sprintf("date_add('%s', interval 7 day)", pickDate)
 	inspectModel := mysql.
-		Select("PNO", "sales_mgr", "model", "qty", "customer", "location", "created_at").
+		Select("PID","PNO", "sales_mgr", "model", "qty", "customer", "location", "created_at").
 		From(tbname["picklist"]).
 		WhereBetween("created_at", startDate, betweenDate).
 		AndWhere("model", "=", modelName).

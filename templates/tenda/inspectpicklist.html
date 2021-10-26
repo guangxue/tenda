@@ -1,22 +1,25 @@
 {{define "PageTitle"}}Inspect Picked Orders{{end}}
 {{define "content"}}
 <div class="content-wrapper">
+	<h1>Weekly picks<h1>
 	<table style="width:50%;">
 		<thead>
 			<tr>
+				<th>PID</th>
 				<th>PNO</th>
 				<th>Customer</th>
 				<th>Sales</th>
 				<th>Location</th>
 				<th>Model</th>
 				<th>Quantity</th>
-				
-				<td>Created At</td>
+				<th>Created At</th>
+				<th>Update</th>
 			</tr>
 		</thead>
 		<tbody>
 			{{range .}}
 			<tr>
+				<td>{{.PID}}</td>
 				<td>{{.PNO}}</td>
 				<td>{{.customer}}</td>
 				<td>{{.sales_mgr}}</td>
@@ -24,6 +27,7 @@
 				<td>{{.model}}</td>
 				<td class="qty">{{.qty}}</td>
 				<td>{{.created_at}}</td>
+				<td><a href="/tenda/picklist/update?PID={{.PID}}" target="_blank">Update</a></td>
 			</tr>
 			{{end}}
 			<tr>
@@ -31,8 +35,10 @@
 				<td></td>
 				<td></td>
 				<td></td>
+				<td></td>
 				<td style="font-weight: bold;">Total</td>
 				<td id="total" style="font-weight:bold;"></td>
+				<td></td>
 				<td></td>
 			</tr>
 		</tbody>

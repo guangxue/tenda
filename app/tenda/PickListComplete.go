@@ -252,12 +252,12 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 								fmt.Printf("\t %s : %s\n", key, val)
 							}
 						} else {
-							fmt.Printf("[%-18s] NOT FOUND index, then Append ID:%s\n", " *completeInfos*", mid)
+							fmt.Printf("[%-18s]  NOT FOUND index, then Append ID:%s\n", " *completeInfos*", mid)
 							completeInfo["ID"] = mid
 							completeInfos = append(completeInfos, completeInfo)
 						}
 					} else {
-						fmt.Printf("[%-18s] Length < 0, then Append `completeInfo`\n", "  *completeInfos*")
+						fmt.Printf("[%-18s]  Length < 0, then Append `completeInfo`\n", "  *completeInfos*")
 						completeInfo["ID"] = mid
 						completeInfos = append(completeInfos, completeInfo)
 						for i, order := range completeInfos {

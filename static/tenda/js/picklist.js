@@ -112,12 +112,13 @@ selectButton.addEventListener("click", function() {
 			}
 			// Weekly Completed
 			if(data[0].LID) {
-				let titles = ["Location", "Model","Cartons", "Boxes", "Total Picks","Action"];
-				let objNames =   ["location", "model","cartons", "boxes","total_picks", "inspect"];
+				let titles = ["LID","Location", "Model","Cartons", "Boxes", "Total Picks","Inspect", "Update"];
+				let objNames =   ["LID","location", "model","cartons", "boxes","total_picks", "inspect", "update"];
 				let tbData = data;
 				// console.log(tbData)
 				tbData.forEach( d => {
-					d.inspect = `<a target="_blank" href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">inspect</a>`;
+					d.inspect = `<a target="_blank" href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">Inspect</a>`;
+					d.update = `<a target="_blank" href="/tenda/lastupdated?LID=${d.LID}" target="_blank">Update</a>`;
 				});
 				return {
 					"titles": titles,
