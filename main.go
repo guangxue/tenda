@@ -14,9 +14,7 @@ var mux = http.NewServeMux()
 func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
-
 	mux.HandleFunc("/", routing)
-
 
 	/*------------------------------------------------------------*/
 	// Tenda pick and pack system

@@ -108,6 +108,7 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 			Select("location").
 			From(tbname["stock_updated"]).
 			Where("model", searchModel).
+			AndWhere("total", ">", "0").
 		Use(db)
 		returnJson(w, allLocations)
 	}
@@ -116,7 +117,7 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
 
 	dbPickedInfo := map[string]string{}
-	
+
 	if r.Method == http.MethodGet {
 		queryPID := r.URL.Query().Get("PID")
 		LID := r.URL.Query().Get("LID")
@@ -168,6 +169,7 @@ func PickListInspectPage(w http.ResponseWriter, r *http.Request) {
 		WhereBetween("created_at", startDate, betweenDate).
 		AndWhere("model", "=", modelName).
 		AndWhere("location", "=", location).
+		AndWhere("status", "=", "Complete").
 		Use(db)
 
 	fmt.Println("INspecting MOdel")

@@ -20,7 +20,7 @@
 			{{range .}}
 			<tr>
 				<td>{{.PID}}</td>
-				<td>{{.PNO}}</td>
+				<td><a href="#" class="PNOinfo">{{.PNO}}</a></td>
 				<td>{{.customer}}</td>
 				<td>{{.sales_mgr}}</td>
 				<td>{{.location}}</td>
@@ -43,6 +43,8 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<div id="outb"></div>
 </div>
 {{end}}
 

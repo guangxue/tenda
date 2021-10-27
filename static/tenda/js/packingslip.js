@@ -71,8 +71,7 @@ inputPNO.addEventListener("input", function() {
 					}
 				}
 			})
-		} 
-		
+		}
 	}
 	else {
 		// insertFB.innerHTML = ""
