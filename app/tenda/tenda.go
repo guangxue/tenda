@@ -172,7 +172,7 @@ func PickListInspectPage(w http.ResponseWriter, r *http.Request) {
 		AndWhere("status", "=", "Complete").
 		Use(db)
 
-	fmt.Println("INspecting MOdel")
+	fmt.Println("Inspected Model")
 	for i, model := range inspectModel {
 		fmt.Printf("------------[%d]---------\n", i)
 		for key, val := range model {

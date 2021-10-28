@@ -73,8 +73,12 @@ function createTable(tableTitles, data, objNames) {
 		let tbrow = tbody.insertRow(i);
 		for(let i = 0; i < cells; i++) {
 			let cell = tbrow.insertCell(i);
-			//console.log("[helper.js] set cell value:",d[objNames[i]])
-			cell.innerHTML = d[objNames[i]]
+			// console.log("[helper.js] set cell value:",d[objNames[i]])
+			if(d[objNames[i]] === undefined) {
+				cell.innerHTML = ""
+			} else {
+				cell.innerHTML = d[objNames[i]]
+			}
 			cell.setAttribute("data-label", tableTitles[i])
 		}
 	});
