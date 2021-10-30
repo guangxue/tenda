@@ -103,15 +103,42 @@ func Locations(w http.ResponseWriter, r *http.Request) {
 	searchModel := r.URL.Query().Get("model");
 	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL", "/tenda/api/locations")
 	fmt.Printf("[%-18s] ?model = %s\n", " -- tenda.go", searchModel)
-	if len(searchModel) > 0 {
+	if len(searchModel) == 0 {
+		emptyLocation := make(map[string]string)
+		returnJs(w, emptyLocation)
+	}
+	switch searchModel {
+	case "MW6-3PK":
+		fmt.Println("====== searchModel: ==", searchModel)
+		locs := []map[string]string{}
+		loc := map[string]string{
+			"location":"0-G-4",
+		}
+		locs = append(locs, loc)
+		returnJson(w, locs)
+	default:
 		allLocations := mysql.
 			Select("location").
 			From(tbname["stock_updated"]).
 			Where("model", searchModel).
 			AndWhere("total", ">", "0").
 		Use(db)
+		for _, locs := range allLocations {
+			for key, val := range locs {
+				fmt.Println("key=%s, val=%s\n", key, val)
+			}
+		}
 		returnJson(w, allLocations)
 	}
+	// if len(searchModel) > 0 {
+	// 	allLocations := mysql.
+	// 		Select("location").
+	// 		From(tbname["stock_updated"]).
+	// 		Where("model", searchModel).
+	// 		AndWhere("total", ">", "0").
+	// 	Use(db)
+	// 	returnJson(w, allLocations)
+	// }
 }
 
 func PickListUpdatePage(w http.ResponseWriter, r *http.Request) {
