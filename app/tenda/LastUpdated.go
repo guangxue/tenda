@@ -12,6 +12,7 @@ func LastUpdated(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			fmt.Println("Form parse error:", err)
+			return
 		}
 		LID := strings.TrimPrefix(r.URL.Path, "/tenda/api/lastupdated/LID/")
 		if strings.Contains(LID, "/") {

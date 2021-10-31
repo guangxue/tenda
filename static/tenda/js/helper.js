@@ -152,7 +152,7 @@ function lastSunTS() {
 }
 
 function formDataCollect(formElement) {
-	let form = document.querySelector(formElement)
+	let form = document.querySelector(formElement);
 	let formData = new FormData(form);
 	let data = new URLSearchParams(formData);
 	let timenow = getCurrentDateTime();
