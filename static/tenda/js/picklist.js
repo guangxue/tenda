@@ -112,8 +112,8 @@ selectButton.addEventListener("click", function() {
 			}
 			// Weekly Completed
 			if(data[0].LID) {
-				let titles = ["LID","Location", "Model","Cartons", "Boxes", "Total Picks","Inspect", "Update"];
-				let objNames =   ["LID","location", "model","cartons", "boxes","total_picks", "inspect", "update"];
+				let titles = ["LID","Location", "Model","Cartons", "Boxes", "Total Picks","Completed_at","Last Updated","Inspect", "Update"];
+				let objNames =   ["LID","location", "model","cartons", "boxes","total_picks","completed_at","updated_at","inspect", "update"];
 				let tbData = data;
 				// console.log(tbData)
 				tbData.forEach( d => {
