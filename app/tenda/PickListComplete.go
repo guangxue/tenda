@@ -207,7 +207,7 @@ func PickListComplete (w http.ResponseWriter, r *http.Request) {
 						"cartons"    : newCartons,
 						"boxes"      : newBoxes,
 						"total"      : newTotal,
-						"completed_at": TimeNow(),
+						"completed_at": completeDate,
 					}
 					insertId := mysql.InsertInto(tbname["last_updated"],insertValues).With(tx, ctx)
 					fmt.Printf("[%-18s] Appended %s to `completeInfos`\n", "  *completeInfos*", insertId[0]["lastId"])
