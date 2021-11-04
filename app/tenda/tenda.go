@@ -84,6 +84,7 @@ func render(w http.ResponseWriter, templateName string, data interface{}) {
 func RenderHandler(templateName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmplpath := "templates/tenda/" + templateName
+		fmt.Printf("\n----- %s ------\n", templateName)
 		tmpl, err := template.ParseFiles("templates/tenda/base.html", "templates/tenda/nav.html", tmplpath)
 		if err != nil {
 			fmt.Println("template parsing errors: ", err)
@@ -236,7 +237,6 @@ func LastUpdatedPage(w http.ResponseWriter, r *http.Request) {
 		render(w, "lastupdated.html", LastUpdated[0])
 	}
 }
-
 
 func TxCommit(w http.ResponseWriter, r *http.Request) {
 	commitName := r.URL.Query().Get("cmn")
