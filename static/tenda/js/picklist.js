@@ -29,6 +29,7 @@ pickStatusOpt.addEventListener("change", function() {
 	}
 	if(pickStatusOpt.value != "searchPNO") {
 		PNOnumber.style.display = "none";
+		PNOnumber.value = ""
 	}
 	if(pickStatusOpt.value.includes("weekly")) {
 		let lastSun = lastSunTS();
@@ -220,6 +221,8 @@ selectButton.addEventListener("click", function() {
 						let completeInfoTitle = ['LID','Location','Model','Total Picks','New Cartons', 'New Boxes'];
 						let completeInfoOrders = ['ID','location','model','totalPicks','newCartons', 'newBoxes']
 						let completeData = data
+						let comfirmData = document.querySelector("#confirm-data")
+						comfirmData.innerHTML = "<h2>Complete Information</h2><p>Complete Date: "+pickDate+"</p>"
 
 						let completeInfoTable = createTable(completeInfoTitle,completeData,completeInfoOrders)
 						let completefb = document.createElement("div");

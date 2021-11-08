@@ -119,13 +119,22 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 				dateLike = date + "%"
 			}
 			fmt.Printf("[%-18s] ?dateLike = %s\n", " -- PickList.go", dateLike);
-			allPicked := mysql.
+			if status == "Pending" {
+				allPicked := mysql.
 				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
-				From(tbname["picklist"]).
-				WhereLike("created_at",dateLike).
-				AndWhere("status", "=",status).
-			Use(db)
-			returnJson(w, allPicked)
+					From(tbname["picklist"]).
+					Where("status", status).
+				Use(db)
+				returnJson(w, allPicked)
+			} else {
+				allPicked := mysql.
+				Select("PID", "PNO", "model","sales_mgr", "qty", "customer", "location", "status", "created_at", "updated_at").
+					From(tbname["picklist"]).
+					WhereLike("created_at",dateLike).
+					AndWhere("status", "=",status).
+				Use(db)
+				returnJson(w, allPicked)
+			}
 		}
 	}
 
