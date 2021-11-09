@@ -119,6 +119,10 @@ textarea {
 	flex-direction: row;
 	justify-content: space-between;
 }
+#complete-info {
+	height: 316px;
+	overflow: auto;
+}
 input {
 	padding: 10px 30px;
 	box-sizing: border-box;

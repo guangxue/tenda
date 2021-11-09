@@ -363,6 +363,9 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		}
 		if status == "Complete" {
 			fmt.Printf("[%-18s] Updating picklist for order with 'Complete' status"," -- PickList.go")
+			pickQty := 0
+			err = db.QueryRow("SELECT qty FROM picklist WHERE PID = ?", PID).Scan(&pickQty)
+			fmt.Printf("Picklist PID:%s qty:%d", PID, pickQty)
 		} else {
 			mysql.Update(tbname["picklist"], false).Set(updateInfo).Where("PID",PID).With(tx, ctx)
 			fmt.Printf("[%-18s] Getting PID=%s from UPDATEd\n", "PickListUpdate", PID);
