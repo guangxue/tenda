@@ -120,7 +120,8 @@ textarea {
 	justify-content: space-between;
 }
 #complete-info {
-	height: 316px;
+	width: 600px;
+	height: 340px;
 	overflow: auto;
 }
 input {

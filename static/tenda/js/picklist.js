@@ -26,10 +26,11 @@ pickStatusOpt.addEventListener("change", function() {
 	// weekly picked
 	if(pickStatusOpt.value != "from") {
 		inputModel.style.display = "none";
+		modelName.value="";
 	}
 	if(pickStatusOpt.value != "searchPNO") {
 		PNOnumber.style.display = "none";
-		PNOnumber.value = ""
+		PNOnumber.value = "";
 	}
 	if(pickStatusOpt.value.includes("weekly")) {
 		let lastSun = lastSunTS();

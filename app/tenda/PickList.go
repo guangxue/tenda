@@ -319,7 +319,22 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		status := r.URL.Query().Get("status");
 		fmt.Println("......[] DELETE PID :", PID)
 		fmt.Println("......[] DELETE status :", status)
+
+		switch status {
+			case "Pending":
+				// delete
+				rowsAffected := mysql.DeleteFrom(tbname["picklist"], false).Where("PID", PID).Use(db)
+				writeJson := map[string]string{
+					"rowsAffected": rowsAffected[0]["rowsAffected"],
+				}
+				returnJs(w, writeJson)
+			case "Complete":
+				fmt.Println("complete orlder")
+			default:
+				fmt.Println("status not found")
+		}
 		
+		/*
 		if status == "Pending" {
 			// delete
 			rowsAffected := mysql.DeleteFrom(tbname["picklist"], false).Where("PID", PID).Use(db)
@@ -332,6 +347,7 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		if status == "Complete" {
 			// rollback
 		}
+		*/
 	}
 
 	if r.Method == "PUT" {
