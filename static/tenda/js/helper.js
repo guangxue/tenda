@@ -119,10 +119,18 @@ function rebuild_dbtable() {
 	return dbtable_width
 }
 
-function lastSaturdayTS() {
-	const t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
+function lastSaturdayTS(pickDate) {
+	var t = new Date().getDate() + (6 - new Date().getDay() - 1) - 6 ;
+	if(pickDate) {
+		let madeDate = new Date(pickDate);
+		console.log("[helper.js] madeDate:", madeDate)
+		console.log("[helper.js] madeDate:", madeDate.getDate())
+		t = new Date(pickDate).getDate() + (6 - new Date(pickDate).getDay()-1) -6;
+	}
+	console.log("[helper.js] t :", t);
 	const lfri = new Date();
 	lfri.setDate(t);
+	console.log("[helper.js] lastSaturday :", lfri);
 	var month = lfri.getMonth()+1;
 	if(month < 10) {
 		month = `0${month}`

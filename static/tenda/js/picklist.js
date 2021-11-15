@@ -191,7 +191,9 @@ selectButton.addEventListener("click", function() {
 
 				data.append("pickDate", pickDate)
 				data.append("pickStatus", pickStatus)
-				data.append("lastSaturday", lastSaturdayTS());
+				data.append("lastSaturday", lastSaturdayTS(pickDate));
+				console.log("pickDate:", pickDate)
+				console.log("lastSaturdayTS:", lastSaturdayTS(pickDate))
 
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
