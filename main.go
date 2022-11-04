@@ -12,8 +12,15 @@ import (
 var mux = http.NewServeMux()
 
 func main() {
-	fs := http.FileServer(http.Dir("./static"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	fs := http.FileServer(http.Dir("./static/tenda/"))
+	mux.Handle("/tenda/static/", http.StripPrefix("/tenda/static/", fs))
+    /*  
+    mux.HandleFunc("/tenda/static/", func(res http.ResponseWriter, request *http.Request){
+        fmt.Fprintf(res, "Hello static")
+    })
+    */
+	fs1 := http.FileServer(http.Dir("./.well-known/"))
+	mux.Handle("/.well-known/", http.StripPrefix("/.well-known/", fs1))
 	mux.HandleFunc("/", routing)
 
 	/*------------------------------------------------------------*/
