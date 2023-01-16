@@ -97,6 +97,7 @@ func RenderHandler(templateName string) http.HandlerFunc {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Rendering login html")
 	render(w, "login.html", nil)
 }
 

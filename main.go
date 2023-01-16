@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"strings"
 	"github.com/guangxue/webapps/app/tenda"
-	"github.com/guangxue/webapps/app/blog"
 )
 
 var mux = http.NewServeMux()
@@ -14,18 +13,15 @@ var mux = http.NewServeMux()
 func main() {
 	fs := http.FileServer(http.Dir("./static/tenda/"))
 	mux.Handle("/tenda/static/", http.StripPrefix("/tenda/static/", fs))
-    /*  
-    mux.HandleFunc("/tenda/static/", func(res http.ResponseWriter, request *http.Request){
-        fmt.Fprintf(res, "Hello static")
-    })
-    */
+
 	fs1 := http.FileServer(http.Dir("./.well-known/"))
 	mux.Handle("/.well-known/", http.StripPrefix("/.well-known/", fs1))
+
 	mux.HandleFunc("/", routing)
 
 	/*------------------------------------------------------------*/
 	// Tenda pick and pack system
-	// mux.HandleFunc("/tenda", tenda.Index)
+	mux.HandleFunc("/tenda/", tenda.Index)
 	mux.HandleFunc("/tenda/packingslip", tenda.RenderHandler("packingslip.html"))
 	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
 	mux.HandleFunc("/tenda/search", tenda.RenderHandler("search.html"))
@@ -47,11 +43,6 @@ func main() {
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
 
-
-	/*------------------------------------------------------------*/
-	// Blog system
-	mux.HandleFunc("/blog", blog.Admin)
-
 	fmt.Printf("[%-18s] Listening on port :8080\n", " -- main.go")
 	err := http.ListenAndServe(":8080", mux)
     if err != nil {
@@ -62,7 +53,7 @@ func main() {
 
 func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
-	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL", rPath)
+	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL<routing>", rPath)
 
 	if strings.HasPrefix(rPath, "/tenda/api/model") {
 		tenda.Model(w, r)
