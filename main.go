@@ -14,9 +14,6 @@ func main() {
 	fs := http.FileServer(http.Dir("./static/tenda/"))
 	mux.Handle("/tenda/static/", http.StripPrefix("/tenda/static/", fs))
 
-	fs1 := http.FileServer(http.Dir("./.well-known/"))
-	mux.Handle("/.well-known/", http.StripPrefix("/.well-known/", fs1))
-
 	mux.HandleFunc("/", routing)
 
 	/*------------------------------------------------------------*/
@@ -43,11 +40,15 @@ func main() {
 	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
 
 
-	fmt.Printf("[%-18s] Listening on port :8080\n", " -- main.go")
-	err := http.ListenAndServe(":8080", mux)
-    if err != nil {
-        fmt.Println("Port listening error: ", err)
-    }
+	fmt.Printf("[%-18s] Listening HTTPS on port :8080\n", " -- main.go")
+	// err := http.ListenAndServe(":8080", mux)
+	// if err != nil {
+	// 	fmt.Println("Port listening error: ", err)
+	// }
+ 	TLSerr := http.ListenAndServeTLS(":8080", "/home/guangxue/ssl/guangxuezhang_com_chain.crt", "/home/guangxue/ssl/ecc.key", mux)
+ 	if TLSerr != nil {
+ 		fmt.Println("ListenAndServe: ", TLSerr)
+ 	}
 }
 
 
