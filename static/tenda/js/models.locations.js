@@ -2,11 +2,13 @@ import { Tenda } from "./helper.js"
 
 let inputModel = document.querySelector('input[name=model]')
 if(inputModel) {
-	fetch("https://gzhang.dev/tenda/api/model")
+  console.log(inputModel)
+	fetch("/api/model")
 	.then(response => {
 		return response.json()
 	})
 	.then(data=> {
+    console.log(data)
 		var modelist = [];
 		for(let [key, value] of Object.entries(data)) {
 			modelist.push(value);
@@ -34,7 +36,7 @@ if(inputModel) {
 	inputModel.addEventListener('input', function(e) {
 		let model = document.querySelector("input[name=model]").value;
 		if(model) {
-			fetch("https://gzhang.dev/tenda/api/locations?model="+model)
+			fetch("/api/locations?model="+model)
 			.then( resp => {
 				return resp.json();
 			})

@@ -58,18 +58,18 @@ selectButton.addEventListener("click", function() {
 	let searchPNO = document.querySelector("input[name=PNO]").value;
 
 
-	var fetch_url = `https://gzhang.dev/tenda/api/picklist?date=${pickDate}&status=${pickStatus}`
+	var fetch_url = `/api/picklist?date=${pickDate}&status=${pickStatus}`
 	// SELECT * FROM picklist where model='pickmodel' AND created_at > 'pickDate'
 	if(pickModel && pickStatus == "from") {
-		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}?date=${pickDate}&status=${pickStatus}`
+		fetch_url = `/api/picklist/model/${pickModel}?date=${pickDate}&status=${pickStatus}`
 	}
 	// SELECT * FROM picklist where model='pickmodel'
 	if(pickModel && pickStatus != "from") {
-		fetch_url = `https://gzhang.dev/tenda/api/picklist/model/${pickModel}`
+		fetch_url = `/api/picklist/model/${pickModel}`
 	}
 	// SELECT * FROM picklist where PNO = 'searchPNO'
 	if(searchPNO) {
-		fetch_url = `https://gzhang.dev/tenda/api/picklist/search/PNO/${searchPNO}`
+		fetch_url = `/api/picklist/search/PNO/${searchPNO}`
 	}
 	let dbtable_container = document.querySelector("#dbtable_container");
 	if (dbtable_container.innerHTML !== "") {
@@ -104,7 +104,7 @@ selectButton.addEventListener("click", function() {
 				let objNames = ["PNO","sales_mgr", "customer","model", "qty", "status","location", "created_at", "update"];
 				let tbData = data;
 				tbData.forEach( d => {
-					d.update = `<a href="/tenda/picklist/update?PID=${d.PID}" target="_blank">update</a>`;
+					d.update = `<a href="/picklist/update?PID=${d.PID}" target="_blank">update</a>`;
 				})
 				return {
 					"titles": titles,
@@ -119,8 +119,8 @@ selectButton.addEventListener("click", function() {
 				let tbData = data;
 				// console.log(tbData)
 				tbData.forEach( d => {
-					d.inspect = `<a target="_blank" href="/tenda/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">Inspect</a>`;
-					d.update = `<a target="_blank" href="/tenda/lastupdated?LID=${d.LID}" target="_blank">Update</a>`;
+					d.inspect = `<a target="_blank" href="/picklist/inspect?model=${d.model}&location=${d.location}&pickDate=${pickDate}" target="_blank">Inspect</a>`;
+					d.update = `<a target="_blank" href="/lastupdated?LID=${d.LID}" target="_blank">Update</a>`;
 				});
 				return {
 					"titles": titles,
@@ -198,7 +198,7 @@ selectButton.addEventListener("click", function() {
 				let tableBody = document.querySelector('table tbody')
 				let trows = tableBody.querySelectorAll('tr');
 				if (tableBody && trows.length) {
-					fetch("https://gzhang.dev/tenda/api/picklist/complete", {
+					fetch("/api/picklist/complete", {
 						method: "POST",
 						body: data,
 					})
@@ -250,7 +250,7 @@ selectButton.addEventListener("click", function() {
 let closeBtn = document.querySelector(".btn-cancel");
 if(closeBtn) {
 	closeBtn.addEventListener('click', function() {
-		let rburl = `https://gzhang.dev/tenda/api/txrb?rbn=CompletePickList`
+		let rburl = `/api/txrb?rbn=CompletePickList`
 		fetch(rburl)
 		.then(resp => {return resp.json()})
 		.then(data =>{
@@ -269,7 +269,7 @@ let commitBtn = document.querySelector(".btn-commit");
 if(commitBtn) {
 	commitBtn.addEventListener('click', function() {
 		//CompletePickList
-		let cmurl = `https://gzhang.dev/tenda/api/txcm?cmn=CompletePickList`
+		let cmurl = `/api/txcm?cmn=CompletePickList`
 		fetch(cmurl)
 		.then(resp => {return resp.json()})
 		.then(data =>{

@@ -1,6 +1,6 @@
 import { createTable, rebuild_dbtable } from "./helper.js"
 
-let fetch_url = `https://gzhang.dev/tenda/api/stock`
+let fetch_url = `/api/stock`
 
 fetch(fetch_url)
 .then( resp => {

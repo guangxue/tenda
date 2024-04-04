@@ -5,50 +5,46 @@ import (
 	"net/http"
 	"html/template"
 	"strings"
-	"github.com/guangxue/webapps/app/tenda"
+	"tenda/utils"
 )
 
 var mux = http.NewServeMux()
 
 func main() {
 	fs := http.FileServer(http.Dir("./static/tenda/"))
-	mux.Handle("/tenda/static/", http.StripPrefix("/tenda/static/", fs))
-
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.HandleFunc("/", routing)
 
 	/*------------------------------------------------------------*/
 	// Tenda pick and pack system
-	mux.HandleFunc("/tenda/", tenda.Index)
-	mux.HandleFunc("/tenda/packingslip", tenda.RenderHandler("packingslip.html"))
-	mux.HandleFunc("/tenda/picklist",tenda.RenderHandler("picklist.html"))
-	mux.HandleFunc("/tenda/search", tenda.RenderHandler("search.html"))
-	mux.HandleFunc("/tenda/update", tenda.RenderHandler("update.html"))
-	mux.HandleFunc("/tenda/stock/add", tenda.RenderHandler("stockadd.html"))
-	mux.HandleFunc("/tenda/stock/update", tenda.StockUpdatePage)
-	mux.HandleFunc("/tenda/stock", tenda.RenderHandler("stock.html"))
-	mux.HandleFunc("/tenda/soh", tenda.RenderHandler("soh.html"))
-	mux.HandleFunc("/tenda/picklist/update", tenda.PickListUpdatePage)
-	mux.HandleFunc("/tenda/picklist/inspect", tenda.PickListInspectPage)
-	mux.HandleFunc("/tenda/yam", tenda.MessagePage)
-	mux.HandleFunc("/tenda/lastupdated", tenda.LastUpdatedPage)
+	mux.HandleFunc("/packingslip", tenda.RenderHandler("packingslip.html"))
+	mux.HandleFunc("/picklist",tenda.RenderHandler("picklist.html"))
+	mux.HandleFunc("/search", tenda.RenderHandler("search.html"))
+	mux.HandleFunc("/update", tenda.RenderHandler("update.html"))
+	mux.HandleFunc("/stock/add", tenda.RenderHandler("stockadd.html"))
+	mux.HandleFunc("/stock/update", tenda.StockUpdatePage)
+	mux.HandleFunc("/stock", tenda.RenderHandler("stock.html"))
+	mux.HandleFunc("/soh", tenda.RenderHandler("soh.html"))
+	mux.HandleFunc("/picklist/update", tenda.PickListUpdatePage)
+	mux.HandleFunc("/picklist/inspect", tenda.PickListInspectPage)
+	mux.HandleFunc("/yam", tenda.MessagePage)
+	mux.HandleFunc("/lastupdated", tenda.LastUpdatedPage)
 	
 	// Tenda API system
-	mux.HandleFunc("/tenda/api/locations", tenda.Locations)
-	mux.HandleFunc("/tenda/api/picklist/complete",tenda.PickListComplete)
-	mux.HandleFunc("/tenda/api/lastupdated", tenda.LastUpdated)
-	mux.HandleFunc("/tenda/api/txcm",tenda.TxCommit)
-	mux.HandleFunc("/tenda/api/txrb",tenda.TxRollback)
+	mux.HandleFunc("/api/model/", tenda.Model)
+	mux.HandleFunc("/api/locations", tenda.Locations)
+	mux.HandleFunc("/api/picklist/complete",tenda.PickListComplete)
+	mux.HandleFunc("/api/picklist/",tenda.PickList)
+	mux.HandleFunc("/api/lastupdated", tenda.LastUpdated)
+	mux.HandleFunc("/api/stock", tenda.Stock)
+	mux.HandleFunc("/api/soh", tenda.SOH)
+	mux.HandleFunc("/api/txcm",tenda.TxCommit)
+	mux.HandleFunc("/api/txrb",tenda.TxRollback)
 
 
 	fmt.Printf("[%-18s] Listening HTTPS on port :8080\n", " -- main.go")
-	// err := http.ListenAndServe(":8080", mux)
-	// if err != nil {
-	// 	fmt.Println("Port listening error: ", err)
-	// }
  	TLSerr := http.ListenAndServeTLS(":8080", "/home/guangxue/ssl/guangxuezhang_com_chain.crt", "/home/guangxue/ssl/ecc.key", mux)
- 	if TLSerr != nil {
- 		fmt.Println("ListenAndServe: ", TLSerr)
- 	}
+ 	if TLSerr != nil { fmt.Println("ListenAndServe: ", TLSerr) }
 }
 
 
@@ -56,25 +52,10 @@ func routing(w http.ResponseWriter, r *http.Request) {
 	rPath := r.URL.Path
 	fmt.Printf("[ **%-12s**:] %s\n", " Fetch URL<routing>", rPath)
 
-	if strings.HasPrefix(rPath, "/tenda/api/model") {
-		tenda.Model(w, r)
+	if strings.Compare(rPath, "/") == 0 {
+		tenda.Index(w, r);
 		return
 	}
-
-	if strings.HasPrefix(rPath, "/tenda/api/picklist") {
-		tenda.PickList(w, r)
-		return
-	}
-
-    if strings.HasPrefix(rPath, "/tenda/api/stock") {
-        tenda.Stock(w, r)
-        return
-    }
-
-    if strings.HasPrefix(rPath, "/tenda/api/soh") {
-        tenda.SOH(w, r)
-        return
-    }
 
 	if rPath != "/" {
 		// render 404 page
@@ -92,8 +73,8 @@ func routing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// render HOME 
-	tmpl, err := template.ParseFiles("templates/home.html")
+	// render HOME: search 
+	tmpl, err := template.ParseFiles("templates/search.html")
 	if err != nil {
 		fmt.Println("template parsing errors: ", err)
 	}

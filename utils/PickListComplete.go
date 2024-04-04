@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"encoding/json"
-	"github.com/guangxue/webapps/mysql"
+	"tenda/mysql"
 )
 
 func PickListComplete (w http.ResponseWriter, r *http.Request) {

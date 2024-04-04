@@ -37,7 +37,7 @@ updateStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
     let SID = document.querySelector("input[name=SID]").value
 	let data = formDataCollect("#table-form");
-	let fetch_url = `https://gzhang.dev/tenda/api/stock/SID/${SID}`;
+	let fetch_url = `/api/stock/SID/${SID}`;
 	fetch(fetch_url, {
 		method: "PUT",
 		body: data,
@@ -65,7 +65,7 @@ updateStockBtn.addEventListener('click', function(e) {
 deleteStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
 	let SID = document.querySelector("input[name=SID]").value;
-	let fetch_url = `https://gzhang.dev/tenda/api/stock/SID/${SID}`;
+	let fetch_url = `/api/stock/SID/${SID}`;
 	console.log("Deleting SID:", SID)
 	fetch(fetch_url, {
 		method: "DELETE",

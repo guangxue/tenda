@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
     "strconv"
-	"github.com/guangxue/webapps/mysql"
+	"tenda/mysql"
 )
 
 func Stock(w http.ResponseWriter, r *http.Request) {

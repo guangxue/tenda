@@ -7,9 +7,9 @@ let inputModel = document.querySelector("#mod");
 let inputLocation = document.querySelector("#loc");
 let sfb = document.querySelector("#sfb")
 
-const getModel = "https://gzhang.dev/tenda/api/model/";
-const getTheModel = "https://gzhang.dev/tenda/api/model";
-const getModelsWhereLocation = "https://gzhang.dev/tenda/api/model?location=";
+const getModel = "/api/model/";
+const getTheModel = "/api/model";
+const getModelsWhereLocation = "/api/model?location=";
 
 searchBtn.addEventListener('click', function(e) {
 	e.preventDefault();
@@ -30,11 +30,16 @@ searchBtn.addEventListener('click', function(e) {
             
 		})
 	}
-
 	if(model && location === "") {
 		console.log("[search.js] searchModel url:", getModel+model)
-		fetch(getModel+model).then(response => { return response.json()})
+		fetch(getModel+model)
+    .then(res => {
+      console.log(res)
+      return res.json()
+    })
 		.then(data => {
+      console.log("return data: ")
+      console.log(data)
 			let sum_total = 0;
 			let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th><th>Modify</th></tr></thead><tbody>";
 			data.forEach(m => {
@@ -74,4 +79,5 @@ searchBtn.addEventListener('click', function(e) {
 			tableTitle.innerHTML = `<div class="table-title">Model: ${location}</div>`
 		})
 	}
+  
 });

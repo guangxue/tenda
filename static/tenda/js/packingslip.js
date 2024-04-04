@@ -37,10 +37,17 @@ const confirmButton = document.querySelector("#cfmbtn")
  **/
 
 inputPNO.addEventListener("input", function() {
+  console.log("input changes")
 	if(inputPNO.value) {
 		let inputValue = inputPNO.value;
-		let fetch_url = `https://gzhang.dev/tenda/api/picklist/PNO/${inputValue}`;
-
+		let fetch_url = `/api/picklist/PNO/${inputValue}`;
+    /**
+     * PO20230518
+     *          |-> length is 10
+     * PO20230518-1
+     *           |-> indexOf is 10
+     * When input is `PO20230518-`, get data from `picklist` table from database.
+     */
 		if(inputValue.length === 12 && inputValue.indexOf("-") === 10) {
 			console.log("legal PNO:",inputValue)
 			fetch(fetch_url, {
@@ -55,7 +62,7 @@ inputPNO.addEventListener("input", function() {
 					let names = ["PID", "PNO","sales_mgr","customer", "model", "qty", "location", "status", "created_at", "Action"];
 					let titles = ["PID", "PNO", "Sales", "Customer", "Model", "Quantity", "Location", "Status", "Created_at", "Action"]
 					data.forEach( d=> {
-						d.Action = `<a href="/tenda/picklist/update?PID=${d.PID}">Modify</a>`;
+						d.Action = `<a href="/picklist/update?PID=${d.PID}">Modify</a>`;
 					});
 					let table = createTable(titles, data, names);
 					let insertFB = document.querySelector("#insertFB")
@@ -101,7 +108,7 @@ pickButton.addEventListener('click', function(e) {
 		data.append(pair[0], pair[1])
 	}
 
-	fetch("https://gzhang.dev/tenda/api/picklist", {
+	fetch("/api/picklist", {
 		method: "POST",
 		body: data,
 	})
@@ -129,7 +136,7 @@ pickButton.addEventListener('click', function(e) {
 			let cell9 = newRow.insertCell(8);
 			let cell10 = newRow.insertCell(9);
 
-			let fetch_url = `/tenda/api/picklist/PID/${data[0].lastId}?status=Pending`;
+			let fetch_url = `/api/picklist/PID/${data[0].lastId}?status=Pending`;
 			fetch(fetch_url)
 			.then(resp => {
 				return resp.json();

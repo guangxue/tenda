@@ -5,7 +5,7 @@ let stockAddBtn = document.querySelector("#stockAddBtn")
 stockAddBtn.addEventListener('click', function(e) {
     e.preventDefault();
 	let fdata = formDataCollect("#stockadd-form")
-	fetch("https://gzhang.dev/tenda/api/stock", {
+	fetch("/api/stock", {
 		method: "POST",
 		body: fdata,
 	})

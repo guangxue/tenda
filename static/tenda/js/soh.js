@@ -38,7 +38,7 @@ fetch(fetch_url)
 */
 
 console.log("-- soh.js --")
-let fetch_url = `https://gzhang.dev/tenda/api/soh`
+let fetch_url = `/api/soh`
 
 fetch(fetch_url)
 .then( resp => {

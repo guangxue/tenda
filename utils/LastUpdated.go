@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
     "strings"
-	_ "github.com/guangxue/webapps/mysql"
+	_ "tenda/mysql"
 )
 
 func LastUpdated(w http.ResponseWriter, r *http.Request) {

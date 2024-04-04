@@ -26,8 +26,8 @@ type Statement struct {
 }
 
 func Connect(dbname string) *sql.DB {
-	dsn := "gzhang:guangxue@/" + dbname
-	db, err := sql.Open("mysql", dsn)
+	dbConnStr := dbAuthStr() + dbname
+	db, err := sql.Open("mysql", dbConnStr)
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,6 @@ func Connect(dbname string) *sql.DB {
 		fmt.Println("DB pinging error: ", pingerr)
 	}
 
-    // fmt.Printf("[%-18s] Running on `dev` branch\n", "...")
 	fmt.Printf("[%-18s] Connected\n", " -- mysql.go")
 	return db
 }

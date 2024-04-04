@@ -7,7 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"encoding/json"
-	"github.com/guangxue/webapps/mysql"
+	"tenda/mysql"
 )
 
 var tbname map[string]string = map[string]string{}

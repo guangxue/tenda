@@ -6,7 +6,7 @@ import (
 	"strings"
 	"strconv"
 	"time"
-	"github.com/guangxue/webapps/mysql"
+	"tenda/mysql"
 )
 
 func PickList(w http.ResponseWriter, r *http.Request) {
@@ -14,19 +14,19 @@ func PickList(w http.ResponseWriter, r *http.Request) {
 		date := r.URL.Query().Get("date");
 		status := r.URL.Query().Get("status");
 
-		model := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/model/")
+		model := strings.TrimPrefix(r.URL.Path, "/api/picklist/model/")
 		if strings.Contains(model, "/") {
 			model = ""
 		}
-		PID := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/PID/")
+		PID := strings.TrimPrefix(r.URL.Path, "/api/picklist/PID/")
 		if strings.Contains(PID, "/") {
 			PID = ""
 		}
-		PNO := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/PNO/")
+		PNO := strings.TrimPrefix(r.URL.Path, "/api/picklist/PNO/")
 		if strings.Contains(PNO, "/") {
 			PNO = ""
 		}
-		searchPNO := strings.TrimPrefix(r.URL.Path, "/tenda/api/picklist/search/PNO/")
+		searchPNO := strings.TrimPrefix(r.URL.Path, "/api/picklist/search/PNO/")
 		if strings.Contains(searchPNO, "/") {
 			searchPNO = ""
 		}

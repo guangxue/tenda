@@ -3,7 +3,7 @@ package tenda
 import (
 	"fmt"
 	"net/http"
-	"github.com/guangxue/webapps/mysql"
+	"tenda/mysql"
 )
 
 func SOH(w http.ResponseWriter, r *http.Request) {
