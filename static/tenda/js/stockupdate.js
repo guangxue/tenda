@@ -36,6 +36,7 @@ inputBoxes.addEventListener("change", (e)=> {
 updateStockBtn.addEventListener('click', function(e) {
 	e.preventDefault();
     let SID = document.querySelector("input[name=SID]").value
+    let updateCode = document.querySelector("input[name=updateCode]").value
 	let data = formDataCollect("#table-form");
 	let fetch_url = `/api/stock/SID/${SID}`;
 	fetch(fetch_url, {

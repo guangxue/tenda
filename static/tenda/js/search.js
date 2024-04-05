@@ -17,11 +17,11 @@ searchBtn.addEventListener('click', function(e) {
 	let location = inputLocation.value;
 
 	if(model && location) {
+		console.log("model & location query")
 		let url = `${getTheModel}/${model}?location=${location}`
-		console.log("url->", url)
 		fetch(url).then(resp=>{ return resp.json()})
 		.then(data=> {
-            data[0].update =`<a href="/tenda/stock/update?SID=${data[0].sid}">Update</a>`;;
+            data[0].update =`<a href="/stock/update?SID=${data[0].sid}">Update</a>`;;
 			console.log("data the model", data)
             let titles = ['sid','location', 'unit', 'cartons', 'boxes', 'total','update'];
             sfb.innerHTML = "" 
@@ -31,19 +31,18 @@ searchBtn.addEventListener('click', function(e) {
 		})
 	}
 	if(model && location === "") {
+		console.log("model & NO location query")
 		console.log("[search.js] searchModel url:", getModel+model)
 		fetch(getModel+model)
     .then(res => {
-      console.log(res)
       return res.json()
     })
 		.then(data => {
-      console.log("return data: ")
       console.log(data)
 			let sum_total = 0;
 			let table = "<table><thead><tr><th>Location</th><th>Unit</th><th>Cartons</th><th>Boxes</th><th>Total</th><th>Modify</th></tr></thead><tbody>";
 			data.forEach(m => {
-				let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td><td><a href="/tenda/stock/update?SID=${m.SID}">Update</a></td></tr>`
+				let row = `<tr><td>${m.location}</td><td>${m.unit}</td><td>${m.cartons}</td><td>${m.boxes}</td><td>${m.total}</td><td><a href="/stock/update?SID=${m.SID}">Update</a></td></tr>`
 				table += row
 				sum_total += parseFloat(m.total);
 			});
@@ -60,7 +59,7 @@ searchBtn.addEventListener('click', function(e) {
 	}
 	if(location && model === "") {
 		let url = getModelsWhereLocation+location;
-		console.log("[search.js] searchLocation url:", url)
+		console.log("location & NO model query")
 		fetch(url)
 		.then(resp => {
 			return resp.json();

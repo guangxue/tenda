@@ -8,7 +8,6 @@ if(inputModel) {
 		return response.json()
 	})
 	.then(data=> {
-    console.log(data)
 		var modelist = [];
 		for(let [key, value] of Object.entries(data)) {
 			modelist.push(value);

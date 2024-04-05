@@ -2,10 +2,12 @@ package mysql
 
 import (
 	"context"
-	"fmt"
 	"database/sql"
-	"strings"
+	"fmt"
 	"strconv"
+	"strings"
+	props "tenda/properties"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,7 +18,7 @@ type Statement struct {
 	TableName      string
 	InsertStmt     string
 	InsertValues   []interface{}
-	SetExpr	       string
+	SetExpr        string
 	WhereClause    string
 	AndWhereClause string
 	QueryType      string
@@ -25,9 +27,13 @@ type Statement struct {
 	RawStatment    string
 }
 
+func dsn(dbname string) string {
+	return props.GetProperty("dbUser") + ":" + props.GetProperty("dbPass") + "@/" + dbname
+}
+
 func Connect(dbname string) *sql.DB {
-	dbConnStr := dbAuthStr() + dbname
-	db, err := sql.Open("mysql", dbConnStr)
+
+	db, err := sql.Open("mysql", dsn(dbname))
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +55,7 @@ func Begin(db *sql.DB) (*sql.Tx, context.Context) {
 	return tx, ctx
 }
 
-func Select(searchColumns ...string) *Statement{
+func Select(searchColumns ...string) *Statement {
 	sqlstmt := &Statement{}
 	sqlstmt.ColumnCount = len(searchColumns)
 	sqlstmt.ColumnNames = searchColumns
@@ -58,7 +64,7 @@ func Select(searchColumns ...string) *Statement{
 	return sqlstmt
 }
 
-func SelectDistinct(searchColumns ...string) *Statement{
+func SelectDistinct(searchColumns ...string) *Statement {
 	sqlstmt := &Statement{}
 	sqlstmt.ColumnCount = len(searchColumns)
 	sqlstmt.ColumnNames = searchColumns
@@ -67,7 +73,7 @@ func SelectDistinct(searchColumns ...string) *Statement{
 	return sqlstmt
 }
 
-func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement{
+func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement {
 	sqlstmt := &Statement{}
 	sqlstmt.QueryType = "INSERT"
 
@@ -75,25 +81,25 @@ func InsertInto(tableName string, insertQuery map[string]interface{}) *Statement
 	for i, _ := range placeholders {
 		placeholders[i] = "?"
 	}
-	insertPlaceholders := "("+strings.Join(placeholders, ",")+")"
+	insertPlaceholders := "(" + strings.Join(placeholders, ",") + ")"
 	// fmt.Println("INSERT placeholders:", insertPlaceholders)
 	insertColumns := []string{}
-	insertValues  := []interface{}{}
+	insertValues := []interface{}{}
 	for col, val := range insertQuery {
 		insertColumns = append(insertColumns, col)
-		insertValues  = append(insertValues, val)
+		insertValues = append(insertValues, val)
 	}
 	sqlstmt.InsertValues = insertValues
-	insertStmt := "INSERT INTO "+tableName + "("+strings.Join(insertColumns, ",")+") VALUES " + insertPlaceholders
+	insertStmt := "INSERT INTO " + tableName + "(" + strings.Join(insertColumns, ",") + ") VALUES " + insertPlaceholders
 	sqlstmt.InsertStmt = insertStmt
 	// fmt.Println("insertStmt:", insertStmt)
 	return sqlstmt
 }
 
-func Update(tableName string, updateNoWhere bool) *Statement{
+func Update(tableName string, updateNoWhere bool) *Statement {
 	sqlstmt := &Statement{}
 	sqlstmt.UpdateNoWhere = updateNoWhere
-	sqlstmt.TableName = "UPDATE "+tableName
+	sqlstmt.TableName = "UPDATE " + tableName
 	sqlstmt.QueryType = "UPDATE"
 	return sqlstmt
 }
@@ -101,7 +107,7 @@ func Update(tableName string, updateNoWhere bool) *Statement{
 func DeleteFrom(tableName string, deleteNoWhere bool) *Statement {
 	sqlstmt := &Statement{}
 	sqlstmt.DeleteNoWhere = deleteNoWhere
-	sqlstmt.TableName = "DELETE FROM "+tableName
+	sqlstmt.TableName = "DELETE FROM " + tableName
 	sqlstmt.QueryType = "DELETE"
 	return sqlstmt
 }
@@ -115,50 +121,50 @@ func SelectRaw(rawStmt string, columnNames ...string) *Statement {
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) Set(updateColumns map[string]interface{}) *Statement{
+func (sqlstmt *Statement) Set(updateColumns map[string]interface{}) *Statement {
 	setExpression := " SET "
 	for col, val := range updateColumns {
-		setExpression += col + "='" + fmt.Sprintf("%v",val) + "', "
+		setExpression += col + "='" + fmt.Sprintf("%v", val) + "', "
 	}
 	sqlstmt.SetExpr = setExpression[:len(setExpression)-2]
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) From(tableName string) *Statement{
-	sqlstmt.TableName = " FROM "+tableName
+func (sqlstmt *Statement) From(tableName string) *Statement {
+	sqlstmt.TableName = " FROM " + tableName
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) Where(column string, searchColumn string) *Statement{
+func (sqlstmt *Statement) Where(column string, searchColumn string) *Statement {
 	sqlstmt.WhereClause = " Where " + column + "='" + searchColumn + "'"
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) WhereBetween(col string,value1 string, value2 string) *Statement{
-	sqlstmt.WhereClause = " Where "+ col +" BETWEEN " + value1 + " AND " + value2
+func (sqlstmt *Statement) WhereBetween(col string, value1 string, value2 string) *Statement {
+	sqlstmt.WhereClause = " Where " + col + " BETWEEN " + value1 + " AND " + value2
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) WhereLike(column string, pattern string) *Statement{
+func (sqlstmt *Statement) WhereLike(column string, pattern string) *Statement {
 	sqlstmt.WhereClause = " Where " + column + " LIKE '" + pattern + "'"
 	return sqlstmt
 }
 
 func (sqlstmt *Statement) AndWhere(column string, condition string, searchColumn string) *Statement {
 	if len(sqlstmt.WhereClause) > 0 {
-		sqlstmt.AndWhereClause += " AND " + column + " " +condition + " '"+searchColumn + "'"
+		sqlstmt.AndWhereClause += " AND " + column + " " + condition + " '" + searchColumn + "'"
 		return sqlstmt
 	}
 	return sqlstmt
 }
 
-func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
-	
+func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string {
+
 	finalColumns := []map[string]string{}
 	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
 	case "SELECT", "SELECTRAW":
-		
+
 		// columnsToSelect := strings.Join(searchColumns, ", ")
 		stmt := ""
 		if sqlstmt.QueryType == "SELECT" {
@@ -172,12 +178,12 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			stmt = sqlstmt.RawStatment
 			fmt.Printf("[%-18s] %s\n", "SelectRaw", sqlstmt.RawStatment)
 		}
-		
+
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
-		
+
 		/* convert []interface{} to slice -> for easing indexing with [1]
-		 | save each interface{} with string poiner -> for rows.Scan()
-		 */
+		| save each interface{} with string poiner -> for rows.Scan()
+		*/
 		for idx, _ := range sqlstmt.ColumnNames {
 			scannedColumns[idx] = new(string)
 		}
@@ -217,15 +223,15 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			}
 			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] %s\n",  " -- UPDATE --", sqlstmt.TableName)
+			fmt.Printf("[%-18s] %s\n", " -- UPDATE --", sqlstmt.TableName)
 			fmt.Printf("[%-18s]  %s\n", ".. SET", sqlstmt.SetExpr)
 			fmt.Printf("[%-18s]  %s\n", ".. WHERE", sqlstmt.WhereClause)
 			fmt.Printf("[%-18s]  %s\n", ".. AND", sqlstmt.AndWhereClause)
-			
+
 			res, err := db.Exec(stmt)
 			if err != nil {
 				fmt.Println("[db *Err]: Update error:", err)
@@ -236,14 +242,14 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			}
 			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else {
 			// fmt.Printf(">> %s\n", stmt)
 			fmt.Println("[db *Err] WhereClause needed!")
 		}
 	case "INSERT":
-		fmt.Printf("[%-18s] %s\n", "INSERT",sqlstmt.InsertStmt)
+		fmt.Printf("[%-18s] %s\n", "INSERT", sqlstmt.InsertStmt)
 		fmt.Printf("[%-18s] %v\n", "INSERT VALUES", sqlstmt.InsertValues)
 		stmt, err := db.Prepare(sqlstmt.InsertStmt)
 		if err != nil {
@@ -260,16 +266,16 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			fmt.Println("Error last ID:", err)
 		}
 
-		fmt.Printf("[%-18s] %s: %d\n", "INSERT","Last Insert Id",id)
+		fmt.Printf("[%-18s] %s: %d\n", "INSERT", "Last Insert Id", id)
 		rid := strconv.FormatInt(id, 10)
-		insertFeedback := map[string]string{"lastId":rid}
+		insertFeedback := map[string]string{"lastId": rid}
 		finalColumns = append(finalColumns, insertFeedback)
 	case "DELETE":
 		if sqlstmt.DeleteNoWhere {
-			fmt.Printf("[%-18s] %s\n", "DELETE","!!! Deleting with NO WHERE !!!")
+			fmt.Printf("[%-18s] %s\n", "DELETE", "!!! Deleting with NO WHERE !!!")
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
+			fmt.Printf("[%-18s] %s: %s\n", "DELETE", "stmt:", stmt)
 			res, err := db.Exec(stmt)
 			if err != nil {
 				fmt.Println("[db *Err]: Delete error:", err)
@@ -280,23 +286,23 @@ func (sqlstmt *Statement) Use(db *sql.DB) []map[string]string{
 			}
 			fmt.Printf("[%-18s] %d\n", "Delete rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else {
-			fmt.Printf("[%-18s] %s: %d\n", "DELETE","WRONG SQL Stmt")
+			fmt.Printf("[%-18s] %s: %d\n", "DELETE", "WRONG SQL Stmt")
 		}
 	} // EOS: end of switch
 
 	return finalColumns
 }
 
-func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]string{
-	
+func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]string {
+
 	finalColumns := []map[string]string{}
 	// fmt.Printf("[QueryType] %s\n", sqlstmt.QueryType)
 	switch sqlstmt.QueryType {
 	case "SELECT", "SELECTRAW":
-		
+
 		// columnsToSelect := strings.Join(searchColumns, ", ")
 		stmt := ""
 		if sqlstmt.QueryType == "SELECT" {
@@ -310,12 +316,12 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			stmt = sqlstmt.RawStatment
 			fmt.Printf("[%-18s] %s\n", "SelectRaw", sqlstmt.RawStatment)
 		}
-		
+
 		var scannedColumns = make([]interface{}, sqlstmt.ColumnCount)
-		
+
 		/* convert []interface{} to slice -> for easing indexing with [1]
-		 | save each interface{} with string poiner -> for rows.Scan()
-		 */
+		| save each interface{} with string poiner -> for rows.Scan()
+		*/
 		for idx, _ := range sqlstmt.ColumnNames {
 			scannedColumns[idx] = new(string)
 		}
@@ -357,16 +363,16 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			}
 			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else if len(sqlstmt.WhereClause) > 0 {
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("\n[%-18s] \n",  "* BEGIN Transaction *")
-			fmt.Printf("[%-18s] %s\n",  "  -- UPDATE -- ", sqlstmt.TableName)
+			fmt.Printf("\n[%-18s] \n", "* BEGIN Transaction *")
+			fmt.Printf("[%-18s] %s\n", "  -- UPDATE -- ", sqlstmt.TableName)
 			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.SetExpr)
 			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.WhereClause)
 			fmt.Printf("[%-18s]  %s\n", "", sqlstmt.AndWhereClause)
-			
+
 			res, err := tx.ExecContext(ctx, stmt)
 			if err != nil {
 				tx.Rollback()
@@ -378,15 +384,15 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			}
 			fmt.Printf("[%-18s] %d\n", "  UPDATED rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else {
 			// fmt.Printf(">> %s\n", stmt)
 			fmt.Println("[db *Err] WhereClause needed!")
 		}
 	case "INSERT":
-		fmt.Printf("\n[%-18s] \n",  "* BEGIN Transaction *")
-		fmt.Printf("[%-18s] %s\n", " -- INSERT",sqlstmt.InsertStmt)
+		fmt.Printf("\n[%-18s] \n", "* BEGIN Transaction *")
+		fmt.Printf("[%-18s] %s\n", " -- INSERT", sqlstmt.InsertStmt)
 		fmt.Printf("[%-18s] %v\n", "", sqlstmt.InsertValues)
 		stmt, err := tx.PrepareContext(ctx, sqlstmt.InsertStmt)
 		// stmt, err := db.Prepare(sqlstmt.InsertStmt)
@@ -405,17 +411,17 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			fmt.Println("Error last ID:", err)
 		}
 
-		fmt.Printf("[%-18s] %s: %d\n", "INSERT","Last Insert Id",id)
+		fmt.Printf("[%-18s] %s: %d\n", "INSERT", "Last Insert Id", id)
 		rid := strconv.FormatInt(id, 10)
-		insertFeedback := map[string]string{"lastId":rid}
+		insertFeedback := map[string]string{"lastId": rid}
 		finalColumns = append(finalColumns, insertFeedback)
 	case "DELETE":
 		if sqlstmt.DeleteNoWhere {
-			fmt.Printf("[%-18s] %s\n", "DELETE","!!! Deleting with NO WHERE !!!")
+			fmt.Printf("[%-18s] %s\n", "DELETE", "!!! Deleting with NO WHERE !!!")
 		} else if len(sqlstmt.WhereClause) > 0 {
-			
+
 			stmt := sqlstmt.TableName + sqlstmt.SetExpr + sqlstmt.WhereClause + sqlstmt.AndWhereClause
-			fmt.Printf("[%-18s] %s: %s\n", "DELETE","stmt:",stmt)
+			fmt.Printf("[%-18s] %s: %s\n", "DELETE", "stmt:", stmt)
 			res, err := tx.ExecContext(ctx, stmt)
 			// res, err := db.Exec(stmt)
 			if err != nil {
@@ -428,10 +434,10 @@ func (sqlstmt *Statement) With(tx *sql.Tx, ctx context.Context) []map[string]str
 			}
 			fmt.Printf("[%-18s] %d\n", "Delete rows", rnums)
 			rid := strconv.FormatInt(rnums, 10)
-			rowsFeedback := map[string]string{"rowsAffected":rid}
+			rowsFeedback := map[string]string{"rowsAffected": rid}
 			finalColumns = append(finalColumns, rowsFeedback)
 		} else {
-			fmt.Printf("[%-18s] %s: %d\n", "DELETE","WRONG SQL Stmt")
+			fmt.Printf("[%-18s] %s: %d\n", "DELETE", "WRONG SQL Stmt")
 		}
 	} // EOS: end of switch
 

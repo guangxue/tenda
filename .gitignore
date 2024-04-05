@@ -1,6 +1,6 @@
 .DS_Store
 main
 sftp-config.json
-dsn.json
+properties.json
 tenda
 sqlfiles/
